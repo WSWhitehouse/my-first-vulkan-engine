@@ -1,5 +1,5 @@
 _filedir = "%{wks.location}/Engine/"
-group "premake5-dependencies"
+group "premake-dependencies"
 
 project "Engine"
     kind "ConsoleApp"
