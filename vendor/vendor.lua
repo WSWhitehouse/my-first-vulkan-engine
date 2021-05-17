@@ -1,10 +1,13 @@
+--# Vendor File Directory #--
+_vendordir = "%.location}/vendor/"
+
 --# Vulkan SDK (found by OS) #--
 VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 --# Include Directory #--
 IncludeDir = {}
-IncludeDir["GLFW"]      = _filedir .. "vendor/GLFW/include"
-IncludeDir["glm"]       = _filedir .. "vendor/glm"
+IncludeDir["GLFW"]      = _vendordir .. "GLFW/include"
+IncludeDir["glm"]       = _vendordir .. "glm"
 IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include"
 
 --# Lib Directory #--

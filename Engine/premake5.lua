@@ -1,6 +1,3 @@
-_filedir = "%{wks.location}/Engine/"
-group "premake-dependencies"
-
 project "Engine"
     kind "ConsoleApp"
     language "C++"
@@ -8,6 +5,8 @@ project "Engine"
 
     targetdir (_targetdir .. "/%{prj.name}")
     objdir    (_objdir .. "/%{prj.name}")
+
+    _filedir = "%{wks.location}/Engine/"
 
     files
     { 
