@@ -15,5 +15,5 @@ LibDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib/"
 
 --# Lib #--
 Lib = {}
-Lib["VulkanSDK"]   = "%{LibraryDir.VulkanSDK}/vulkan-1.lib"
-Lib["VulkanUtils"] = "%{LibraryDir.VulkanSDK}/VkLayer_utils.lib"
+Lib["VulkanSDK"]   = "%{LibDir.VulkanSDK}/vulkan-1.lib"
+Lib["VulkanUtils"] = "%{LibDir.VulkanSDK}/VkLayer_utils.lib"

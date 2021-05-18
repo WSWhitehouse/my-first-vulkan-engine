@@ -3,8 +3,8 @@ project "GLFW"
     kind "StaticLib"
     language "C"
 
-    targetdir (_targetdir .. "/%{prj.name}")
-    objdir    (_objdir .. "/%{prj.name}")
+    targetdir (_targetdir)
+    objdir    (_objdir)
 
     _glfwfiledir = "%{wks.location}/vendor/GLFW/"
 
@@ -19,6 +19,11 @@ project "GLFW"
         "GLFW/src/monitor.c",
         "GLFW/src/vulkan.c",
         "GLFW/src/window.c"
+    }
+
+    includedirs
+    {
+        "%{IncludeDir.VulkanSDK}"
     }
 
     filter "system:linux"

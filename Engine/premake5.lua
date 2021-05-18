@@ -5,8 +5,8 @@ project "Engine"
     language "C++"
     cppdialect "C++17"
 
-    targetdir (_targetdir .. "/%{prj.name}")
-    objdir    (_objdir .. "/%{prj.name}")
+    targetdir (_targetdir)
+    objdir    (_objdir)
 
     _enginefiledir = "%{wks.location}/Engine/"
 
