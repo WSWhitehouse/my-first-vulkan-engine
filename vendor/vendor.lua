@@ -1,5 +1,4 @@
---# Vendor File Directory #--
-_vendordir = "%.location}/vendor/"
+_vendordir = "%{wks.location}/vendor/"
 
 --# Vulkan SDK (found by OS) #--
 VULKAN_SDK = os.getenv("VULKAN_SDK")
