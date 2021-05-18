@@ -3,6 +3,7 @@
 #include <glm/glm.hpp>
 #include <glm/vec2.hpp>
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
 
 int main(int /*argc*/, char ** /*argv*/)
 {
