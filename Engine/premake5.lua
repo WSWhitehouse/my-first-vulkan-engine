@@ -1,4 +1,6 @@
 project "Engine"
+    location "%{wks.location}/Engine/"
+    uuid = os.uuid()
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
@@ -11,10 +13,10 @@ project "Engine"
     files
     {
         --# Engine Src #--
-        _enginefiledir .. "src/**.h",
-        _enginefiledir .. "src/**.c",
-        _enginefiledir .. "src/**.hpp",
-        _enginefiledir .. "src/**.cpp",
+        "src/**.h",
+        "src/**.c",
+        "src/**.hpp",
+        "src/**.cpp",
 
         --# glm #--
         "%{IncludeDir.glm}/glm/**.hpp",
@@ -23,7 +25,7 @@ project "Engine"
 
     includedirs
     {
-        _enginefiledir .. "src",
+        "src",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.VulkanSDK}"
