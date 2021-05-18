@@ -33,7 +33,8 @@ project "Engine"
 
     links
     {
-        "GLFW"
+        "GLFW",
+        "%{Lib.VulkanSDK}"
     }
 
     filter "configurations:Debug"
@@ -45,3 +46,14 @@ project "Engine"
         defines { "NDEBUG" }
         runtime "Release"
         optimize "On"
+
+    filter "system:linux"
+        links
+        {
+            "dl",
+            "pthread",
+            "X11",
+            "Xxf86vm",
+            "Xrandr",
+            "Xi"
+        }

@@ -7,13 +7,13 @@ VULKAN_SDK = os.getenv("VULKAN_SDK")
 IncludeDir = {}
 IncludeDir["GLFW"]      = _vendordir .. "GLFW/include/"
 IncludeDir["glm"]       = _vendordir .. "glm/"
-IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/Include/"
+IncludeDir["VulkanSDK"] = "%{VULKAN_SDK}/include/"
 
 --# Lib Directory #--
 LibDir = {}
-LibDir["VulkanSDK"] = "%{VULKAN_SDK}/Lib/"
+LibDir["VulkanSDK"] = "%{VULKAN_SDK}/lib/"
 
 --# Lib #--
 Lib = {}
-Lib["VulkanSDK"]   = "%{LibDir.VulkanSDK}/vulkan-1.lib"
+Lib["VulkanSDK"]   = "%{LibDir.VulkanSDK}/vulkan.lib"
 Lib["VulkanUtils"] = "%{LibDir.VulkanSDK}/VkLayer_utils.lib"

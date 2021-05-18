@@ -21,11 +21,6 @@ project "GLFW"
         "GLFW/src/window.c"
     }
 
-    includedirs
-    {
-        "%{IncludeDir.VulkanSDK}"
-    }
-
     filter "system:linux"
         pic "On"
 
