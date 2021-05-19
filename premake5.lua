@@ -1,7 +1,7 @@
 include "vendor/vendor.lua"
 
 --# Workspace #--
-workspace "Vk-Test"
+workspace "WIPE"
     architecture "x86_64"
     startproject "Engine"
 

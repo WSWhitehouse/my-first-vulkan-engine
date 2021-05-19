@@ -1,4 +1,4 @@
-project "Engine"
+project "WIPE"
     location "%{wks.location}/Engine/"
     uuid = os.uuid()
     kind "ConsoleApp"
