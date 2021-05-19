@@ -27,7 +27,7 @@ BreakConstructorInitializers: AfterColon
 ColumnLimit: 125
 DerivePointerAlignment: false
 IndentCaseLabels: true
-IndentPPDirectives: AfterHash
+IndentPPDirectives: BeforeHash
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^"(llvm|llvm-c|clang|clang-c)/'
