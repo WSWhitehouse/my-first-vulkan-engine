@@ -1,7 +1,3 @@
-//
-// Created by wswhitehouse on 19/05/2021.
-//
-
 #ifndef WIPE_WIPE_PCH_H
 #define WIPE_WIPE_PCH_H
 
