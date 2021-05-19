@@ -1,5 +1,5 @@
-#ifndef WIPE_WIPE_PCH_H
-#define WIPE_WIPE_PCH_H
+#ifndef WIPE_PCH_H
+#define WIPE_PCH_H
 
 #include "platform/PlatformDetection.h"
 
@@ -28,4 +28,4 @@
 
 
 
-#endif //WIPE_WIPE_PCH_H
+#endif // WIPE_PCH_H
