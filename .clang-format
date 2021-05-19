@@ -24,7 +24,7 @@ BreakAfterJavaFieldAnnotations: true
 BreakBeforeBraces: Allman
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: AfterColon
-ColumnLimit: 125
+ColumnLimit: 100
 DerivePointerAlignment: false
 IndentCaseLabels: true
 IndentPPDirectives: BeforeHash
@@ -54,5 +54,6 @@ SpacesInAngles: false
 SpacesInContainerLiterals: false
 Standard: c++20
 CommentPragmas: '^ NOLINT'
+BreakStringLiterals: false
 IndentWidth: 2
 TabWidth: 2
