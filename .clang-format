@@ -1,0 +1,58 @@
+---
+BasedOnStyle: Mozilla
+Language: Cpp
+AccessModifierOffset: -1
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveDeclarations: None
+AlignConsecutiveMacros: Consecutive
+AlignEscapedNewlines: Left
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: Always
+AllowShortLambdasOnASingleLine: All
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakTemplateDeclarations: Yes
+BinPackParameters: true
+BreakAfterJavaFieldAnnotations: true
+BreakBeforeBraces: Allman
+BreakBeforeTernaryOperators: true
+BreakConstructorInitializers: AfterColon
+ColumnLimit: 125
+DerivePointerAlignment: false
+IndentCaseLabels: true
+IndentPPDirectives: AfterHash
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^"(llvm|llvm-c|clang|clang-c)/'
+    Priority: 2
+  - Regex: '^(<|"(gtest|gmock|isl|json)/)'
+    Priority: 3
+  - Regex: '<[[:alnum:].]+>'
+    Priority: 4
+  - Regex: '.*'
+    Priority: 1
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+NamespaceIndentation: All
+PenaltyBreakAssignment: 5
+PenaltyBreakComment: 5
+PenaltyBreakString: 5
+PenaltyExcessCharacter: 100
+PenaltyReturnTypeOnItsOwnLine: 10
+PointerAlignment: Left
+ReflowComments: true
+SpaceBeforeAssignmentOperators: true
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInContainerLiterals: false
+Standard: c++20
+CommentPragmas: '^ NOLINT'
+IndentWidth: 2
+TabWidth: 2

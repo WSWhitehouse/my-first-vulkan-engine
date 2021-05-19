@@ -7,53 +7,53 @@
 /* --------------------------------------------------------------------------------------- */
 
 #ifdef _WIN32 /* Windows */
-    #define WIPE_PLATFORM_WINDOWS
+#  define WIPE_PLATFORM_WINDOWS
 
-	#ifdef _WIN64 /* Windows x64  */
-		#define WIPE_PLATFORM_WINDOWS_64
-        #error "Windows x64 Builds are not supported!"
+#  ifdef _WIN64 /* Windows x64  */
+#    define WIPE_PLATFORM_WINDOWS_64
+#    error "Windows x64 Builds are not supported!"
 
-	#else /* Windows x86 */
-        #define WIPE_PLATFORM_WINDOWS_86
-		#error "Windows x86 Builds are not supported!"
+#  else /* Windows x86 */
+#    define WIPE_PLATFORM_WINDOWS_86
+#    error "Windows x86 Builds are not supported!"
 
-    #endif
+#  endif
 
 #elif defined(__APPLE__) || defined(__MACH__) /* Apple */
-#include <TargetConditionals.h>
-	/* TARGET_OS_MAC exists on all the platforms
-	 * so we must check all of them (in this order)
-	 * to ensure that we're running on MAC and not
-	 * some other Apple platform */
+#  include <TargetConditionals.h>
 
-	#if TARGET_IPHONE_SIMULATOR == 1 /* IPhone Sim */
-		#error "IOS simulator is not supported!"
+/* TARGET_OS_MAC exists on all the platforms so we must check all of them (in this
+ * order) to ensure that we're running on MAC and not some other Apple platform
+ */
 
-	#elif TARGET_OS_IPHONE == 1 /* IOS */
-		#define WIPE_PLATFORM_IOS
-		#error "IOS is not supported!"
+#  if TARGET_IPHONE_SIMULATOR == 1 /* IPhone Sim */
+#    error "IOS simulator is not supported!"
 
-	#elif TARGET_OS_MAC == 1 /* MAC OS */
-		#define WIPE_PLATFORM_MACOS
-		#error "MacOS is not supported!"
+#  elif TARGET_OS_IPHONE == 1 /* IOS */
+#    define WIPE_PLATFORM_IOS
+#    error "IOS is not supported!"
 
-	#else /* Unknown Apple */
-		#error "Unknown Apple platform!"
-    #endif
+#  elif TARGET_OS_MAC == 1 /* MAC OS */
+#    define WIPE_PLATFORM_MACOS
+#    error "MacOS is not supported!"
 
-/* We also have to check __ANDROID__ before __linux__
- * since android is based on the linux kernel it has
- * __linux__ defined */
+#  else /* Unknown Apple */
+#    error "Unknown Apple platform!"
+#  endif
+
+/* We also have to check __ANDROID__ before __linux__ since android
+ * is based on the linux kernel it has  __linux__ defined
+ */
 #elif defined(__ANDROID__) /* Android */
-    #define WIPE_PLATFORM_ANDROID
-	#error "Android is not supported!"
+#  define WIPE_PLATFORM_ANDROID
+#  error "Android is not supported!"
 
 #elif defined(__linux__) /* Linux */
-    #define WIPE_PLATFORM_LINUX
+#  define WIPE_PLATFORM_LINUX
 
 #else /* Unknown compiler/platform */
-	#error "Unknown platform!"
+#  error "Unknown platform!"
 
 #endif /* End of platform detection */
 
-#endif //WIPE_PLATFORM_DETECTION_H
+#endif // WIPE_PLATFORM_DETECTION_H
