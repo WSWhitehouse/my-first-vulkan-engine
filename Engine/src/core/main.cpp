@@ -1,28 +1,119 @@
 #include <GLFW/glfw3.h>
 #include <wipe_pch.h>
 
+#include "Wipe.h"
+#include "platform/vulkan/ValidationLayers.h"
 #include "platform/vulkan/Vk_Base.h"
+
+namespace WIPE
+{
+  struct WindowProperties
+  {
+    int width         = 800;
+    int height        = 600;
+    std::string title = "WIPE";
+  };
+
+  class Application
+  {
+   public:
+    void run()
+    {
+      initWindow();
+      initVulkan();
+      mainLoop();
+      cleanup();
+    }
+
+   private:
+    void initWindow()
+    {
+      glfwInit();
+      glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+      glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+      m_window = glfwCreateWindow(
+        m_properties.width, m_properties.height, m_properties.title.c_str(), nullptr, nullptr);
+    }
+
+    void initVulkan() { createInstance(); }
+
+    void createInstance()
+    {
+      if (ValidationLayers::Active() && !ValidationLayers::CheckLayerSupport())
+      {
+        throw std::runtime_error("Validation layers requested, but not available!");
+      }
+
+      VkApplicationInfo appInfo{};
+      appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+      appInfo.pApplicationName   = m_properties.title.c_str();
+      appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
+      appInfo.pEngineName        = WIPE_ENGINE_NAME;
+      appInfo.engineVersion      = VK_MAKE_VERSION(WIPE_VER_MAJOR, WIPE_VER_MINOR, WIPE_VER_PATCH);
+      appInfo.apiVersion         = VK_API_VERSION_1_0;
+
+      VkInstanceCreateInfo createInfo{};
+      createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+      createInfo.pApplicationInfo = &appInfo;
+
+      uint32_t glfwExtensionCount = 0;
+      const char** glfwExtensions;
+
+      glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+      createInfo.enabledExtensionCount   = glfwExtensionCount;
+      createInfo.ppEnabledExtensionNames = glfwExtensions;
+
+      if (ValidationLayers::Active())
+      {
+        createInfo.enabledLayerCount   = static_cast<uint32_t>(ValidationLayers::LayerCount());
+        createInfo.ppEnabledLayerNames = ValidationLayers::LayerNames();
+      }
+      else
+      {
+        createInfo.enabledLayerCount = 0;
+      }
+
+      VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
+    }
+
+    void mainLoop()
+    {
+      while (!glfwWindowShouldClose(m_window))
+      {
+        glfwPollEvents();
+      }
+    }
+
+    void cleanup()
+    {
+      vkDestroyInstance(m_instance, nullptr);
+
+      glfwDestroyWindow(m_window);
+      glfwTerminate();
+    }
+
+   private:
+    WindowProperties m_properties = {};
+    GLFWwindow* m_window          = nullptr;
+    VkInstance m_instance         = nullptr;
+  };
+}
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  glfwInit();
+  WIPE::Application app;
 
-  glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-  GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan window", nullptr, nullptr);
-
-  LogSupportedExtensions();
-
-  glm::mat4 matrix;
-  glm::vec4 vec;
-  auto test = matrix * vec;
-
-  while (!glfwWindowShouldClose(window))
+  try
   {
-    glfwPollEvents();
+    app.run();
+  }
+  catch (const std::exception& e)
+  {
+    std::cerr << e.what() << std::endl;
+    return EXIT_FAILURE;
   }
 
-  glfwDestroyWindow(window);
-
-  glfwTerminate();
   return EXIT_SUCCESS;
 }

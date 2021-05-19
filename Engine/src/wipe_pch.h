@@ -15,6 +15,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 #include <utility>
 
 // C++ String
@@ -24,5 +25,9 @@
 // C++ Containers
 #include <array>
 #include <vector>
+
+// GLM
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 #endif // WIPE_PCH_H
