@@ -1,9 +1,7 @@
 #ifndef WIPE_VK_BASE_H
 #define WIPE_VK_BASE_H
 
-// C++ Standard Lib
-#include <string>
-#include <vector>
+#include <wipe_pch.h>
 
 // Vulkan
 #include <vulkan/vulkan.h>
