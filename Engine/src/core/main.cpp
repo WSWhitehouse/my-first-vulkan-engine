@@ -1,5 +1,4 @@
-#include <iostream>
-#include <cstdlib>
+#include <wipe_pch.h>
 
 //#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
