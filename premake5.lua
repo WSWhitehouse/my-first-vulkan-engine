@@ -13,6 +13,7 @@ _targetdir = "%{wks.location}/bin/" .. _outputdir
 _objdir    = "%{wks.location}/bin-int/" .. _outputdir
 
 --# Dependencies #--
+include "vendor/premake"
 include "vendor/GLFW-premake"
 
 --# Projects #--
