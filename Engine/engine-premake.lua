@@ -1,3 +1,5 @@
+_enginefiledir = "%{wks.location}/Engine/"
+
 project "WIPE"
     location "%{wks.location}/Engine/"
     uuid = os.uuid()
@@ -8,7 +10,8 @@ project "WIPE"
     targetdir (_targetdir)
     objdir    (_objdir)
 
-    _enginefiledir = "%{wks.location}/Engine/"
+    pchheader = _enginefiledir .. "src/wipe_pch.h"
+    pchsource = _enginefiledir .. "src/wipe_pch.cpp"
 
     files
     {
