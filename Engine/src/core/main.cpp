@@ -2,6 +2,7 @@
 #include <wipe_pch.h>
 
 #include "Wipe.h"
+#include "platform/vulkan/Extensions.h"
 #include "platform/vulkan/ValidationLayers.h"
 #include "platform/vulkan/Vk_Base.h"
 
@@ -36,7 +37,11 @@ namespace WIPE
         m_properties.width, m_properties.height, m_properties.title.c_str(), nullptr, nullptr);
     }
 
-    void initVulkan() { createInstance(); }
+    void initVulkan()
+    {
+      createInstance();
+      VkCheck(ValidationLayers::InitDebugMessenger(m_instance, nullptr, nullptr));
+    }
 
     void createInstance()
     {
@@ -57,22 +62,24 @@ namespace WIPE
       createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
       createInfo.pApplicationInfo = &appInfo;
 
-      uint32_t glfwExtensionCount = 0;
-      const char** glfwExtensions;
+      auto extensions                    = Extensions::GetRequired();
+      createInfo.enabledExtensionCount   = static_cast<uint32_t>(extensions.size());
+      createInfo.ppEnabledExtensionNames = extensions.data();
 
-      glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-      createInfo.enabledExtensionCount   = glfwExtensionCount;
-      createInfo.ppEnabledExtensionNames = glfwExtensions;
-
+      // Outside scope to ensure that it is not destroyed before the vkCreateInstance call
+      VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
       if (ValidationLayers::Active())
       {
         createInfo.enabledLayerCount   = static_cast<uint32_t>(ValidationLayers::LayerCount());
         createInfo.ppEnabledLayerNames = ValidationLayers::LayerNames();
+
+        ValidationLayers::PopulateDebugMessengerCreateInfo(debugCreateInfo);
+        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
       }
       else
       {
         createInfo.enabledLayerCount = 0;
+        createInfo.pNext             = nullptr;
       }
 
       VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
@@ -88,6 +95,8 @@ namespace WIPE
 
     void cleanup()
     {
+      ValidationLayers::DestroyDebugMessenger(m_instance, nullptr);
+
       vkDestroyInstance(m_instance, nullptr);
 
       glfwDestroyWindow(m_window);

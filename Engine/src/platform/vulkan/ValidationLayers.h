@@ -1,6 +1,9 @@
 #ifndef WIPE_VALIDATION_LAYERS_H
 #define WIPE_VALIDATION_LAYERS_H
 
+#include <array>
+#include <vector>
+
 #include "Vk_Base.h"
 
 namespace WIPE
@@ -20,54 +23,52 @@ namespace WIPE
     ValidationLayers& operator=(const ValidationLayers&) = delete;
     ValidationLayers& operator=(ValidationLayers&&) = delete;
 
-    /* Getters */
-    static const bool& Active() { return ValidationLayersActive; }
-    static uint32_t LayerCount() { return static_cast<uint32_t>(m_validationLayers.size()); }
-    static const char* const* LayerNames() { return m_validationLayers.data(); }
-
-    static inline bool CheckLayerSupport()
+   public: /* Getters */
+    static bool Active()
     {
-      // Get number of layers
-      uint32_t count;
-      vkEnumerateInstanceLayerProperties(&count, nullptr);
-
-      // Populate vector
-      std::vector<VkLayerProperties> layers(count);
-      vkEnumerateInstanceLayerProperties(&count, layers.data());
-
-      // Check all requested validation layers are supported
-      for (const char* layerName : m_validationLayers)
-      {
-        bool layerFound = false;
-
-        for (const auto& layerProperties : layers)
-        {
-          if (strcmp(layerName, layerProperties.layerName) == 0)
-          {
-            layerFound = true;
-            break;
-          }
-        }
-
-        if (!layerFound)
-        {
-          return false;
-        }
-      }
-
+#ifdef NDEBUG
+      return false;
+#else
       return true;
+#endif
     }
 
-   private:
-#ifdef NDEBUG
-    static inline const bool ValidationLayersActive = false;
-#else
-    static inline const bool ValidationLayersActive = true;
-#endif
+    static size_t LayerCount() { return m_validationLayers.size(); }
+    static const char* const* LayerNames() { return m_validationLayers.data(); }
 
-    static inline const std::vector<const char*> m_validationLayers = {
+    static size_t ExtensionCount() { return m_extensions.size(); }
+    static const char* const* ExtensionNames() { return m_extensions.data(); }
+
+    /* Layer Support */
+    static std::vector<VkLayerProperties> GetSupportedLayers();
+    static bool
+    CheckLayerSupport(const std::vector<VkLayerProperties>& _layers = GetSupportedLayers());
+
+    /* Debug Messenger */
+    static void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& _createInfo);
+    static VkResult InitDebugMessenger(
+      VkInstance _instance, const VkAllocationCallbacks* _pAllocator, void* _userData);
+    static void
+    DestroyDebugMessenger(VkInstance _instance, const VkAllocationCallbacks* _pAllocator);
+
+   private:
+    /* Requested validation layers */
+    static inline const std::array<const char*, 1> m_validationLayers = {
       "VK_LAYER_KHRONOS_validation"
     };
+
+    /* Requested validation extensions */
+    static inline const std::array<const char*, 1> m_extensions = {
+      VK_EXT_DEBUG_UTILS_EXTENSION_NAME
+    };
+
+    /* Debug Messenger */
+    static inline VkDebugUtilsMessengerEXT debugMessenger = nullptr;
+
+    static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
+      VkDebugUtilsMessageSeverityFlagBitsEXT _messageSeverity,
+      VkDebugUtilsMessageTypeFlagsEXT _messageType,
+      const VkDebugUtilsMessengerCallbackDataEXT* _pCallbackData, void* _pUserData);
   };
 }
 

@@ -19,6 +19,7 @@
 #include <utility>
 
 // C++ String
+#include <cstring>
 #include <sstream>
 #include <string>
 
