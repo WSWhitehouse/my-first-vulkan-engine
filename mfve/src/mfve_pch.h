@@ -1,9 +1,9 @@
-#ifndef WIPE_PCH_H
-#define WIPE_PCH_H
+#ifndef MFVE_PCH_H
+#define MFVE_PCH_H
 
 #include "platform/PlatformDetection.h"
 
-#ifdef WIPE_PLATFORM_WINDOWS
+#ifdef MFVE_PLATFORM_WINDOWS
   #ifndef NOMINMAX
     #define NOMINMAX // github.com/skypjack/entt/wiki/Frequently-Asked-Questions#warning-c4003-the-min-the-max-and-the-macro
   #endif
@@ -31,4 +31,4 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
-#endif // WIPE_PCH_H
+#endif // MFVE_PCH_H

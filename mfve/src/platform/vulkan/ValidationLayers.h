@@ -1,12 +1,12 @@
-#ifndef WIPE_VALIDATION_LAYERS_H
-#define WIPE_VALIDATION_LAYERS_H
+#ifndef MFVE_VALIDATION_LAYERS_H
+#define MFVE_VALIDATION_LAYERS_H
 
 #include <array>
 #include <vector>
 
 #include "Vk_Base.h"
 
-namespace WIPE
+namespace MFVE
 {
   class ValidationLayers
   {
@@ -72,4 +72,4 @@ namespace WIPE
   };
 }
 
-#endif // WIPE_VALIDATION_LAYERS_H
+#endif // MFVE_VALIDATION_LAYERS_H

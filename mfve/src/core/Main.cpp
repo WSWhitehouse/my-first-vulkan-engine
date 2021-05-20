@@ -1,18 +1,18 @@
 #include <GLFW/glfw3.h>
-#include <wipe_pch.h>
+#include <mfve_pch.h>
 
-#include "Wipe.h"
+#include "mfve.h"
 #include "platform/vulkan/Extensions.h"
 #include "platform/vulkan/ValidationLayers.h"
 #include "platform/vulkan/Vk_Base.h"
 
-namespace WIPE
+namespace MFVE
 {
   struct WindowProperties
   {
     int width         = 800;
     int height        = 600;
-    std::string title = "WIPE";
+    std::string title = "MFVE";
   };
 
   class Application
@@ -54,8 +54,8 @@ namespace WIPE
       appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
       appInfo.pApplicationName   = m_properties.title.c_str();
       appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-      appInfo.pEngineName        = WIPE_ENGINE_NAME;
-      appInfo.engineVersion      = VK_MAKE_VERSION(WIPE_VER_MAJOR, WIPE_VER_MINOR, WIPE_VER_PATCH);
+      appInfo.pEngineName        = MFVE_ENGINE_NAME;
+      appInfo.engineVersion      = VK_MAKE_VERSION(MFVE_VER_MAJOR, MFVE_VER_MINOR, MFVE_VER_PATCH);
       appInfo.apiVersion         = VK_API_VERSION_1_0;
 
       VkInstanceCreateInfo createInfo{};
@@ -112,7 +112,7 @@ namespace WIPE
 
 int main(int /*argc*/, char** /*argv*/)
 {
-  WIPE::Application app;
+  MFVE::Application app;
 
   try
   {

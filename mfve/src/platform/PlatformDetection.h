@@ -1,5 +1,5 @@
-#ifndef WIPE_PLATFORM_DETECTION_H
-#define WIPE_PLATFORM_DETECTION_H
+#ifndef MFVE_PLATFORM_DETECTION_H
+#define MFVE_PLATFORM_DETECTION_H
 
 /* --------------------------------------------------------------------------------------- */
 /* Platform detection using predefined macros. File sourced from TheCherno/Hazel:          */
@@ -7,14 +7,14 @@
 /* --------------------------------------------------------------------------------------- */
 
 #ifdef _WIN32 /* Windows */
-  #define WIPE_PLATFORM_WINDOWS
+  #define MFVE_PLATFORM_WINDOWS
 
   #ifdef _WIN64 /* Windows x64  */
-    #define WIPE_PLATFORM_WINDOWS_64
+    #define MFVE_PLATFORM_WINDOWS_64
     #error "Windows x64 Builds are not supported!"
 
   #else /* Windows x86 */
-    #define WIPE_PLATFORM_WINDOWS_86
+    #define MFVE_PLATFORM_WINDOWS_86
     #error "Windows x86 Builds are not supported!"
 
   #endif
@@ -30,11 +30,11 @@
     #error "IOS simulator is not supported!"
 
   #elif TARGET_OS_IPHONE == 1 /* IOS */
-    #define WIPE_PLATFORM_IOS
+    #define MFVE_PLATFORM_IOS
     #error "IOS is not supported!"
 
   #elif TARGET_OS_MAC == 1 /* MAC OS */
-    #define WIPE_PLATFORM_MACOS
+    #define MFVE_PLATFORM_MACOS
     #error "MacOS is not supported!"
 
   #else /* Unknown Apple */
@@ -45,15 +45,15 @@
  * is based on the linux kernel it has  __linux__ defined
  */
 #elif defined(__ANDROID__) /* Android */
-  #define WIPE_PLATFORM_ANDROID
+  #define MFVE_PLATFORM_ANDROID
   #error "Android is not supported!"
 
 #elif defined(__linux__) /* Linux */
-  #define WIPE_PLATFORM_LINUX
+  #define MFVE_PLATFORM_LINUX
 
 #else /* Unknown compiler/platform */
   #error "Unknown platform!"
 
 #endif /* End of platform detection */
 
-#endif // WIPE_PLATFORM_DETECTION_H
+#endif // MFVE_PLATFORM_DETECTION_H

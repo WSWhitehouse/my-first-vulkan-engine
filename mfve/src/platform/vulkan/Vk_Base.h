@@ -1,12 +1,12 @@
-#ifndef WIPE_VK_BASE_H
-#define WIPE_VK_BASE_H
+#ifndef MFVE_VK_BASE_H
+#define MFVE_VK_BASE_H
 
 #include <stdexcept>
 
 // Vulkan
 #include <vulkan/vulkan.h>
 
-namespace WIPE
+namespace MFVE
 {
   /**
    * \brief Check a VkResult is successful
@@ -20,4 +20,4 @@ namespace WIPE
   }
 }
 
-#endif // WIPE_VK_BASE_H
+#endif // MFVE_VK_BASE_H

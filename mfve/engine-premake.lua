@@ -1,7 +1,7 @@
-_enginefiledir = "%{wks.location}/Engine/"
+_enginefiledir = "%{wks.location}/mfve/"
 
-project "WIPE"
-    location "%{wks.location}/Engine/"
+project "MFVE"
+    location = _enginefiledir
     uuid = os.uuid()
     kind "ConsoleApp"
     language "C++"
@@ -10,12 +10,12 @@ project "WIPE"
     targetdir (_targetdir)
     objdir    (_objdir)
 
-    pchheader = _enginefiledir .. "src/wipe_pch.h"
-    pchsource = _enginefiledir .. "src/wipe_pch.cpp"
+    pchheader = _enginefiledir .. "src/mfve_pch.h"
+    pchsource = _enginefiledir .. "src/mfve_pch.cpp"
 
     files
     {
-        --# Engine Src #--
+        --# mfve Src #--
         "src/**.h",
         "src/**.c",
         "src/**.hpp",

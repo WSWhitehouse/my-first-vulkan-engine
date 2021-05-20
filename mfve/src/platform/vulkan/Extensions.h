@@ -1,10 +1,10 @@
-#ifndef WIPE_EXTENSIONS_H
-#define WIPE_EXTENSIONS_H
+#ifndef MFVE_EXTENSIONS_H
+#define MFVE_EXTENSIONS_H
 
 #include "ValidationLayers.h"
 #include "Vk_Base.h"
 
-namespace WIPE
+namespace MFVE
 {
   class Extensions
   {
@@ -66,4 +66,4 @@ namespace WIPE
   };
 }
 
-#endif // WIPE_EXTENSIONS_H
+#endif // MFVE_EXTENSIONS_H

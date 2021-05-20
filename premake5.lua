@@ -1,9 +1,9 @@
 include "vendor/vendor.lua"
 
 --# Workspace #--
-workspace "WIPE"
+workspace "my-first-vulkan-engine"
     architecture "x86_64"
-    startproject "Engine"
+    startproject "mfve"
 
     configurations {"Debug", "Release"}
 
@@ -17,4 +17,4 @@ include "vendor/premake"
 include "vendor/GLFW-premake"
 
 --# Projects #--
-include "Engine/engine-premake"
+include "mfve/engine-premake"
