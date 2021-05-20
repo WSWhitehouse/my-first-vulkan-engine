@@ -47,6 +47,6 @@ Currently the only platform that has official support is `Linux`. In theory `Win
 ![Seperator](https://github.com/WSWhitehouse/my-first-vulkan-engine/blob/main/resources/readme-seperator.png)
 
 # License
-This project is under the MIT License. Check out the License file for more information.
+This project is under the MIT License. Check out the [License file](https://github.com/WSWhitehouse/my-first-vulkan-engine/blob/main/LICENSE.md) for more information.
 
 ![Seperator](https://github.com/WSWhitehouse/my-first-vulkan-engine/blob/main/resources/readme-seperator.png)
