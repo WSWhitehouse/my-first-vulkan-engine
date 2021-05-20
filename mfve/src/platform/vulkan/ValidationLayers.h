@@ -63,7 +63,7 @@ namespace MFVE
     };
 
     /* Debug Messenger */
-    static inline VkDebugUtilsMessengerEXT debugMessenger = nullptr;
+    static inline VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
       VkDebugUtilsMessageSeverityFlagBitsEXT _messageSeverity,

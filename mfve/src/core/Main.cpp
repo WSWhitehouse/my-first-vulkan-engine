@@ -41,6 +41,8 @@ namespace MFVE
     {
       createInstance();
       VkCheck(ValidationLayers::InitDebugMessenger(m_instance, nullptr, nullptr));
+      pickPhysicalDevice();
+      createLogicalDevice();
     }
 
     void createInstance()
@@ -85,6 +87,107 @@ namespace MFVE
       VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
     }
 
+    void pickPhysicalDevice()
+    {
+      uint32_t deviceCount = 0;
+      vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+
+      if (deviceCount == 0)
+      {
+        throw std::runtime_error("Failed to find GPUs with Vulkan support!");
+      }
+
+      std::vector<VkPhysicalDevice> devices(deviceCount);
+      vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+
+      for (const auto& device : devices)
+      {
+        if (isDeviceSuitable(device))
+        {
+          m_physicalDevice = device;
+          break;
+        }
+      }
+
+      if (m_physicalDevice == VK_NULL_HANDLE)
+      {
+        throw std::runtime_error("Failed to find suitable GPU!");
+      }
+    }
+
+    bool isDeviceSuitable(VkPhysicalDevice _device)
+    {
+      QueueFamilyIndices indices = findQueueFamilies(_device);
+
+      return indices.isComplete();
+    }
+
+    struct QueueFamilyIndices
+    {
+      std::optional<uint32_t> graphicsFamily;
+
+      [[nodiscard]] bool isComplete() const { return graphicsFamily.has_value(); }
+    };
+
+    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice _device)
+    {
+      QueueFamilyIndices indices;
+
+      uint32_t queueFamilyCount = 0;
+      vkGetPhysicalDeviceQueueFamilyProperties(_device, &queueFamilyCount, nullptr);
+
+      std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+      vkGetPhysicalDeviceQueueFamilyProperties(_device, &queueFamilyCount, queueFamilies.data());
+
+      for (uint32_t i = 0; i < queueFamilyCount; ++i)
+      {
+        const auto& queueFamily = queueFamilies.at(static_cast<size_t>(i));
+
+        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
+        {
+          indices.graphicsFamily = i;
+          break;
+        }
+      }
+
+      return indices;
+    }
+
+    void createLogicalDevice()
+    {
+      QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
+      float queuePriority        = 1.0F;
+
+      VkDeviceQueueCreateInfo queueCreateInfo{};
+      queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+      queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
+      queueCreateInfo.queueCount       = 1;
+      queueCreateInfo.pQueuePriorities = &queuePriority;
+
+      VkPhysicalDeviceFeatures deviceFeatures{};
+
+      VkDeviceCreateInfo createInfo{};
+      createInfo.sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+      createInfo.pQueueCreateInfos    = &queueCreateInfo;
+      createInfo.queueCreateInfoCount = 1;
+      createInfo.pEnabledFeatures     = &deviceFeatures;
+
+      createInfo.enabledExtensionCount = 0;
+
+      if (ValidationLayers::Active())
+      {
+        createInfo.enabledLayerCount   = ValidationLayers::LayerCount();
+        createInfo.ppEnabledLayerNames = ValidationLayers::LayerNames();
+      }
+      else
+      {
+        createInfo.enabledLayerCount = 0;
+      }
+
+      VkCheck(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
+      vkGetDeviceQueue(m_device, indices.graphicsFamily.value(), 0, &m_graphicsQueue);
+    }
+
     void mainLoop()
     {
       while (!glfwWindowShouldClose(m_window))
@@ -95,8 +198,9 @@ namespace MFVE
 
     void cleanup()
     {
-      ValidationLayers::DestroyDebugMessenger(m_instance, nullptr);
+      vkDestroyDevice(m_device, nullptr);
 
+      ValidationLayers::DestroyDebugMessenger(m_instance, nullptr);
       vkDestroyInstance(m_instance, nullptr);
 
       glfwDestroyWindow(m_window);
@@ -106,7 +210,11 @@ namespace MFVE
    private:
     WindowProperties m_properties = {};
     GLFWwindow* m_window          = nullptr;
-    VkInstance m_instance         = nullptr;
+
+    VkInstance m_instance             = VK_NULL_HANDLE;
+    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    VkDevice m_device                 = VK_NULL_HANDLE;
+    VkQueue m_graphicsQueue           = VK_NULL_HANDLE;
   };
 }
 
