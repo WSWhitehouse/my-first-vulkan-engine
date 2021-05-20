@@ -1,4 +1,5 @@
-![My First Vulkan Engine - Written in C++](https://github.com/WSWhitehouse/my-first-vulkan-engine/blob/main/resources/readme-title.png)
+![My First Vulkan Engine - Written in Cpp](https://github.com/WSWhitehouse/my-first-vulkan-engine/blob/main/resources/readme-title.png)
+
 ![Seperator](https://github.com/WSWhitehouse/my-first-vulkan-engine/blob/main/resources/readme-seperator.png)
 
 <p align="center">
