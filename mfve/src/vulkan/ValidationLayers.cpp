@@ -19,14 +19,14 @@ namespace MFVE
     return layers;
   }
 
-  bool ValidationLayers::CheckLayerSupport(const std::vector<VkLayerProperties>& _layers)
+  bool ValidationLayers::CheckLayerSupport(const std::vector<VkLayerProperties>& _supportedLayers)
   {
     // Check all requested validation layers are supported
-    for (const char* layerName : m_validationLayers)
+    for (const char* layerName : LayerVector())
     {
       bool layerFound = false;
 
-      for (const auto& layerProperties : _layers)
+      for (const auto& layerProperties : _supportedLayers)
       {
         if (strcmp(layerName, layerProperties.layerName) == 0)
         {
@@ -59,11 +59,12 @@ namespace MFVE
     _createInfo.pfnUserCallback = DebugCallback;
   }
 
-  VkResult ValidationLayers::InitDebugMessenger(
+  VkResult ValidationLayers::CreateDebugMessenger(
     VkInstance _instance, const VkAllocationCallbacks* _pAllocator, void* _userData)
   {
     if (!Active())
     {
+      // If layers are inactive, return success
       return VK_SUCCESS;
     }
 
@@ -76,7 +77,7 @@ namespace MFVE
 
     if (func != nullptr)
     {
-      return func(_instance, &createInfo, _pAllocator, &debugMessenger);
+      return func(_instance, &createInfo, _pAllocator, &m_debugMessenger);
     }
 
     return VK_ERROR_EXTENSION_NOT_PRESENT;
@@ -94,7 +95,7 @@ namespace MFVE
       _instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr)
     {
-      func(_instance, debugMessenger, _pAllocator);
+      func(_instance, m_debugMessenger, _pAllocator);
     }
   }
 
@@ -103,9 +104,8 @@ namespace MFVE
     VkDebugUtilsMessageTypeFlagsEXT _messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* _pCallbackData, void* _pUserData)
   {
-    std::cerr << "Vk Validation Layer: " << _pCallbackData->pMessage << std::endl;
+    std::cerr << _pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
   }
-
 }

@@ -10,16 +10,16 @@ namespace MFVE
   {
    public:
     /* Constructor & Destructor */
-    Extensions()  = delete;
-    ~Extensions() = delete;
+    Extensions()  = default;
+    ~Extensions() = default;
 
     /* Copy Constructors */
-    Extensions(const Extensions&) = delete;
-    Extensions(Extensions&&)      = delete;
+    Extensions(const Extensions&) = default;
+    Extensions(Extensions&&)      = default;
 
     /* Assignment Operator */
-    Extensions& operator=(const Extensions&) = delete;
-    Extensions& operator=(Extensions&&) = delete;
+    Extensions& operator=(const Extensions&) = default;
+    Extensions& operator=(Extensions&&) = default;
 
    public:
     /**
@@ -39,30 +39,23 @@ namespace MFVE
       return extensions;
     }
 
-    /**
-     * \brief Get all vulkan extensions required by the application
-     * \return vector of all required extensions
-     */
-    static inline std::vector<const char*> GetRequired()
+    /* Getters */
+    [[nodiscard]] size_t ExtensionCount() const { return ExtensionVector().size(); }
+    [[nodiscard]] const char* const* ExtensionNames() const { return ExtensionVector().data(); }
+    [[nodiscard]] const std::vector<const char*>& ExtensionVector() const { return m_extensions; }
+
+    void AddExtensions(const std::vector<const char*>& _extensions)
     {
-      std::vector<const char*> extensions;
-
-      uint32_t glfwExtensionCount = 0;
-      const char** glfwExtensions;
-      glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-      extensions.insert(extensions.cend(), glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-      if (ValidationLayers::Active())
-      {
-        extensions.insert(
-          extensions.cend(),
-          ValidationLayers::ExtensionNames(),
-          ValidationLayers::ExtensionNames() + ValidationLayers::ExtensionCount());
-      }
-
-      return extensions;
+      m_extensions.insert(m_extensions.cend(), _extensions.cbegin(), _extensions.cend());
     }
+
+    void AddExtensions(const char* const* _extensions, const size_t& _count)
+    {
+      m_extensions.insert(m_extensions.cend(), _extensions, _extensions + _count);
+    }
+
+   private:
+    std::vector<const char*> m_extensions = {};
   };
 }
 

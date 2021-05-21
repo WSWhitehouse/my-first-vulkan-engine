@@ -40,16 +40,22 @@ namespace MFVE
     void initVulkan()
     {
       createInstance();
-      VkCheck(ValidationLayers::InitDebugMessenger(m_instance, nullptr, nullptr));
+      VkCheck(m_validationLayers.CreateDebugMessenger(m_instance, nullptr, nullptr));
       pickPhysicalDevice();
       createLogicalDevice();
     }
 
     void createInstance()
     {
-      if (ValidationLayers::Active() && !ValidationLayers::CheckLayerSupport())
+      if (m_validationLayers.Active())
       {
-        throw std::runtime_error("Validation layers requested, but not available!");
+        if (!m_validationLayers.CheckLayerSupport())
+        {
+          throw std::runtime_error("Validation layers requested, but not available!");
+        }
+
+        // Add validation layer extensions
+        m_extensions.AddExtensions(m_validationLayers.ExtensionVector());
       }
 
       VkApplicationInfo appInfo{};
@@ -64,18 +70,26 @@ namespace MFVE
       createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
       createInfo.pApplicationInfo = &appInfo;
 
-      auto extensions                    = Extensions::GetRequired();
-      createInfo.enabledExtensionCount   = static_cast<uint32_t>(extensions.size());
-      createInfo.ppEnabledExtensionNames = extensions.data();
+      // Add GLFW Extensions
+      {
+        uint32_t glfwExtensionCount = 0;
+        const char** glfwExtensions;
+        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+        m_extensions.AddExtensions(glfwExtensions, glfwExtensionCount);
+      }
+
+      createInfo.enabledExtensionCount   = static_cast<uint32_t>(m_extensions.ExtensionCount());
+      createInfo.ppEnabledExtensionNames = m_extensions.ExtensionNames();
 
       // Outside scope to ensure that it is not destroyed before the vkCreateInstance call
       VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-      if (ValidationLayers::Active())
+      if (m_validationLayers.Active())
       {
-        createInfo.enabledLayerCount   = static_cast<uint32_t>(ValidationLayers::LayerCount());
-        createInfo.ppEnabledLayerNames = ValidationLayers::LayerNames();
+        createInfo.enabledLayerCount   = static_cast<uint32_t>(m_validationLayers.LayerCount());
+        createInfo.ppEnabledLayerNames = m_validationLayers.LayerNames();
 
-        ValidationLayers::PopulateDebugMessengerCreateInfo(debugCreateInfo);
+        m_validationLayers.PopulateDebugMessengerCreateInfo(debugCreateInfo);
         createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
       }
       else
@@ -174,10 +188,10 @@ namespace MFVE
 
       createInfo.enabledExtensionCount = 0;
 
-      if (ValidationLayers::Active())
+      if (m_validationLayers.Active())
       {
-        createInfo.enabledLayerCount   = ValidationLayers::LayerCount();
-        createInfo.ppEnabledLayerNames = ValidationLayers::LayerNames();
+        createInfo.enabledLayerCount   = m_validationLayers.LayerCount();
+        createInfo.ppEnabledLayerNames = m_validationLayers.LayerNames();
       }
       else
       {
@@ -200,7 +214,7 @@ namespace MFVE
     {
       vkDestroyDevice(m_device, nullptr);
 
-      ValidationLayers::DestroyDebugMessenger(m_instance, nullptr);
+      m_validationLayers.DestroyDebugMessenger(m_instance, nullptr);
       vkDestroyInstance(m_instance, nullptr);
 
       glfwDestroyWindow(m_window);
@@ -210,6 +224,15 @@ namespace MFVE
    private:
     WindowProperties m_properties = {};
     GLFWwindow* m_window          = nullptr;
+
+    Extensions m_extensions = {};
+    ValidationLayers m_validationLayers{
+#ifdef NDEBUG
+      false
+#else
+      true
+#endif
+    };
 
     VkInstance m_instance             = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;

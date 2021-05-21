@@ -12,58 +12,50 @@ namespace MFVE
   {
    public:
     /* Constructor & Destructor */
-    ValidationLayers()  = delete;
-    ~ValidationLayers() = delete;
+    explicit ValidationLayers(bool _active) : m_active(_active) {}
+    ~ValidationLayers() = default;
 
     /* Copy Constructors */
-    ValidationLayers(const ValidationLayers&) = delete;
-    ValidationLayers(ValidationLayers&&)      = delete;
+    ValidationLayers(const ValidationLayers&) = default;
+    ValidationLayers(ValidationLayers&&)      = default;
 
     /* Assignment Operator */
     ValidationLayers& operator=(const ValidationLayers&) = delete;
     ValidationLayers& operator=(ValidationLayers&&) = delete;
 
-   public: /* Getters */
-    static bool Active()
-    {
-#ifdef NDEBUG
-      return false;
-#else
-      return true;
-#endif
-    }
+    /* Getters - Active */
+    [[nodiscard]] const bool& Active() const { return m_active; }
 
-    static size_t LayerCount() { return m_validationLayers.size(); }
-    static const char* const* LayerNames() { return m_validationLayers.data(); }
+    /* Getters - Validation Layers */
+    [[nodiscard]] size_t LayerCount() const { return LayerVector().size(); }
+    [[nodiscard]] const char* const* LayerNames() const { return LayerVector().data(); }
+    [[nodiscard]] const std::vector<const char*>& LayerVector() const { return m_validationLayers; }
+    [[nodiscard]] std::vector<const char*>& LayerVector() { return m_validationLayers; }
 
-    static size_t ExtensionCount() { return m_extensions.size(); }
-    static const char* const* ExtensionNames() { return m_extensions.data(); }
+    /* Getters - Extensions */
+    [[nodiscard]] const std::vector<const char*>& ExtensionVector() const { return m_extensions; }
+    [[nodiscard]] std::vector<const char*>& ExtensionVector() { return m_extensions; }
 
     /* Layer Support */
     static std::vector<VkLayerProperties> GetSupportedLayers();
-    static bool
-    CheckLayerSupport(const std::vector<VkLayerProperties>& _layers = GetSupportedLayers());
+    bool
+    CheckLayerSupport(const std::vector<VkLayerProperties>& _supportedLayers = GetSupportedLayers());
 
     /* Debug Messenger */
-    static void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& _createInfo);
-    static VkResult InitDebugMessenger(
+    void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& _createInfo);
+    VkResult CreateDebugMessenger(
       VkInstance _instance, const VkAllocationCallbacks* _pAllocator, void* _userData);
-    static void
-    DestroyDebugMessenger(VkInstance _instance, const VkAllocationCallbacks* _pAllocator);
+    void DestroyDebugMessenger(VkInstance _instance, const VkAllocationCallbacks* _pAllocator);
 
    private:
-    /* Requested validation layers */
-    static inline const std::array<const char*, 1> m_validationLayers = {
-      "VK_LAYER_KHRONOS_validation"
-    };
+    const bool m_active;
 
-    /* Requested validation extensions */
-    static inline const std::array<const char*, 1> m_extensions = {
-      VK_EXT_DEBUG_UTILS_EXTENSION_NAME
-    };
+    /* Validation Layers & Extensions*/
+    std::vector<const char*> m_validationLayers = { "VK_LAYER_KHRONOS_validation" };
+    std::vector<const char*> m_extensions       = { VK_EXT_DEBUG_UTILS_EXTENSION_NAME };
 
     /* Debug Messenger */
-    static inline VkDebugUtilsMessengerEXT debugMessenger = VK_NULL_HANDLE;
+    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
       VkDebugUtilsMessageSeverityFlagBitsEXT _messageSeverity,
