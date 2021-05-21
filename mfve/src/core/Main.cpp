@@ -2,9 +2,9 @@
 #include <mfve_pch.h>
 
 #include "mfve.h"
-#include "platform/vulkan/Extensions.h"
-#include "platform/vulkan/ValidationLayers.h"
-#include "platform/vulkan/Vk_Base.h"
+#include "vulkan/Extensions.h"
+#include "vulkan/ValidationLayers.h"
+#include "vulkan/Vk_Base.h"
 
 namespace MFVE
 {
