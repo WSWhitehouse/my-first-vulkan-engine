@@ -1,5 +1,3 @@
-include "vendor/vendor.lua"
-
 --# Workspace #--
 workspace "my-first-vulkan-engine"
     architecture "x86_64"
@@ -13,8 +11,7 @@ _targetdir = "%{wks.location}/bin/" .. _outputdir
 _objdir    = "%{wks.location}/bin-int/" .. _outputdir
 
 --# Dependencies #--
-include "vendor/premake"
-include "vendor/GLFW-premake"
+include "vendor/vendor.lua"
 
 --# Projects #--
 include "mfve/engine-premake"

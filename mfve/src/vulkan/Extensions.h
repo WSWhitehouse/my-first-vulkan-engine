@@ -44,12 +44,12 @@ namespace MFVE
     [[nodiscard]] const char* const* ExtensionNames() const { return ExtensionVector().data(); }
     [[nodiscard]] const std::vector<const char*>& ExtensionVector() const { return m_extensions; }
 
-    void AddExtensions(const std::vector<const char*>& _extensions)
+    void Add(const std::vector<const char*>& _extensions)
     {
       m_extensions.insert(m_extensions.cend(), _extensions.cbegin(), _extensions.cend());
     }
 
-    void AddExtensions(const char* const* _extensions, const size_t& _count)
+    void Add(const char* const* _extensions, const size_t& _count)
     {
       m_extensions.insert(m_extensions.cend(), _extensions, _extensions + _count);
     }

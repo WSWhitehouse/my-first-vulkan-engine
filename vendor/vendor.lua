@@ -17,3 +17,7 @@ LibDir["VulkanSDK"] = "%{VULKAN_SDK}/lib/"
 Lib = {}
 Lib["VulkanSDK"]   = "%{LibDir.VulkanSDK}/vulkan.lib"
 Lib["VulkanUtils"] = "%{LibDir.VulkanSDK}/VkLayer_utils.lib"
+
+--# Vendor #--
+include "GLFW-premake"
+include "premake/premake5"

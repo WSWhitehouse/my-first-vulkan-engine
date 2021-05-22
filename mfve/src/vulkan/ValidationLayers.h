@@ -33,8 +33,8 @@ namespace MFVE
     [[nodiscard]] std::vector<const char*>& LayerVector() { return m_validationLayers; }
 
     /* Getters - Extensions */
-    [[nodiscard]] const std::vector<const char*>& ExtensionVector() const { return m_extensions; }
-    [[nodiscard]] std::vector<const char*>& ExtensionVector() { return m_extensions; }
+    [[nodiscard]] const std::vector<const char*>& Extensions() const { return m_extensions; }
+    [[nodiscard]] std::vector<const char*>& Extensions() { return m_extensions; }
 
     /* Layer Support */
     static std::vector<VkLayerProperties> GetSupportedLayers();

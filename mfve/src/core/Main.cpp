@@ -55,7 +55,7 @@ namespace MFVE
         }
 
         // Add validation layer extensions
-        m_extensions.AddExtensions(m_validationLayers.ExtensionVector());
+        m_extensions.Add(m_validationLayers.Extensions());
       }
 
       VkApplicationInfo appInfo{};
@@ -76,7 +76,7 @@ namespace MFVE
         const char** glfwExtensions;
         glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-        m_extensions.AddExtensions(glfwExtensions, glfwExtensionCount);
+        m_extensions.Add(glfwExtensions, glfwExtensionCount);
       }
 
       createInfo.enabledExtensionCount   = static_cast<uint32_t>(m_extensions.ExtensionCount());
