@@ -23,7 +23,10 @@ project "MFVE"
 
         --# glm #--
         "%{IncludeDir.glm}/glm/**.hpp",
-        "%{IncludeDir.glm}/glm/**.inl"
+        "%{IncludeDir.glm}/glm/**.inl",
+
+        --# Cpp Log #--
+        "%{IncludeDir.CppLog}/log/**.h"
     }
 
     includedirs
@@ -31,6 +34,7 @@ project "MFVE"
         "src",
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glm}",
+        "%{IncludeDir.CppLog}",
         "%{IncludeDir.VulkanSDK}"
     }
 

@@ -32,4 +32,7 @@
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
+// Log
+#include <log/log.h>
+
 #endif // MFVE_PCH_H
