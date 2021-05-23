@@ -29,6 +29,7 @@ namespace MFVE
   #define MFVE_LOG_WARNING(msg) ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_WARNING);
   #define MFVE_LOG_ERROR(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_ERROR);
   #define MFVE_LOG_FATAL(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_FATAL);
+  #define MFVE_LOG_INVALID(msg) ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_INVALID);
 
 #else
 
@@ -37,6 +38,7 @@ namespace MFVE
   #define MFVE_LOG_WARNING(msg)
   #define MFVE_LOG_ERROR(msg)
   #define MFVE_LOG_FATAL(msg)
+  #define MFVE_LOG_INVALID(msg)
 
 #endif
 

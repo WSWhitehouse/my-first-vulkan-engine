@@ -22,14 +22,6 @@ namespace MFVE
     {
       initWindow();
       initVulkan();
-
-      // Logging test
-      MFVE_LOG_INFO("info");
-      MFVE_LOG_DEBUG("debug");
-      MFVE_LOG_WARNING("warning");
-      MFVE_LOG_ERROR("error");
-      MFVE_LOG_FATAL("fatal");
-
       mainLoop();
       cleanup();
     }

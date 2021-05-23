@@ -104,7 +104,23 @@ namespace MFVE
     VkDebugUtilsMessageTypeFlagsEXT _messageType,
     const VkDebugUtilsMessengerCallbackDataEXT* _pCallbackData, void* _pUserData)
   {
-    std::cerr << _pCallbackData->pMessage << std::endl;
+    switch (_messageSeverity)
+    {
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+        MFVE_LOG_INFO(_pCallbackData->pMessage);
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        MFVE_LOG_WARNING(_pCallbackData->pMessage);
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        MFVE_LOG_ERROR(_pCallbackData->pMessage);
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
+      default:
+        MFVE_LOG_INVALID(_pCallbackData->pMessage);
+        break;
+    }
 
     return VK_FALSE;
   }
