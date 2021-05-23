@@ -45,7 +45,7 @@ project "MFVE"
     }
 
     filter "configurations:Debug"
-        defines { "DEBUG" }
+        defines { "DEBUG", "MFVE_ENABLE_LOGGER" }
         runtime "Debug"
         symbols "On"
 
