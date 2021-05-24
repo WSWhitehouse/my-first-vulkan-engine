@@ -1,3 +1,4 @@
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <mfve_pch.h>
 
@@ -41,6 +42,7 @@ namespace MFVE
     {
       createInstance();
       VkCheck(m_validationLayers.CreateDebugMessenger(m_instance, nullptr, nullptr));
+      createSurface();
       pickPhysicalDevice();
       createLogicalDevice();
     }
@@ -101,6 +103,11 @@ namespace MFVE
       VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
     }
 
+    void createSurface()
+    {
+      VkCheck(glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface));
+    }
+
     void pickPhysicalDevice()
     {
       uint32_t deviceCount = 0;
@@ -139,8 +146,12 @@ namespace MFVE
     struct QueueFamilyIndices
     {
       std::optional<uint32_t> graphicsFamily;
+      std::optional<uint32_t> presentFamily;
 
-      [[nodiscard]] bool isComplete() const { return graphicsFamily.has_value(); }
+      [[nodiscard]] bool isComplete() const
+      {
+        return graphicsFamily.has_value() && presentFamily.has_value();
+      }
     };
 
     QueueFamilyIndices findQueueFamilies(VkPhysicalDevice _device)
@@ -160,7 +171,15 @@ namespace MFVE
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
         {
           indices.graphicsFamily = i;
-          break;
+        }
+
+        VkBool32 presentSupport = true;
+        VkCheck(
+          vkGetPhysicalDeviceSurfaceSupportKHR(_device, i, m_surface, &presentSupport));
+
+        if (presentSupport)
+        {
+          indices.presentFamily = i;
         }
       }
 
@@ -172,18 +191,27 @@ namespace MFVE
       QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
       float queuePriority        = 1.0F;
 
-      VkDeviceQueueCreateInfo queueCreateInfo{};
-      queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-      queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-      queueCreateInfo.queueCount       = 1;
-      queueCreateInfo.pQueuePriorities = &queuePriority;
+      std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(),
+                                                 indices.presentFamily.value() };
+      std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+      queueCreateInfos.reserve(uniqueQueueFamilies.size());
+
+      for (uint32_t queueFamily : uniqueQueueFamilies)
+      {
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount       = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfos.emplace_back(queueCreateInfo);
+      }
 
       VkPhysicalDeviceFeatures deviceFeatures{};
 
       VkDeviceCreateInfo createInfo{};
       createInfo.sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-      createInfo.pQueueCreateInfos    = &queueCreateInfo;
-      createInfo.queueCreateInfoCount = 1;
+      createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+      createInfo.pQueueCreateInfos    = queueCreateInfos.data();
       createInfo.pEnabledFeatures     = &deviceFeatures;
 
       createInfo.enabledExtensionCount = 0;
@@ -200,6 +228,7 @@ namespace MFVE
 
       VkCheck(vkCreateDevice(m_physicalDevice, &createInfo, nullptr, &m_device));
       vkGetDeviceQueue(m_device, indices.graphicsFamily.value(), 0, &m_graphicsQueue);
+      vkGetDeviceQueue(m_device, indices.presentFamily.value(), 0, &m_presentQueue);
     }
 
     void mainLoop()
@@ -213,6 +242,7 @@ namespace MFVE
     void cleanup()
     {
       vkDestroyDevice(m_device, nullptr);
+      vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
 
       m_validationLayers.DestroyDebugMessenger(m_instance, nullptr);
       vkDestroyInstance(m_instance, nullptr);
@@ -235,9 +265,11 @@ namespace MFVE
     };
 
     VkInstance m_instance             = VK_NULL_HANDLE;
+    VkSurfaceKHR m_surface            = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
     VkDevice m_device                 = VK_NULL_HANDLE;
     VkQueue m_graphicsQueue           = VK_NULL_HANDLE;
+    VkQueue m_presentQueue            = VK_NULL_HANDLE;
   };
 }
 

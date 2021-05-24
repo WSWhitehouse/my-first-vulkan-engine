@@ -29,6 +29,7 @@
 
 // C++ Containers
 #include <array>
+#include <set>
 #include <vector>
 
 // GLM
