@@ -139,8 +139,28 @@ namespace MFVE
     bool isDeviceSuitable(VkPhysicalDevice _device)
     {
       QueueFamilyIndices indices = findQueueFamilies(_device);
+      bool extensionsSupported   = checkDeviceExtensionSupport(_device);
 
-      return indices.isComplete();
+      return indices.isComplete() && extensionsSupported;
+    }
+
+    bool checkDeviceExtensionSupport(VkPhysicalDevice device)
+    {
+      uint32_t extensionCount;
+      vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+      std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+      vkEnumerateDeviceExtensionProperties(
+        device, nullptr, &extensionCount, availableExtensions.data());
+
+      std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+
+      for (const auto& extension : availableExtensions)
+      {
+        requiredExtensions.erase(extension.extensionName);
+      }
+
+      return requiredExtensions.empty();
     }
 
     struct QueueFamilyIndices
@@ -174,8 +194,7 @@ namespace MFVE
         }
 
         VkBool32 presentSupport = true;
-        VkCheck(
-          vkGetPhysicalDeviceSurfaceSupportKHR(_device, i, m_surface, &presentSupport));
+        VkCheck(vkGetPhysicalDeviceSurfaceSupportKHR(_device, i, m_surface, &presentSupport));
 
         if (presentSupport)
         {
@@ -209,12 +228,12 @@ namespace MFVE
       VkPhysicalDeviceFeatures deviceFeatures{};
 
       VkDeviceCreateInfo createInfo{};
-      createInfo.sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-      createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
-      createInfo.pQueueCreateInfos    = queueCreateInfos.data();
-      createInfo.pEnabledFeatures     = &deviceFeatures;
-
-      createInfo.enabledExtensionCount = 0;
+      createInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+      createInfo.queueCreateInfoCount    = static_cast<uint32_t>(queueCreateInfos.size());
+      createInfo.pQueueCreateInfos       = queueCreateInfos.data();
+      createInfo.pEnabledFeatures        = &deviceFeatures;
+      createInfo.enabledExtensionCount   = static_cast<uint32_t>(deviceExtensions.size());
+      createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
       if (m_validationLayers.Active())
       {
@@ -263,6 +282,8 @@ namespace MFVE
       true
 #endif
     };
+
+    const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
     VkInstance m_instance             = VK_NULL_HANDLE;
     VkSurfaceKHR m_surface            = VK_NULL_HANDLE;
