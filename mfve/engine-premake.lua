@@ -26,7 +26,7 @@ project "MFVE"
         "%{IncludeDir.glm}/glm/**.inl",
 
         --# Cpp Log #--
-        "%{IncludeDir.CppLog}/log/**.h"
+        "%{IncludeDir.CppLog}/CppLog/**.h"
     }
 
     includedirs

@@ -1,8 +1,8 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_LOGGER_H
 #define MY_FIRST_VULKAN_ENGINE_LOGGER_H
 
-#include <log/cout_logger.h>
-#include <log/logger.h>
+#include <CppLog/cout_logger.h>
+#include <CppLog/logger.h>
 
 namespace MFVE
 {
