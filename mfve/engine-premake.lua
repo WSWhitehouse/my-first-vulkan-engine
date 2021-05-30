@@ -11,9 +11,6 @@ project "MFVE"
     targetdir (_targetdir)
     objdir    (_objdir)
 
-    pchheader  ("mfve_pch.h")
-    pchsource  (_enginefiledir .. "src/mfve_pch.cpp")
-
     defines
     {
         --# glm #--
@@ -39,7 +36,7 @@ project "MFVE"
 
     includedirs
     {
-        "src",
+        _enginefiledir .. "src",
 
         --# Vendor #--
         "%{IncludeDir.GLFW}",
@@ -48,8 +45,8 @@ project "MFVE"
 
         --# Vulkan SDK #--
         "%{VULKAN_SDK}/include/"
-    } 
-    
+    }
+
     libdirs
     {
         --# Vulkan SDK #--
@@ -61,6 +58,13 @@ project "MFVE"
         --# Vendor #--
         "GLFW"
     }
+
+    filter "action:vs*"
+        pchheader  ("mfve_pch.h")
+        pchsource  (_enginefiledir .. "src/mfve_pch.cpp")
+
+    filter "action:not vs*"
+        --pchheader ("mfve_pch.h")
 
     filter "system:linux"
         links
@@ -101,7 +105,7 @@ project "MFVE"
             "vulkan-1.lib",
             "VkLayer_utils.lib"
         }
-        
+
     filter "configurations:Debug"
         defines { "DEBUG", "MFVE_DEBUG", "MFVE_ENABLE_LOGGER" }
         runtime "Debug"
