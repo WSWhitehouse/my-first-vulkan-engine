@@ -22,6 +22,10 @@
 #include <stdexcept>
 #include <utility>
 
+// C++ Math
+#include <cmath>
+#include <numeric>
+
 // C++ String
 #include <cstring>
 #include <sstream>
@@ -38,5 +42,8 @@
 
 // Logger
 #include "core/Logger.h"
+
+// Random
+#include "core/Random.h"
 
 #endif // MFVE_PCH_H
