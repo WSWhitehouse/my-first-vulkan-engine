@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <mfve_pch.h>
 
+#include "Profiler.h"
 #include "mfve.h"
 #include "vulkan/Extensions.h"
 #include "vulkan/ValidationLayers.h"
@@ -21,10 +22,66 @@ namespace MFVE
    public:
     void run()
     {
-      initWindow();
-      initVulkan();
-      mainLoop();
-      cleanup();
+      constexpr const int count = 10;
+      std::array<double, count> profilers{};
+      for (int i = 0; i < count; ++i)
+      {
+        profilers.at(i) = profile();
+      }
+
+      double sum = std::accumulate(profilers.cbegin(), profilers.cend(), 0.0);
+      double avg = sum / count;
+
+      MFVE_LOG_INFO(std::to_string(avg));
+
+      /* initWindow();
+       initVulkan();
+       mainLoop();
+       cleanup();*/
+    }
+
+    double profile()
+    {
+      constexpr const int count = 1000;
+      std::array<double, count> profilers{};
+      for (int i = 0; i < count; ++i)
+      {
+        profilers.at(i) = profileLogger();
+      }
+
+      double sum = std::accumulate(profilers.cbegin(), profilers.cend(), 0.0);
+      return sum / count;
+    }
+
+    double profileLogger()
+    {
+      constexpr const int count = 100;
+
+      Profiler completeProfiler{};
+      completeProfiler.Start();
+      for (int i = 0; i < count; ++i)
+      {
+        // auto profiler = profilers.at(i);
+        // profiler.Start();
+        Logger::GetLogger()->log("TEST", static_cast<Log::Severity>(Random::Range(0, 4)));
+        // MFVE_LOG_INFO("INFO");
+        // profiler.Stop();
+      }
+      completeProfiler.Stop();
+
+      /*
+            MFVE_LOG_INFO("PROFILERS:");
+            for (int i = 0; i < count; ++i)
+            {
+              auto profiler = profilers.at(i);
+              MFVE_LOG_INFO("\t" + std::to_string(i) + " " +
+         std::to_string(profiler.Nanoseconds()));
+            }
+      */
+
+      // MFVE_LOG_INFO("TOTAL: " + std::to_string(completeProfiler.Microseconds()));
+
+      return completeProfiler.Microseconds();
     }
 
    private:
