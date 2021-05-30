@@ -1,7 +1,7 @@
 --# Workspace #--
 workspace "my-first-vulkan-engine"
     architecture "x86_64"
-    startproject "mfve"
+    startproject "MFVE"
 
     configurations {"Debug", "Release"}
 
