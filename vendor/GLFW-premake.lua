@@ -2,6 +2,8 @@ project "GLFW"
     location "%{wks.location}/vendor/GLFW/"
     kind "StaticLib"
     language "C"
+    systemversion "latest"
+    staticruntime "On"
 
     targetdir (_targetdir)
     objdir    (_objdir)
@@ -24,9 +26,6 @@ project "GLFW"
     filter "system:linux"
         pic "On"
 
-        systemversion "latest"
-        staticruntime "On"
-
         files
         {
             "GLFW/src/x11_init.c",
@@ -47,9 +46,6 @@ project "GLFW"
         }
 
     filter "system:windows"
-        systemversion "latest"
-        staticruntime "On"
-
         files
         {
             "GLFW/src/win32_init.c",
@@ -74,5 +70,9 @@ project "GLFW"
         symbols "on"
 
     filter "configurations:Release"
+        runtime "Release"
+        optimize "on"
+
+    filter "configurations:Dist"
         runtime "Release"
         optimize "on"

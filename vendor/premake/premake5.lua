@@ -14,7 +14,7 @@ project "premake"
     filter "system:windows"
         postbuildcommands
         {
-            "%{prj.location}vendor/premake/bin/premake5 %{_ACTION} --file=\"%{wks.location}premake5.lua\""
+            "%{prj.location}bin/premake5 %{_ACTION} --file=\"%{wks.location}premake5.lua\""
         }
 
     filter "system:linux"
