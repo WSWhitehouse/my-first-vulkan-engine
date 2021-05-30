@@ -9,8 +9,6 @@
   #ifndef NOMINMAX
     #define NOMINMAX // github.com/skypjack/entt/wiki/Frequently-Asked-Questions#warning-c4003-the-min-the-max-and-the-macro
   #endif
-
-  #include <Windows.h>
 #endif
 
 // C++ Standard Lib
@@ -35,10 +33,6 @@
 #include <array>
 #include <set>
 #include <vector>
-
-// GLM
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 
 // Logger
 #include "core/Logger.h"

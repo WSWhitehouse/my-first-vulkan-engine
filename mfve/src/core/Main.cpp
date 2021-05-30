@@ -1,6 +1,7 @@
+#include <mfve_pch.h>
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <mfve_pch.h>
 
 #include "Profiler.h"
 #include "mfve.h"
@@ -12,17 +13,17 @@ namespace MFVE
 {
   struct WindowProperties
   {
-    int width         = 800;
-    int height        = 600;
+    int width = 800;
+    int height = 600;
     std::string title = "MFVE";
   };
 
   class Application
   {
-   public:
+  public:
     void run()
     {
-      constexpr const int count = 10;
+      /*constexpr const int count = 10;
       std::array<double, count> profilers{};
       for (int i = 0; i < count; ++i)
       {
@@ -32,12 +33,12 @@ namespace MFVE
       double sum = std::accumulate(profilers.cbegin(), profilers.cend(), 0.0);
       double avg = sum / count;
 
-      MFVE_LOG_INFO(std::to_string(avg));
+      MFVE_LOG_INFO(std::to_string(avg));*/
 
-      /* initWindow();
-       initVulkan();
-       mainLoop();
-       cleanup();*/
+      initWindow();
+      initVulkan();
+      mainLoop();
+      cleanup();
     }
 
     double profile()
@@ -84,7 +85,7 @@ namespace MFVE
       return completeProfiler.Microseconds();
     }
 
-   private:
+  private:
     void initWindow()
     {
       glfwInit();
@@ -92,7 +93,11 @@ namespace MFVE
       glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
       m_window = glfwCreateWindow(
-        m_properties.width, m_properties.height, m_properties.title.c_str(), nullptr, nullptr);
+        m_properties.width,
+        m_properties.height,
+        m_properties.title.c_str(),
+        nullptr,
+        nullptr);
     }
 
     void initVulkan()
@@ -118,43 +123,42 @@ namespace MFVE
       }
 
       VkApplicationInfo appInfo{};
-      appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-      appInfo.pApplicationName   = m_properties.title.c_str();
+      appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
+      appInfo.pApplicationName = m_properties.title.c_str();
       appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-      appInfo.pEngineName        = MFVE_ENGINE_NAME;
-      appInfo.engineVersion      = VK_MAKE_VERSION(MFVE_VER_MAJOR, MFVE_VER_MINOR, MFVE_VER_PATCH);
-      appInfo.apiVersion         = VK_API_VERSION_1_0;
+      appInfo.pEngineName = MFVE_ENGINE_NAME;
+      appInfo.engineVersion = VK_MAKE_VERSION(MFVE_VER_MAJOR, MFVE_VER_MINOR, MFVE_VER_PATCH);
+      appInfo.apiVersion = VK_API_VERSION_1_0;
 
       VkInstanceCreateInfo createInfo{};
-      createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
+      createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
       createInfo.pApplicationInfo = &appInfo;
 
       // Add GLFW Extensions
       {
         uint32_t glfwExtensionCount = 0;
-        const char** glfwExtensions;
-        glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+        const char** glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
         m_extensions.Add(glfwExtensions, glfwExtensionCount);
       }
 
-      createInfo.enabledExtensionCount   = static_cast<uint32_t>(m_extensions.ExtensionCount());
+      createInfo.enabledExtensionCount = static_cast<uint32_t>(m_extensions.ExtensionCount());
       createInfo.ppEnabledExtensionNames = m_extensions.ExtensionNames();
 
       // Outside scope to ensure that it is not destroyed before the vkCreateInstance call
       VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
       if (m_validationLayers.Active())
       {
-        createInfo.enabledLayerCount   = static_cast<uint32_t>(m_validationLayers.LayerCount());
+        createInfo.enabledLayerCount = static_cast<uint32_t>(m_validationLayers.LayerCount());
         createInfo.ppEnabledLayerNames = m_validationLayers.LayerNames();
 
         m_validationLayers.PopulateDebugMessengerCreateInfo(debugCreateInfo);
-        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
+        createInfo.pNext = static_cast<VkDebugUtilsMessengerCreateInfoEXT*>(&debugCreateInfo);
       }
       else
       {
         createInfo.enabledLayerCount = 0;
-        createInfo.pNext             = nullptr;
+        createInfo.pNext = nullptr;
       }
 
       VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
@@ -196,7 +200,7 @@ namespace MFVE
     bool isDeviceSuitable(VkPhysicalDevice _device)
     {
       QueueFamilyIndices indices = findQueueFamilies(_device);
-      bool extensionsSupported   = checkDeviceExtensionSupport(_device);
+      bool extensionsSupported = checkDeviceExtensionSupport(_device);
 
       return indices.isComplete() && extensionsSupported;
     }
@@ -208,7 +212,10 @@ namespace MFVE
 
       std::vector<VkExtensionProperties> availableExtensions(extensionCount);
       vkEnumerateDeviceExtensionProperties(
-        device, nullptr, &extensionCount, availableExtensions.data());
+        device,
+        nullptr,
+        &extensionCount,
+        availableExtensions.data());
 
       std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
 
@@ -265,7 +272,7 @@ namespace MFVE
     void createLogicalDevice()
     {
       QueueFamilyIndices indices = findQueueFamilies(m_physicalDevice);
-      float queuePriority        = 1.0F;
+      float queuePriority = 1.0F;
 
       std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(),
                                                  indices.presentFamily.value() };
@@ -275,9 +282,9 @@ namespace MFVE
       for (uint32_t queueFamily : uniqueQueueFamilies)
       {
         VkDeviceQueueCreateInfo queueCreateInfo{};
-        queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
         queueCreateInfo.queueFamilyIndex = queueFamily;
-        queueCreateInfo.queueCount       = 1;
+        queueCreateInfo.queueCount = 1;
         queueCreateInfo.pQueuePriorities = &queuePriority;
         queueCreateInfos.emplace_back(queueCreateInfo);
       }
@@ -285,16 +292,16 @@ namespace MFVE
       VkPhysicalDeviceFeatures deviceFeatures{};
 
       VkDeviceCreateInfo createInfo{};
-      createInfo.sType                   = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-      createInfo.queueCreateInfoCount    = static_cast<uint32_t>(queueCreateInfos.size());
-      createInfo.pQueueCreateInfos       = queueCreateInfos.data();
-      createInfo.pEnabledFeatures        = &deviceFeatures;
-      createInfo.enabledExtensionCount   = static_cast<uint32_t>(deviceExtensions.size());
+      createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+      createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+      createInfo.pQueueCreateInfos = queueCreateInfos.data();
+      createInfo.pEnabledFeatures = &deviceFeatures;
+      createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
       createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
       if (m_validationLayers.Active())
       {
-        createInfo.enabledLayerCount   = m_validationLayers.LayerCount();
+        createInfo.enabledLayerCount = m_validationLayers.LayerCount();
         createInfo.ppEnabledLayerNames = m_validationLayers.LayerNames();
       }
       else
@@ -327,27 +334,27 @@ namespace MFVE
       glfwTerminate();
     }
 
-   private:
+  private:
     WindowProperties m_properties = {};
-    GLFWwindow* m_window          = nullptr;
+    GLFWwindow* m_window = nullptr;
 
     Extensions m_extensions = {};
     ValidationLayers m_validationLayers{
-#ifdef NDEBUG
+      #ifdef NDEBUG
       false
-#else
+      #else
       true
-#endif
+      #endif
     };
 
     const std::vector<const char*> deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-    VkInstance m_instance             = VK_NULL_HANDLE;
-    VkSurfaceKHR m_surface            = VK_NULL_HANDLE;
+    VkInstance m_instance = VK_NULL_HANDLE;
+    VkSurfaceKHR m_surface = VK_NULL_HANDLE;
     VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
-    VkDevice m_device                 = VK_NULL_HANDLE;
-    VkQueue m_graphicsQueue           = VK_NULL_HANDLE;
-    VkQueue m_presentQueue            = VK_NULL_HANDLE;
+    VkDevice m_device = VK_NULL_HANDLE;
+    VkQueue m_graphicsQueue = VK_NULL_HANDLE;
+    VkQueue m_presentQueue = VK_NULL_HANDLE;
   };
 }
 

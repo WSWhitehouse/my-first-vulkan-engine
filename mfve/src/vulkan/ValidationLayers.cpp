@@ -1,6 +1,6 @@
-#include "ValidationLayers.h"
-
 #include <mfve_pch.h>
+
+#include "ValidationLayers.h"
 
 namespace MFVE
 {
@@ -47,9 +47,10 @@ namespace MFVE
   /* Debug Messenger */
 
   void
-  ValidationLayers::PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& _createInfo)
+  ValidationLayers::PopulateDebugMessengerCreateInfo(
+    VkDebugUtilsMessengerCreateInfoEXT& _createInfo)
   {
-    _createInfo.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    _createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     _createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
                                   VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
                                   VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
@@ -73,7 +74,8 @@ namespace MFVE
     createInfo.pUserData = _userData;
 
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-      _instance, "vkCreateDebugUtilsMessengerEXT");
+      _instance,
+      "vkCreateDebugUtilsMessengerEXT");
 
     if (func != nullptr)
     {
@@ -92,7 +94,8 @@ namespace MFVE
     }
 
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-      _instance, "vkDestroyDebugUtilsMessengerEXT");
+      _instance,
+      "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr)
     {
       func(_instance, m_debugMessenger, _pAllocator);
