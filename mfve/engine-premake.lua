@@ -36,7 +36,7 @@ project "MFVE"
 
     includedirs
     {
-        _enginefiledir .. "src",
+        _enginefiledir .. "src/",
 
         --# Vendor #--
         "%{IncludeDir.GLFW}",
