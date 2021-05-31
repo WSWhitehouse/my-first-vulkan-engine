@@ -1,7 +1,3 @@
-//
-// Created by wswhitehouse on 30/05/2021.
-//
-
 #ifndef MY_FIRST_VULKAN_ENGINE_RANDOM_H
 #define MY_FIRST_VULKAN_ENGINE_RANDOM_H
 
