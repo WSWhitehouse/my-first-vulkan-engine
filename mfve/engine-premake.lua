@@ -1,4 +1,4 @@
-_enginefiledir = "%{wks.location}/mfve/"
+
 
 project "MFVE"
     location (_enginefiledir)
@@ -11,6 +11,8 @@ project "MFVE"
     targetdir (_targetdir)
     objdir    (_objdir)
 
+    _enginefiledir = "%{wks.location}/mfve/"
+
     defines
     {
         --# glm #--
@@ -21,10 +23,10 @@ project "MFVE"
     files
     {
         --# mfve Src #--
-        "src/**.h",
-        "src/**.c",
-        "src/**.hpp",
-        "src/**.cpp",
+        _enginefiledir .. "src/**.h",
+        _enginefiledir .. "src/**.c",
+        _enginefiledir .. "src/**.hpp",
+        _enginefiledir .. "src/**.cpp",
 
         --# glm #--
         "%{IncludeDir.glm}/glm/**.hpp",
