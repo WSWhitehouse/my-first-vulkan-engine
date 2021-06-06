@@ -1,12 +1,12 @@
-project "MFVE"
-    _enginefiledir = "%{wks.location}/mfve/"
+project "App"
+    _appfiledir = "%{wks.location}/app/"
 
-    location (_enginefiledir)
+    location (_appfiledir)
     uuid (os.uuid())
-    kind "StaticLib"
+    kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
-    staticruntime "off"
+    staticruntime "on"
 
     targetdir (_targetdir)
     objdir    (_objdir)
@@ -23,11 +23,11 @@ project "MFVE"
 
     files
     {
-        --# mfve Src #--
-        _enginefiledir .. "src/**.h",
-        _enginefiledir .. "src/**.c",
-        _enginefiledir .. "src/**.hpp",
-        _enginefiledir .. "src/**.cpp",
+        --# App Src #--
+        _appfiledir .. "src/**.h",
+        _appfiledir .. "src/**.c",
+        _appfiledir .. "src/**.hpp",
+        _appfiledir .. "src/**.cpp",
 
         --# glm #--
         "%{IncludeDir.glm}/glm/**.hpp",
@@ -39,15 +39,15 @@ project "MFVE"
 
     includedirs
     {
+        _appfiledir .. "src/",
+
+        --# MFVE #--
         _enginefiledir .. "src/",
 
         --# Vendor #--
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.CppLog}",
-
-        --# Vulkan SDK #--
-        "%{VULKAN_SDK}/include/"
     }
 
     libdirs
@@ -58,16 +58,16 @@ project "MFVE"
 
     links
     {
-        --# Vendor #--
-        "GLFW"
+        --# MFVE #--
+        "MFVE"
     }
 
     filter "action:vs*"
-        pchheader  ("mfve_pch.h")
-        pchsource  (_enginefiledir .. "src/mfve_pch.cpp")
+        pchheader  ("pch.h")
+        pchsource  (_enginefiledir .. "src/pch.cpp")
 
     filter "action:not vs*"
-        --pchheader ("mfve_pch.h")
+        --pchheader ("pch.h")
 
     filter "system:linux"
         links

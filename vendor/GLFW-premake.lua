@@ -1,5 +1,7 @@
 project "GLFW"
-    location "%{wks.location}/vendor/GLFW/"
+    _glfwfiledir = "%{wks.location}/vendor/GLFW/"
+
+    location (_glfwfiledir)
     kind "StaticLib"
     language "C"
     systemversion "latest"
@@ -7,8 +9,6 @@ project "GLFW"
 
     targetdir (_targetdir)
     objdir    (_objdir)
-
-    _glfwfiledir = "%{wks.location}/vendor/GLFW/"
 
     files
     {

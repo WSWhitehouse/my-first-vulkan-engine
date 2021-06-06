@@ -15,3 +15,4 @@ workspace "my-first-vulkan-engine"
 
     --# Projects #--
     include "mfve/engine-premake"
+    include "app/app-premake"

@@ -12,8 +12,8 @@ namespace MFVE
     Logger()  = delete;
     ~Logger() = delete;
 
-    static void Init() { m_logger = new Log::cout_logger(); }
-    static void CleanUp() { delete m_logger; }
+    static void CreateLogger() { m_logger = new Log::cout_logger(); }
+    static void DestroyLogger() { delete m_logger; }
 
     static inline Log::logger* GetLogger() { return m_logger; }
 
