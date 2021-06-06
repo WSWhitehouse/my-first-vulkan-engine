@@ -37,7 +37,7 @@ IncludeCategories:
   - Regex: '<[[:alnum:].]+>'
     Priority: 1
   - Regex: '.*'
-    Priority: 4
+    Priority: 3
 KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All

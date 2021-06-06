@@ -295,7 +295,7 @@ namespace MFVE
   };
 }
 
-int main(int /*argc*/, char** /*argv*/)
+int main(int argc, char** argv)
 {
   MFVE::Logger::Init();
 
