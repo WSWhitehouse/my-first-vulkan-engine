@@ -7,9 +7,9 @@ namespace MFVE
 {
   struct AppProperties
   {
-    int width         = 800;
-    int height        = 600;
-    std::string title = "MFVE App";
+    int WindowWidth   = 800;
+    int WindowHeight  = 600;
+    std::string Title = "MFVE App";
   };
 }
 

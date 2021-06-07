@@ -6,19 +6,19 @@ int main(int argc, char** argv)
 {
   MFVE::Logger::CreateLogger();
 
-  Sandbox app;
+  MFVE::Application* app = new Sandbox({});
 
   try
   {
-    app.Init({});
-    app.Run();
-    app.CleanUp();
+    app->Run();
   }
   catch (const std::exception& e)
   {
     std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;
   }
+
+  delete app;
 
   MFVE::Logger::DestroyLogger();
   return EXIT_SUCCESS;

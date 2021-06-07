@@ -3,11 +3,13 @@
 
 // GLFW
 #include <GLFW/glfw3.h>
+#include <utility>
 
 // MFVE
 #include "AppProperties.h"
 #include "FrameTimer.h"
 #include "Profiler.h"
+#include "Window.h"
 
 // Vulkan
 #include "vulkan/Extensions.h"
@@ -25,8 +27,8 @@ namespace MFVE
   class Application
   {
    public:
-    Application()          = default;
-    virtual ~Application() = default;
+    explicit Application(AppProperties _appProperties);
+    virtual ~Application();
 
     /* Copy Constructors */
     Application(const Application&) = delete;
@@ -37,9 +39,7 @@ namespace MFVE
     Application& operator=(Application&&) = delete;
 
    public: /* Engine Functions */
-    void Init(const AppProperties& _appProperties);
     void Run();
-    void CleanUp();
 
    protected: /* Application Functions */
     virtual void AppInit()                                = 0;
@@ -54,7 +54,9 @@ namespace MFVE
     AppProperties m_appProperties = {};
     FrameTimer m_frameTimer       = {};
 
-    GLFWwindow* m_window = nullptr;
+    /* Window */
+    Window* m_window = nullptr;
+    void InitWindow();
 
     Extensions m_extensions = {};
     ValidationLayers m_validationLayers{
@@ -75,20 +77,6 @@ namespace MFVE
     VkQueue m_presentQueue            = VK_NULL_HANDLE;
 
    private:
-    void initWindow()
-    {
-      glfwInit();
-      glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-      glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-      m_window = glfwCreateWindow(
-        m_appProperties.width,
-        m_appProperties.height,
-        m_appProperties.title.c_str(),
-        nullptr,
-        nullptr);
-    }
-
     void initVulkan()
     {
       createInstance();
@@ -113,7 +101,7 @@ namespace MFVE
 
       VkApplicationInfo appInfo{};
       appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-      appInfo.pApplicationName   = m_appProperties.title.c_str();
+      appInfo.pApplicationName   = m_appProperties.Title.c_str();
       appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
       appInfo.pEngineName        = MFVE_ENGINE_NAME;
       appInfo.engineVersion      = VK_MAKE_VERSION(MFVE_VER_MAJOR, MFVE_VER_MINOR, MFVE_VER_PATCH);
@@ -155,7 +143,7 @@ namespace MFVE
 
     void createSurface()
     {
-      VkCheck(glfwCreateWindowSurface(m_instance, m_window, nullptr, &m_surface));
+      VkCheck(glfwCreateWindowSurface(m_instance, static_cast<GLFWwindow*>(m_window->GetNativeWindow()), nullptr, &m_surface));
     }
 
     void pickPhysicalDevice()

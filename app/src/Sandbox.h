@@ -5,7 +5,8 @@
 class Sandbox : public MFVE::Application
 {
  public:
-  Sandbox()           = default;
+  explicit Sandbox(const MFVE::AppProperties& _appProperties) :
+    MFVE::Application(_appProperties) {}
   ~Sandbox() override = default;
 
  protected:

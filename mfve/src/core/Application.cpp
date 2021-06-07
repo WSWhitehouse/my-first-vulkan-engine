@@ -2,14 +2,28 @@
 
 #include <mfve_pch.h>
 
+// Platform
+#include "platform/GLFWWindow.h"
+
 namespace MFVE
 {
-  void Application::Init(const AppProperties& _appProperties)
+  Application::Application(AppProperties _appProperties) :
+    m_appProperties(std::move(_appProperties))
   {
-    m_appProperties = _appProperties;
-
-    initWindow();
+    InitWindow();
     initVulkan();
+  }
+
+  Application::~Application()
+  {
+    vkDestroyDevice(m_device, nullptr);
+    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+
+    m_validationLayers.DestroyDebugMessenger(m_instance, nullptr);
+    vkDestroyInstance(m_instance, nullptr);
+
+    m_window->DestroyWindow();
+    delete m_window;
   }
 
   void Application::Run()
@@ -17,9 +31,9 @@ namespace MFVE
     // Initialise Application
     AppInit();
 
-    while (!glfwWindowShouldClose(m_window))
+    while (!m_window->WindowShouldClose())
     {
-      glfwPollEvents();
+      m_window->UpdateEvents();
 
       if (m_frameTimer.Tick())
       {
@@ -35,15 +49,11 @@ namespace MFVE
     AppCleanUp();
   }
 
-  void Application::CleanUp()
+  void Application::InitWindow()
   {
-    vkDestroyDevice(m_device, nullptr);
-    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
-
-    m_validationLayers.DestroyDebugMessenger(m_instance, nullptr);
-    vkDestroyInstance(m_instance, nullptr);
-
-    glfwDestroyWindow(m_window);
-    glfwTerminate();
+    // Creating a GLFW Window for now
+    m_window = new GLFWWindow(m_appProperties);
+    m_window->CreateWindow();
   }
+
 } // namespace MFVE
