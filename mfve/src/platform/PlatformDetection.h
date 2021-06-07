@@ -11,7 +11,6 @@
 
   #ifdef _WIN64 /* Windows x64  */
     #define MFVE_PLATFORM_WINDOWS_64
-    //#error "Windows x64 Builds are not supported!"
 
   #else /* Windows x86 */
     #define MFVE_PLATFORM_WINDOWS_86
