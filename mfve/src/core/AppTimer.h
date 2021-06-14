@@ -5,11 +5,11 @@
 
 namespace MFVE
 {
-  class FrameTimer
+  class AppTimer
   {
    public:
-    FrameTimer()  = default;
-    ~FrameTimer() = default;
+    AppTimer()  = default;
+    ~AppTimer() = default;
 
     bool Tick();
 

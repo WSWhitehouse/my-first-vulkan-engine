@@ -7,7 +7,7 @@
 
 // MFVE
 #include "AppProperties.h"
-#include "FrameTimer.h"
+#include "AppTimer.h"
 #include "Profiler.h"
 #include "Window.h"
 
@@ -42,17 +42,17 @@ namespace MFVE
     void Run();
 
    protected: /* Application Functions */
-    virtual void AppInit()                                = 0;
-    virtual void AppUpdate(const FrameTimer& _frameTimer) = 0;
-    virtual void AppRender()                              = 0;
-    virtual void AppCleanUp()                             = 0;
+    virtual void AppInit()                            = 0;
+    virtual void AppUpdate(const AppTimer& _appTimer) = 0;
+    virtual void AppRender()                          = 0;
+    virtual void AppCleanUp()                         = 0;
 
    public: /* Getters */
     [[nodiscard]] inline const AppProperties& GetAppProperties() const { return m_appProperties; }
 
    private:
     AppProperties m_appProperties = {};
-    FrameTimer m_frameTimer       = {};
+    AppTimer m_appTimer           = {};
 
     /* Window */
     Window* m_window = nullptr;
@@ -143,7 +143,8 @@ namespace MFVE
 
     void createSurface()
     {
-      VkCheck(glfwCreateWindowSurface(m_instance, static_cast<GLFWwindow*>(m_window->GetNativeWindow()), nullptr, &m_surface));
+      VkCheck(glfwCreateWindowSurface(
+        m_instance, static_cast<GLFWwindow*>(m_window->GetNativeWindow()), nullptr, &m_surface));
     }
 
     void pickPhysicalDevice()

@@ -35,10 +35,10 @@ namespace MFVE
     {
       m_window->UpdateEvents();
 
-      if (m_frameTimer.Tick())
+      if (m_appTimer.Tick())
       {
         // Update Application
-        AppUpdate(m_frameTimer);
+        AppUpdate(m_appTimer);
       }
 
       // Render Application

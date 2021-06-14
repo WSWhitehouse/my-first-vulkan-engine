@@ -5,13 +5,12 @@
 class Sandbox : public MFVE::Application
 {
  public:
-  explicit Sandbox(const MFVE::AppProperties& _appProperties) :
-    MFVE::Application(_appProperties) {}
+  explicit Sandbox(const MFVE::AppProperties& _appProperties) : MFVE::Application(_appProperties) {}
   ~Sandbox() override = default;
 
  protected:
   void AppInit() override;
-  void AppUpdate(const MFVE::FrameTimer &_frameTimer) override;
+  void AppUpdate(const MFVE::AppTimer& _appTimer) override;
   void AppRender() override;
   void AppCleanUp() override;
 };
