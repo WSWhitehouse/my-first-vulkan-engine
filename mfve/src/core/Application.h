@@ -17,7 +17,7 @@
 #include "vulkan/Vk_Base.h"
 
 // Defines
-#define MFVE_ENGINE_NAME "my-first-vulkan-engine";
+#define MFVE_ENGINE_NAME "my-first-vulkan-engine"
 #define MFVE_VER_MAJOR   0
 #define MFVE_VER_MINOR   1
 #define MFVE_VER_PATCH   0
@@ -48,7 +48,7 @@ namespace MFVE
     virtual void AppCleanUp()                             = 0;
 
    public: /* Getters */
-    [[nodiscard]] const AppProperties& GetAppProperties() const { return m_appProperties; }
+    [[nodiscard]] inline const AppProperties& GetAppProperties() const { return m_appProperties; }
 
    private:
     AppProperties m_appProperties = {};

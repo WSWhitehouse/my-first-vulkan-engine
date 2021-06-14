@@ -12,7 +12,7 @@ namespace MFVE
   /**
    * \brief Check a VkResult is successful
    */
-  static constexpr void VkCheck(VkResult _result)
+  static constexpr inline void VkCheck(VkResult _result)
   {
     if (_result != VK_SUCCESS)
     {

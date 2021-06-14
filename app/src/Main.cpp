@@ -6,7 +6,10 @@ int main(int argc, char** argv)
 {
   MFVE::Logger::CreateLogger();
 
-  MFVE::Application* app = new Sandbox({});
+  MFVE::AppProperties appProperties {};
+  appProperties.Title = "MFVE Sandbox";
+
+  MFVE::Application* app = new Sandbox(appProperties);
 
   try
   {
