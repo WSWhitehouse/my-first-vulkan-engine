@@ -4,7 +4,7 @@
 
 <p align="center">
   <b> 
-My First Vulkan Engine (MFVE) is an open source game and rendering engine written in the C++ programming language.
+My First Vulkan Engine (MFVE) is an open source game and rendering engine written in modern C++
   </b>
 </p>
 
