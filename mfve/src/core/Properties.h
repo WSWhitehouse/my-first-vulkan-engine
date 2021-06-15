@@ -5,11 +5,16 @@
 
 namespace MFVE
 {
-  struct AppProperties
+  struct Properties
   {
-    int WindowWidth   = 800;
-    int WindowHeight  = 600;
-    std::string Title = "MFVE App";
+    int WindowWidth  = 800;
+    int WindowHeight = 600;
+
+    std::string Name = "MFVE App";
+
+    uint32_t VersionMajor = 1;
+    uint32_t VersionMinor = 0;
+    uint32_t VersionPatch = 0;
   };
 }
 
