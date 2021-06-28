@@ -24,12 +24,12 @@ namespace MFVE
 
 #ifdef MFVE_ENABLE_LOGGER
 
-  #define MFVE_LOG_INFO(msg)    ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_INFO);
-  #define MFVE_LOG_DEBUG(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_DEBUG);
-  #define MFVE_LOG_WARNING(msg) ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_WARNING);
-  #define MFVE_LOG_ERROR(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_ERROR);
-  #define MFVE_LOG_FATAL(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_FATAL);
-  #define MFVE_LOG_INVALID(msg) ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_INVALID);
+  #define MFVE_LOG_INFO(msg)    ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_INFO)
+  #define MFVE_LOG_DEBUG(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_DEBUG)
+  #define MFVE_LOG_WARNING(msg) ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_WARNING)
+  #define MFVE_LOG_ERROR(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_ERROR)
+  #define MFVE_LOG_FATAL(msg)   ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_FATAL)
+  #define MFVE_LOG_INVALID(msg) ::MFVE::Logger::GetLogger()->log(msg, Log::Severity::LOG_INVALID)
 
 #else
 

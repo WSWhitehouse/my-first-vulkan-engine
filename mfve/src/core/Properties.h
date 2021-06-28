@@ -1,21 +1,24 @@
-#ifndef MY_FIRST_VULKAN_ENGINE_APPLICATION_PROPERTIES_H
-#define MY_FIRST_VULKAN_ENGINE_APPLICATION_PROPERTIES_H
+#ifndef MY_FIRST_VULKAN_ENGINE_PROPERTIES_H
+#define MY_FIRST_VULKAN_ENGINE_PROPERTIES_H
 
 #include <string>
 
 namespace MFVE
 {
-  struct Properties
+  struct AppProperties
   {
-    int WindowWidth  = 800;
-    int WindowHeight = 600;
+    std::string name = "MFVE App";
 
-    std::string Name = "MFVE App";
+    uint32_t versionMajor = 1;
+    uint32_t versionMinor = 0;
+    uint32_t versionPatch = 0;
+  };
 
-    uint32_t VersionMajor = 1;
-    uint32_t VersionMinor = 0;
-    uint32_t VersionPatch = 0;
+  struct WindowProperties
+  {
+    int width  = 800;
+    int height = 600;
   };
 }
 
-#endif // MY_FIRST_VULKAN_ENGINE_APPLICATION_PROPERTIES_H
+#endif // MY_FIRST_VULKAN_ENGINE_PROPERTIES_H

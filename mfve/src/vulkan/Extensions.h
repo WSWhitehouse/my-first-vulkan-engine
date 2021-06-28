@@ -4,7 +4,7 @@
 #include "ValidationLayers.h"
 #include "Vk_Base.h"
 
-namespace MFVE
+namespace MFVE::Vulkan
 {
   class Extensions
   {
@@ -39,23 +39,22 @@ namespace MFVE
       return extensions;
     }
 
-    /* Getters */
-    [[nodiscard]] size_t ExtensionCount() const { return ExtensionVector().size(); }
-    [[nodiscard]] const char* const* ExtensionNames() const { return ExtensionVector().data(); }
-    [[nodiscard]] const std::vector<const char*>& ExtensionVector() const { return m_extensions; }
+    [[nodiscard]] bool AreExtensionsSupported(
+      const std::vector<VkExtensionProperties>& _supportedExtensions = GetSupported()) const;
 
-    void Add(const std::vector<const char*>& _extensions)
-    {
-      m_extensions.insert(m_extensions.cend(), _extensions.cbegin(), _extensions.cend());
-    }
+    /* Add Extensions */
+    void Add(std::string_view _extension);
+    void Add(size_t _extensionCount, const char** _extensions);
 
-    void Add(const char* const* _extensions, const size_t& _count)
-    {
-      m_extensions.insert(m_extensions.cend(), _extensions, _extensions + _count);
-    }
+   public: /* Getters */
+    [[nodiscard]] inline std::vector<const char*>& Get() { return m_extensions; }
+    [[nodiscard]] inline const std::vector<const char*>& Get() const { return m_extensions; }
 
-   private:
-    std::vector<const char*> m_extensions = {};
+    [[nodiscard]] inline size_t GetCount() const { return m_extensions.size(); }
+    [[nodiscard]] inline const char* const* GetNames() const { return m_extensions.data(); }
+
+   private: /* Variables */
+    std::vector<const char*> m_extensions{};
   };
 }
 

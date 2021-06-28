@@ -10,19 +10,19 @@ namespace MFVE
   class GLFWWindow : public Window
   {
    public:
-    explicit GLFWWindow(const AppProperties& _appProperties) : Window(_appProperties) {}
+    explicit GLFWWindow(const WindowProperties& _appProperties) : Window(_appProperties) {}
     ~GLFWWindow() override = default;
 
    public: /* Functions */
-    void CreateWindow() override;
-    void DestroyWindow() override;
+    virtual bool CreateWindow(std::string_view _windowTitle) override;
+    virtual void DestroyWindow() override;
 
-    bool WindowShouldClose() override;
-
-    void UpdateEvents() override;
+    virtual void SetWindowTitle(std::string_view _windowTitle) override;
+    virtual bool WindowShouldClose() override;
+    virtual void UpdateEvents() override;
 
    public: /* Getters */
-    [[nodiscard]] void* GetNativeWindow() const override { return m_window; }
+    [[nodiscard]] virtual void* GetNativeWindow() const override { return m_window; }
 
    private:
     GLFWwindow* m_window = nullptr;

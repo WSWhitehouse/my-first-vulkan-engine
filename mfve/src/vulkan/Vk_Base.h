@@ -7,7 +7,7 @@
 // Vulkan
 #include <vulkan/vulkan.h>
 
-namespace MFVE
+namespace MFVE::Vulkan
 {
   /**
    * \brief Check a VkResult is successful

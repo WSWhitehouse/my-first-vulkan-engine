@@ -1,14 +1,16 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_WINDOW_H
 #define MY_FIRST_VULKAN_ENGINE_WINDOW_H
 
-#include "AppProperties.h"
+#include <utility>
+
+#include "Properties.h"
 
 namespace MFVE
 {
   class Window
   {
    public:
-    explicit Window(const AppProperties& _appProperties) : m_appProperties(_appProperties) {}
+    explicit Window(WindowProperties _windowProperties) : m_windowProperties(_windowProperties) {}
     virtual ~Window() = default;
 
     /* Copy Constructors */
@@ -20,18 +22,19 @@ namespace MFVE
     Window& operator=(Window&&) = delete;
 
    public: /* Functions */
-    virtual void CreateWindow()  = 0;
-    virtual void DestroyWindow() = 0;
+    virtual bool CreateWindow(std::string_view _windowTitle) = 0;
+    virtual void DestroyWindow()                             = 0;
 
-    virtual bool WindowShouldClose() = 0;
-
-    virtual void UpdateEvents() = 0;
+    virtual void SetWindowTitle(std::string_view _windowTitle) = 0;
+    virtual bool WindowShouldClose()                           = 0;
+    virtual void UpdateEvents()                                = 0;
 
    public: /* Getters */
+    [[nodiscard]] const WindowProperties& GetWindowProperties() const { return m_windowProperties; }
     [[nodiscard]] virtual void* GetNativeWindow() const = 0;
 
    protected:
-    const AppProperties& m_appProperties;
+    WindowProperties m_windowProperties;
   };
 
 } // namespace MFVE
