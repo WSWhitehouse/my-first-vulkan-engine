@@ -10,7 +10,7 @@ class Sandbox : public MFVE::Application
 
  protected:
   void AppInit() override;
-  void AppUpdate(const MFVE::AppTimer& _appTimer) override;
+  void AppUpdate(const MFVE::Time& _timer) override;
   void AppRender() override;
   void AppCleanUp() override;
 };

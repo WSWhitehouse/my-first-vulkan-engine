@@ -2,9 +2,9 @@
 #define MY_FIRST_VULKAN_ENGINE_APPLICATION_H
 
 // MFVE
-#include "AppTimer.h"
 #include "Profiler.h"
 #include "Properties.h"
+#include "Time.h"
 #include "Window.h"
 
 // Vulkan
@@ -39,10 +39,10 @@ namespace MFVE
     void SignalExit() { m_signalExit = true; }
 
    protected: /* Application Functions */
-    virtual void AppInit()                            = 0;
-    virtual void AppUpdate(const AppTimer& _appTimer) = 0;
-    virtual void AppRender()                          = 0;
-    virtual void AppCleanUp()                         = 0;
+    virtual void AppInit()                    = 0;
+    virtual void AppUpdate(const Time& _time) = 0;
+    virtual void AppRender()                  = 0;
+    virtual void AppCleanUp()                 = 0;
 
    public: /* Getters */
     [[nodiscard]] inline const AppProperties& GetAppProperties() const { return m_appProperties; }
@@ -51,13 +51,22 @@ namespace MFVE
    private: /* Variables */
     bool m_signalExit             = false;
     AppProperties m_appProperties = {};
-    AppTimer m_appTimer           = {};
+    Time m_appTimer               = {};
 
     Window* m_window = nullptr;
 
    private: /* Vulkan */
     // Extensions
-    Vulkan::Extensions m_extensions{};
+    std::vector<const char*> m_extensions{};
+
+    // Validation Layers
+    const std::vector<const char*> _validationLayers = { "VK_LAYER_KHRONOS_validation" };
+
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
 
     // Instance
     VkInstance m_instance = VK_NULL_HANDLE;

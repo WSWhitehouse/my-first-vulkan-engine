@@ -86,17 +86,21 @@ namespace MFVE
 
       glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-      m_extensions.Add(glfwExtensionCount, glfwExtensions);
+      m_extensions.reserve(glfwExtensionCount);
+      for (int i = 0; i < glfwExtensionCount; ++i)
+      {
+        m_extensions.emplace_back(glfwExtensions[i]);
+      }
     }
 
-    if (!m_extensions.AreExtensionsSupported())
+    if (!Extensions::CheckExtensionSupport(m_extensions))
     {
       MFVE_LOG_FATAL("Extensions unsupported!");
       throw std::runtime_error("Extensions unsupported!");
     }
 
-    createInfo.enabledExtensionCount   = m_extensions.GetCount();
-    createInfo.ppEnabledExtensionNames = m_extensions.GetNames();
+    createInfo.enabledExtensionCount   = m_extensions.size();
+    createInfo.ppEnabledExtensionNames = m_extensions.data();
 
     createInfo.enabledLayerCount = 0;
 

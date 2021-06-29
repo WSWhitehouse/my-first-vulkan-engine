@@ -1,51 +1,6 @@
-#include <mfve_pch.h>
-
-#include "ValidationLayers.h"
-
+/*
 namespace MFVE
 {
-  /* Layer Support */
-
-  std::vector<VkLayerProperties> ValidationLayers::GetSupportedLayers()
-  {
-    // Get number of layers
-    uint32_t count;
-    vkEnumerateInstanceLayerProperties(&count, nullptr);
-
-    // Populate vector
-    std::vector<VkLayerProperties> layers(count);
-    vkEnumerateInstanceLayerProperties(&count, layers.data());
-
-    return layers;
-  }
-
-  bool ValidationLayers::CheckLayerSupport(const std::vector<VkLayerProperties>& _supportedLayers)
-  {
-    // Check all requested validation layers are supported
-    for (const char* layerName : LayerVector())
-    {
-      bool layerFound = false;
-
-      for (const auto& layerProperties : _supportedLayers)
-      {
-        if (strcmp(layerName, layerProperties.layerName) == 0)
-        {
-          layerFound = true;
-          break;
-        }
-      }
-
-      if (!layerFound)
-      {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
-  /* Debug Messenger */
-
   void
   ValidationLayers::PopulateDebugMessengerCreateInfo(
     VkDebugUtilsMessengerCreateInfoEXT& _createInfo)
@@ -128,3 +83,4 @@ namespace MFVE
     return VK_FALSE;
   }
 }
+*/

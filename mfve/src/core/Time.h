@@ -5,11 +5,11 @@
 
 namespace MFVE
 {
-  class AppTimer
+  class Time
   {
    public:
-    AppTimer()  = default;
-    ~AppTimer() = default;
+    Time()  = default;
+    ~Time() = default;
 
     bool Tick();
 
