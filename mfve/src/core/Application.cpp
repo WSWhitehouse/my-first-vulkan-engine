@@ -62,8 +62,41 @@ namespace MFVE
     AppCleanUp();
   }
 
+  std::vector<const char*> Application::GetRequiredExtensions()
+  {
+    std::vector<const char*> extensions;
+
+    // TODO Change to window extensions
+    // GLFW Extensions
+    {
+      uint32_t glfwExtensionCount = 0;
+      const char** glfwExtensions;
+
+      glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+      extensions.reserve(glfwExtensionCount);
+      for (int i = 0; i < glfwExtensionCount; ++i)
+      {
+        extensions.emplace_back(glfwExtensions[i]);
+      }
+    }
+
+    if (!Extensions::CheckExtensionSupport(extensions))
+    {
+      MFVE_LOG_FATAL("Extensions unsupported!");
+      throw std::runtime_error("Extensions unsupported!");
+    }
+
+    return extensions;
+  }
+
   void Application::CreateInstance()
   {
+    if (enableValidationLayers && !ValidationLayers::CheckLayerSupport(m_validationLayers))
+    {
+      throw std::runtime_error("Validation Layers requested, but not available!");
+    }
+
     VkApplicationInfo appInfo{};
     appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName   = m_appProperties.name.c_str();
@@ -79,30 +112,19 @@ namespace MFVE
     createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    // GLFW Extensions
+    const auto extensions = GetRequiredExtensions();
+    createInfo.enabledExtensionCount   = extensions.size();
+    createInfo.ppEnabledExtensionNames = extensions.data();
+
+    if (enableValidationLayers)
     {
-      uint32_t glfwExtensionCount = 0;
-      const char** glfwExtensions;
-
-      glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-      m_extensions.reserve(glfwExtensionCount);
-      for (int i = 0; i < glfwExtensionCount; ++i)
-      {
-        m_extensions.emplace_back(glfwExtensions[i]);
-      }
+      createInfo.enabledLayerCount   = m_validationLayers.size();
+      createInfo.ppEnabledLayerNames = m_validationLayers.data();
     }
-
-    if (!Extensions::CheckExtensionSupport(m_extensions))
+    else
     {
-      MFVE_LOG_FATAL("Extensions unsupported!");
-      throw std::runtime_error("Extensions unsupported!");
+      createInfo.enabledLayerCount = 0;
     }
-
-    createInfo.enabledExtensionCount   = m_extensions.size();
-    createInfo.ppEnabledExtensionNames = m_extensions.data();
-
-    createInfo.enabledLayerCount = 0;
 
     VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
   }

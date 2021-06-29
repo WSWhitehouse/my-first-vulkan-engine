@@ -57,10 +57,10 @@ namespace MFVE
 
    private: /* Vulkan */
     // Extensions
-    std::vector<const char*> m_extensions{};
+    std::vector<const char*> GetRequiredExtensions();
 
     // Validation Layers
-    const std::vector<const char*> _validationLayers = { "VK_LAYER_KHRONOS_validation" };
+    const std::vector<const char*> m_validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
 #ifdef NDEBUG
     const bool enableValidationLayers = false;

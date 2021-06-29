@@ -34,20 +34,14 @@ namespace MFVE::Vulkan::Extensions
     const std::vector<const char*>& _extensions,
     const std::vector<VkExtensionProperties>& _supportedExtensions = GetSupported())
   {
-    // Return false if supported extensions is empty and extensions isn't
-    if (_supportedExtensions.empty() && !_extensions.empty())
-    {
-      return false;
-    }
-
     return std::all_of(
       _extensions.cbegin(),
       _extensions.cend(),
-      [&](const std::string& extension)
+      [&](const char* extension)
       {
         for (const auto& ext : _supportedExtensions)
         {
-          if (strcmp(extension.c_str(), ext.extensionName) == 0)
+          if (strcmp(extension, ext.extensionName) == 0)
           {
             return true;
           }

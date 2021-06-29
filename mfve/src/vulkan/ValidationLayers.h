@@ -9,9 +9,9 @@
 namespace MFVE::Vulkan::ValidationLayers
 {
   /**
- * \brief Get all supported vulkan validation layers
- * \return vector of VkLayerProperties
- */
+   * \brief Get all supported vulkan validation layers
+   * \return vector of VkLayerProperties
+   */
   static std::vector<VkLayerProperties> GetSupported()
   {
     // Get number of layers
@@ -36,27 +36,21 @@ namespace MFVE::Vulkan::ValidationLayers
     const std::vector<const char*>& _layers,
     const std::vector<VkLayerProperties>& _supportedLayers = GetSupported())
   {
-    // Check all requested validation layers are supported
-    for (const char* layerName : _layers)
-    {
-      bool layerFound = false;
-
-      for (const auto& layerProperties : _supportedLayers)
+    return std::all_of(
+      _layers.cbegin(),
+      _layers.cend(),
+      [&](const char* layer)
       {
-        if (strcmp(layerName, layerProperties.layerName) == 0)
+        for (const auto& supportedLayer : _supportedLayers)
         {
-          layerFound = true;
-          break;
+          if (strcmp(layer, supportedLayer.layerName) == 0)
+          {
+            return true;
+          }
         }
-      }
 
-      if (!layerFound)
-      {
         return false;
-      }
-    }
-
-    return true;
+      });
   }
 
 }
