@@ -26,6 +26,17 @@ namespace MFVE
     glfwTerminate();
   }
 
+  std::vector<const char*> GLFWWindow::GetRequiredWindowExtensions()
+  {
+    uint32_t glfwExtensionCount = 0;
+    const char** glfwExtensions;
+    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+
+    return extensions;
+  }
+
   void GLFWWindow::SetWindowTitle(std::string_view _windowTitle)
   {
     glfwSetWindowTitle(m_window, _windowTitle.data());

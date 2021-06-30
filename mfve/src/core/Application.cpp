@@ -64,21 +64,11 @@ namespace MFVE
 
   std::vector<const char*> Application::GetRequiredExtensions()
   {
-    std::vector<const char*> extensions;
+    std::vector<const char*> extensions = m_window->GetRequiredWindowExtensions();
 
-    // TODO Change to window extensions
-    // GLFW Extensions
+    if (enableValidationLayers)
     {
-      uint32_t glfwExtensionCount = 0;
-      const char** glfwExtensions;
-
-      glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-      extensions.reserve(glfwExtensionCount);
-      for (int i = 0; i < glfwExtensionCount; ++i)
-      {
-        extensions.emplace_back(glfwExtensions[i]);
-      }
+      extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
     if (!Extensions::CheckExtensionSupport(extensions))
@@ -112,7 +102,7 @@ namespace MFVE
     createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    const auto extensions = GetRequiredExtensions();
+    const auto extensions              = GetRequiredExtensions();
     createInfo.enabledExtensionCount   = extensions.size();
     createInfo.ppEnabledExtensionNames = extensions.data();
 

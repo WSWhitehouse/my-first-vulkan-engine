@@ -2,6 +2,7 @@
 #define MY_FIRST_VULKAN_ENGINE_WINDOW_H
 
 #include <utility>
+#include <vector>
 
 #include "Properties.h"
 
@@ -24,6 +25,8 @@ namespace MFVE
    public: /* Functions */
     virtual bool CreateWindow(std::string_view _windowTitle) = 0;
     virtual void DestroyWindow()                             = 0;
+
+    virtual std::vector<const char*> GetRequiredWindowExtensions() = 0;
 
     virtual void SetWindowTitle(std::string_view _windowTitle) = 0;
     virtual bool WindowShouldClose()                           = 0;
