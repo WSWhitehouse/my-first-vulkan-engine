@@ -27,11 +27,13 @@ namespace MFVE
 
     /* Vulkan */
     CreateInstance();
+    CreateDebugMessenger();
   }
 
   Application::~Application()
   {
     /* Vulkan */
+    DestroyDebugMessenger();
     vkDestroyInstance(m_instance, nullptr);
 
     /* Window */
@@ -66,7 +68,7 @@ namespace MFVE
   {
     std::vector<const char*> extensions = m_window->GetRequiredWindowExtensions();
 
-    if (enableValidationLayers)
+    if (m_enableValidationLayers)
     {
       extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
@@ -82,7 +84,7 @@ namespace MFVE
 
   void Application::CreateInstance()
   {
-    if (enableValidationLayers && !ValidationLayers::CheckLayerSupport(m_validationLayers))
+    if (m_enableValidationLayers && !ValidationLayers::CheckLayerSupport(m_validationLayers))
     {
       throw std::runtime_error("Validation Layers requested, but not available!");
     }
@@ -106,17 +108,46 @@ namespace MFVE
     createInfo.enabledExtensionCount   = extensions.size();
     createInfo.ppEnabledExtensionNames = extensions.data();
 
-    if (enableValidationLayers)
+    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+    if (m_enableValidationLayers)
     {
       createInfo.enabledLayerCount   = m_validationLayers.size();
       createInfo.ppEnabledLayerNames = m_validationLayers.data();
+
+      ValidationLayers::PopulateDebugMessengerCreateInfo(debugCreateInfo);
+      createInfo.pNext = &debugCreateInfo;
     }
     else
     {
       createInfo.enabledLayerCount = 0;
+      createInfo.pNext             = nullptr;
     }
 
     VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
+  }
+
+  void Application::CreateDebugMessenger()
+  {
+    if (!m_enableValidationLayers)
+    {
+      return;
+    }
+
+    VkDebugUtilsMessengerCreateInfoEXT createInfo;
+    ValidationLayers::PopulateDebugMessengerCreateInfo(createInfo);
+
+    VkCheck(ValidationLayers::CreateDebugUtilsMessengerEXT(
+      m_instance, &createInfo, nullptr, &m_debugMessenger));
+  }
+
+  void Application::DestroyDebugMessenger()
+  {
+    if (!m_enableValidationLayers)
+    {
+      return;
+    }
+
+    ValidationLayers::DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
   }
 
 } // namespace MFVE

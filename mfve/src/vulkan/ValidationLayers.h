@@ -8,6 +8,8 @@
 
 namespace MFVE::Vulkan::ValidationLayers
 {
+  /* Supported Layers*/
+
   /**
    * \brief Get all supported vulkan validation layers
    * \return vector of VkLayerProperties
@@ -51,6 +53,75 @@ namespace MFVE::Vulkan::ValidationLayers
 
         return false;
       });
+  }
+
+  /* Debug Callback */
+
+  static VkBool32 DebugCallback(
+    VkDebugUtilsMessageSeverityFlagBitsEXT _messageSeverity,
+    VkDebugUtilsMessageTypeFlagsEXT _messageType,
+    const VkDebugUtilsMessengerCallbackDataEXT* _pCallbackData, void* _pUserData)
+  {
+    switch (_messageSeverity)
+    {
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+        MFVE_LOG_INFO(_pCallbackData->pMessage);
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        MFVE_LOG_WARNING(_pCallbackData->pMessage);
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        MFVE_LOG_ERROR(_pCallbackData->pMessage);
+        break;
+      case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
+      default:
+        MFVE_LOG_INVALID(_pCallbackData->pMessage);
+        break;
+    }
+
+    return VK_FALSE;
+  }
+
+  static void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo)
+  {
+    createInfo                 = {};
+    createInfo.sType           = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
+    createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT |
+                                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT |
+                                 VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
+    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                             VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    createInfo.pfnUserCallback = DebugCallback;
+  }
+
+  static VkResult CreateDebugUtilsMessengerEXT(
+    VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+    const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+  {
+    auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+      instance, "vkCreateDebugUtilsMessengerEXT");
+    if (func != nullptr)
+    {
+      return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+    }
+    else
+    {
+      return VK_ERROR_EXTENSION_NOT_PRESENT;
+    }
+  }
+
+  static void DestroyDebugUtilsMessengerEXT(
+    VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
+    const VkAllocationCallbacks* pAllocator)
+  {
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
+      instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (func != nullptr)
+    {
+      func(instance, debugMessenger, pAllocator);
+    }
   }
 
 }

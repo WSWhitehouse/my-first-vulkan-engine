@@ -63,14 +63,17 @@ namespace MFVE
     const std::vector<const char*> m_validationLayers = { "VK_LAYER_KHRONOS_validation" };
 
 #ifdef NDEBUG
-    const bool enableValidationLayers = false;
+    const bool m_enableValidationLayers = false;
 #else
-    const bool enableValidationLayers = true;
+    const bool m_enableValidationLayers = true;
 #endif
 
-    // Instance
-    VkInstance m_instance = VK_NULL_HANDLE;
+    VkInstance m_instance                     = VK_NULL_HANDLE;
+    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
+
     void CreateInstance();
+    void CreateDebugMessenger();
+    void DestroyDebugMessenger();
   };
 } // namespace MFVE
 
