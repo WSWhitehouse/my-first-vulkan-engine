@@ -22,12 +22,12 @@ namespace MFVE
     if (!m_window->CreateWindow(GetAppProperties().name))
     {
       MFVE_LOG_FATAL("Window failed to create!");
-      return;
     }
 
     /* Vulkan */
     CreateInstance();
     CreateDebugMessenger();
+    PickPhysicalDevice();
   }
 
   Application::~Application()
@@ -76,7 +76,6 @@ namespace MFVE
     if (!Extensions::CheckExtensionSupport(extensions))
     {
       MFVE_LOG_FATAL("Extensions unsupported!");
-      throw std::runtime_error("Extensions unsupported!");
     }
 
     return extensions;
@@ -86,7 +85,7 @@ namespace MFVE
   {
     if (m_enableValidationLayers && !ValidationLayers::CheckLayerSupport(m_validationLayers))
     {
-      throw std::runtime_error("Validation Layers requested, but not available!");
+      MFVE_LOG_FATAL("Validation Layers requested, but not available!");
     }
 
     VkApplicationInfo appInfo{};
@@ -149,5 +148,35 @@ namespace MFVE
 
     ValidationLayers::DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
   }
+
+  void Application::PickPhysicalDevice()
+  {
+    uint32_t deviceCount = 0;
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
+
+    if (deviceCount == 0)
+    {
+      MFVE_LOG_FATAL("Failed to find GPUs with Vulkan support!");
+    }
+
+    std::vector<VkPhysicalDevice> devices(deviceCount);
+    vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
+
+    for (const auto& device : devices)
+    {
+      if (IsPhysicalDeviceSuitable(device))
+      {
+        m_physicalDevice = device;
+        break;
+      }
+    }
+
+    if (m_physicalDevice == VK_NULL_HANDLE)
+    {
+      MFVE_LOG_FATAL("Failed to find a suitable GPU!");
+    }
+  }
+
+  bool Application::IsPhysicalDeviceSuitable(const VkPhysicalDevice& _device) { return true; }
 
 } // namespace MFVE

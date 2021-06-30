@@ -68,12 +68,19 @@ namespace MFVE
     const bool m_enableValidationLayers = true;
 #endif
 
-    VkInstance m_instance                     = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
-
+    // Instance
+    VkInstance m_instance = VK_NULL_HANDLE;
     void CreateInstance();
+
+    // Debug Messenger
+    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
     void CreateDebugMessenger();
     void DestroyDebugMessenger();
+
+    // Physical Device
+    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
+    void PickPhysicalDevice();
+    bool IsPhysicalDeviceSuitable(const VkPhysicalDevice& _device);
   };
 } // namespace MFVE
 
