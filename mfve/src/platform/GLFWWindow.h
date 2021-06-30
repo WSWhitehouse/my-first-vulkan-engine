@@ -17,7 +17,7 @@ namespace MFVE
     virtual bool CreateWindow(std::string_view _windowTitle) override;
     virtual void DestroyWindow() override;
 
-    virtual std::vector<const char*> GetRequiredWindowExtensions();
+    virtual std::vector<const char*> GetRequiredWindowExtensions() override;
 
     virtual void SetWindowTitle(std::string_view _windowTitle) override;
     virtual bool WindowShouldClose() override;
