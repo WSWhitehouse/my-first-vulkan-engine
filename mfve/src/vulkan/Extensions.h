@@ -1,10 +1,12 @@
-#ifndef MFVE_EXTENSIONS_H
-#define MFVE_EXTENSIONS_H
+#ifndef MY_FIRST_VULKAN_ENGINE_EXTENSIONS_H
+#define MY_FIRST_VULKAN_ENGINE_EXTENSIONS_H
 
 #include "Vk_Base.h"
 
 namespace MFVE::Vulkan::Extensions
 {
+  static std::vector<const char*> Extensions = {};
+
   /**
    * \brief Get all supported vulkan extensions
    * \return vector of VkExtensionProperties
@@ -24,18 +26,16 @@ namespace MFVE::Vulkan::Extensions
 
   /**
    * \brief Check if the extensions are supported
-   * \param _extensions Vector of extensions to check
    * \param _supportedExtensions Vector of extensions supported by device (uses
    * Extensions::GetSupported() by default)
    * \return True if they are all supported, false otherwise.
    */
-  static bool CheckExtensionSupport(
-    const std::vector<const char*>& _extensions,
+  static inline bool CheckExtensionSupport(
     const std::vector<VkExtensionProperties>& _supportedExtensions = GetSupported())
   {
     return std::all_of(
-      _extensions.cbegin(),
-      _extensions.cend(),
+      Extensions.cbegin(),
+      Extensions.cend(),
       [&](const char* extension)
       {
         for (const auto& ext : _supportedExtensions)
@@ -49,6 +49,7 @@ namespace MFVE::Vulkan::Extensions
         return false;
       });
   }
+
 } // namespace MFVE::Vulkan::Extensions
 
-#endif // MFVE_EXTENSIONS_H
+#endif // MY_FIRST_VULKAN_ENGINE_EXTENSIONS_H

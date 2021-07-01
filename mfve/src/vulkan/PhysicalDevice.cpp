@@ -18,6 +18,7 @@ namespace MFVE::Vulkan
         m_physicalDevice = device;
         vkGetPhysicalDeviceProperties(m_physicalDevice, &m_properties);
         vkGetPhysicalDeviceFeatures(m_physicalDevice, &m_features);
+        m_queueFamily = FindQueueFamilies(m_physicalDevice);
         return;
       }
     }

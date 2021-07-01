@@ -1,5 +1,5 @@
-#ifndef MFVE_VALIDATION_LAYERS_H
-#define MFVE_VALIDATION_LAYERS_H
+#ifndef MY_FIRST_VULKAN_ENGINE_VALIDATION_LAYERS_H
+#define MY_FIRST_VULKAN_ENGINE_VALIDATION_LAYERS_H
 
 #include <array>
 #include <vector>
@@ -8,13 +8,27 @@
 
 namespace MFVE::Vulkan::ValidationLayers
 {
+  /**
+   * \brief Are validation layers enabled
+   */
+  static inline bool Enabled()
+  {
+#ifdef NDEBUG
+    return false;
+#else
+    return true;
+#endif
+  }
+
+  static const std::array<const char*, 1> Layers = { "VK_LAYER_KHRONOS_validation" };
+
   /* Supported Layers*/
 
   /**
    * \brief Get all supported vulkan validation layers
    * \return vector of VkLayerProperties
    */
-  static std::vector<VkLayerProperties> GetSupported()
+  static inline std::vector<VkLayerProperties> GetSupported()
   {
     // Get number of layers
     uint32_t count;
@@ -29,18 +43,16 @@ namespace MFVE::Vulkan::ValidationLayers
 
   /**
    * \brief Check if the validation layers are supported
-   * \param _layers Vector of layers to check
    * \param _supportedLayers Vector of layers supported by device (uses
    * ValidationLayers::GetSupported() by default)
    * \return True if they are all supported, false otherwise.
    */
-  static bool CheckLayerSupport(
-    const std::vector<const char*>& _layers,
+  static inline bool CheckLayerSupport(
     const std::vector<VkLayerProperties>& _supportedLayers = GetSupported())
   {
     return std::all_of(
-      _layers.cbegin(),
-      _layers.cend(),
+      Layers.cbegin(),
+      Layers.cend(),
       [&](const char* layer)
       {
         for (const auto& supportedLayer : _supportedLayers)
@@ -124,6 +136,6 @@ namespace MFVE::Vulkan::ValidationLayers
     }
   }
 
-}
+} // namespace MFVE::Vulkan::ValidationLayers
 
-#endif // MFVE_VALIDATION_LAYERS_H
+#endif // MY_FIRST_VULKAN_ENGINE_VALIDATION_LAYERS_H

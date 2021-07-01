@@ -6,8 +6,8 @@
 #include "platform/GLFWWindow.h"
 
 // Vulkan
-#include "vulkan/ValidationLayers.h"
 #include "vulkan/Extensions.h"
+#include "vulkan/ValidationLayers.h"
 
 using namespace MFVE::Vulkan;
 
@@ -25,14 +25,17 @@ namespace MFVE
     }
 
     /* Vulkan */
+    InitExtensions();
     CreateInstance();
     CreateDebugMessenger();
     m_physicalDevice.PickSuitableDevice(m_instance);
+    m_logicalDevice = new LogicalDevice(m_physicalDevice);
   }
 
   Application::~Application()
   {
     /* Vulkan */
+    delete m_logicalDevice;
     DestroyDebugMessenger();
     vkDestroyInstance(m_instance, nullptr);
 
@@ -64,26 +67,26 @@ namespace MFVE
     AppCleanUp();
   }
 
-  std::vector<const char*> Application::GetRequiredExtensions()
+  void Application::InitExtensions()
   {
-    std::vector<const char*> extensions = m_window->GetRequiredWindowExtensions();
+    // Window Extensions
+    Extensions::Extensions = m_window->GetRequiredWindowExtensions();
 
-    if (m_enableValidationLayers)
+    // Validation Layers Extensions
+    if (ValidationLayers::Enabled())
     {
-      extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+      Extensions::Extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     }
 
-    if (!Extensions::CheckExtensionSupport(extensions))
+    if (!Extensions::CheckExtensionSupport())
     {
       MFVE_LOG_FATAL("Extensions unsupported!");
     }
-
-    return extensions;
   }
 
   void Application::CreateInstance()
   {
-    if (m_enableValidationLayers && !ValidationLayers::CheckLayerSupport(m_validationLayers))
+    if (ValidationLayers::Enabled() && !ValidationLayers::CheckLayerSupport())
     {
       MFVE_LOG_FATAL("Validation Layers requested, but not available!");
     }
@@ -103,15 +106,14 @@ namespace MFVE
     createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    const auto extensions              = GetRequiredExtensions();
-    createInfo.enabledExtensionCount   = extensions.size();
-    createInfo.ppEnabledExtensionNames = extensions.data();
+    createInfo.enabledExtensionCount   = Extensions::Extensions.size();
+    createInfo.ppEnabledExtensionNames = Extensions::Extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (m_enableValidationLayers)
+    if (ValidationLayers::Enabled())
     {
-      createInfo.enabledLayerCount   = m_validationLayers.size();
-      createInfo.ppEnabledLayerNames = m_validationLayers.data();
+      createInfo.enabledLayerCount   = ValidationLayers::Layers.size();
+      createInfo.ppEnabledLayerNames = ValidationLayers::Layers.data();
 
       ValidationLayers::PopulateDebugMessengerCreateInfo(debugCreateInfo);
       createInfo.pNext = &debugCreateInfo;
@@ -127,7 +129,7 @@ namespace MFVE
 
   void Application::CreateDebugMessenger()
   {
-    if (!m_enableValidationLayers)
+    if (!ValidationLayers::Enabled())
     {
       return;
     }
@@ -141,7 +143,7 @@ namespace MFVE
 
   void Application::DestroyDebugMessenger()
   {
-    if (!m_enableValidationLayers)
+    if (!ValidationLayers::Enabled())
     {
       return;
     }

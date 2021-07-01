@@ -8,8 +8,9 @@
 #include "Window.h"
 
 // Vulkan
-#include "vulkan/Vk_Base.h"
+#include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"
+#include "vulkan/Vk_Base.h"
 
 // Defines
 #define MFVE_ENGINE_NAME "my-first-vulkan-engine"
@@ -56,16 +57,7 @@ namespace MFVE
 
    private: /* Vulkan */
     // Extensions
-    std::vector<const char*> GetRequiredExtensions();
-
-    // Validation Layers
-    const std::vector<const char*> m_validationLayers = { "VK_LAYER_KHRONOS_validation" };
-
-#ifdef NDEBUG
-    const bool m_enableValidationLayers = false;
-#else
-    const bool m_enableValidationLayers = true;
-#endif
+    void InitExtensions();
 
     // Instance
     VkInstance m_instance = VK_NULL_HANDLE;
@@ -77,7 +69,8 @@ namespace MFVE
     void DestroyDebugMessenger();
 
     // Devices
-    Vulkan::PhysicalDevice m_physicalDevice;
+    Vulkan::PhysicalDevice m_physicalDevice = {};
+    Vulkan::LogicalDevice* m_logicalDevice  = nullptr;
   };
 } // namespace MFVE
 

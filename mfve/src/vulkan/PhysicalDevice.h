@@ -39,11 +39,13 @@ namespace MFVE::Vulkan
     [[nodiscard]] const VkPhysicalDevice& GetDevice() const { return m_physicalDevice; }
     [[nodiscard]] const VkPhysicalDeviceFeatures& GetFeatures() const { return m_features; }
     [[nodiscard]] const VkPhysicalDeviceProperties& GetProperties() const { return m_properties; }
+    [[nodiscard]] const QueueFamily& GetQueueFamily() const { return m_queueFamily; }
 
    private:
     VkPhysicalDevice m_physicalDevice       = VK_NULL_HANDLE;
     VkPhysicalDeviceFeatures m_features     = {};
     VkPhysicalDeviceProperties m_properties = {};
+    QueueFamily m_queueFamily               = {};
   };
 
 } // namespace MFVE::Vulkan
