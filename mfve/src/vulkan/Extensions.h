@@ -1,7 +1,6 @@
 #ifndef MFVE_EXTENSIONS_H
 #define MFVE_EXTENSIONS_H
 
-#include "ValidationLayers.h"
 #include "Vk_Base.h"
 
 namespace MFVE::Vulkan::Extensions
@@ -10,7 +9,7 @@ namespace MFVE::Vulkan::Extensions
    * \brief Get all supported vulkan extensions
    * \return vector of VkExtensionProperties
    */
-  static std::vector<VkExtensionProperties> GetSupported()
+  static inline std::vector<VkExtensionProperties> GetSupported()
   {
     // Get number of extensions
     uint32_t count = 0;
@@ -50,6 +49,6 @@ namespace MFVE::Vulkan::Extensions
         return false;
       });
   }
-}
+} // namespace MFVE::Vulkan::Extensions
 
 #endif // MFVE_EXTENSIONS_H

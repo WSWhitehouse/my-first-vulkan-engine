@@ -5,10 +5,10 @@
 // Platform
 #include "platform/GLFWWindow.h"
 
-// GLFW
-#include <GLFW/glfw3.h>
-
 // Vulkan
+#include "vulkan/ValidationLayers.h"
+#include "vulkan/Extensions.h"
+
 using namespace MFVE::Vulkan;
 
 namespace MFVE
@@ -27,7 +27,7 @@ namespace MFVE
     /* Vulkan */
     CreateInstance();
     CreateDebugMessenger();
-    PickPhysicalDevice();
+    m_physicalDevice.PickSuitableDevice(m_instance);
   }
 
   Application::~Application()
@@ -148,35 +148,5 @@ namespace MFVE
 
     ValidationLayers::DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
   }
-
-  void Application::PickPhysicalDevice()
-  {
-    uint32_t deviceCount = 0;
-    vkEnumeratePhysicalDevices(m_instance, &deviceCount, nullptr);
-
-    if (deviceCount == 0)
-    {
-      MFVE_LOG_FATAL("Failed to find GPUs with Vulkan support!");
-    }
-
-    std::vector<VkPhysicalDevice> devices(deviceCount);
-    vkEnumeratePhysicalDevices(m_instance, &deviceCount, devices.data());
-
-    for (const auto& device : devices)
-    {
-      if (IsPhysicalDeviceSuitable(device))
-      {
-        m_physicalDevice = device;
-        break;
-      }
-    }
-
-    if (m_physicalDevice == VK_NULL_HANDLE)
-    {
-      MFVE_LOG_FATAL("Failed to find a suitable GPU!");
-    }
-  }
-
-  bool Application::IsPhysicalDeviceSuitable(const VkPhysicalDevice& _device) { return true; }
 
 } // namespace MFVE

@@ -8,9 +8,8 @@
 #include "Window.h"
 
 // Vulkan
-//#include "vulkan/ValidationLayers.h"
-#include "vulkan/Extensions.h"
 #include "vulkan/Vk_Base.h"
+#include "vulkan/PhysicalDevice.h"
 
 // Defines
 #define MFVE_ENGINE_NAME "my-first-vulkan-engine"
@@ -77,10 +76,8 @@ namespace MFVE
     void CreateDebugMessenger();
     void DestroyDebugMessenger();
 
-    // Physical Device
-    VkPhysicalDevice m_physicalDevice = VK_NULL_HANDLE;
-    void PickPhysicalDevice();
-    bool IsPhysicalDeviceSuitable(const VkPhysicalDevice& _device);
+    // Devices
+    Vulkan::PhysicalDevice m_physicalDevice;
   };
 } // namespace MFVE
 
