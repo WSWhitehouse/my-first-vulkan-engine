@@ -22,18 +22,18 @@ namespace MFVE::Vulkan
       m_physicalDevice->GetQueueFamily().presentFamily.value()
     };
 
-    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos(uniqueQueueFamilies.size());
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 
     float queuePriority = 1.0f;
     for (const auto& queueFamily : uniqueQueueFamilies)
     {
-      queueCreateInfos.emplace_back();
-      auto& createInfo = queueCreateInfos.back();
-
+      VkDeviceQueueCreateInfo createInfo{};
       createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
       createInfo.queueFamilyIndex = queueFamily;
       createInfo.queueCount       = 1;
       createInfo.pQueuePriorities = &queuePriority;
+
+      queueCreateInfos.push_back(createInfo);
     }
 
     VkPhysicalDeviceFeatures deviceFeatures{};
@@ -68,7 +68,6 @@ namespace MFVE::Vulkan
     }
 
     const auto& queueFamily = m_physicalDevice->GetQueueFamily();
-
     vkGetDeviceQueue(m_device, queueFamily.graphicsFamily.value(), 0, &m_graphicsQueue);
     vkGetDeviceQueue(m_device, queueFamily.presentFamily.value(), 0, &m_presentQueue);
   }
@@ -77,6 +76,8 @@ namespace MFVE::Vulkan
   {
     vkDestroyDevice(m_device, _allocator);
     m_physicalDevice = nullptr;
+    m_graphicsQueue  = VK_NULL_HANDLE;
+    m_presentQueue   = VK_NULL_HANDLE;
   }
 
 } // namespace MFVE::Vulkan

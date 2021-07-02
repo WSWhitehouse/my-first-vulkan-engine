@@ -31,7 +31,7 @@ namespace MFVE
     VkCheck(m_window->CreateWindowSurface(m_instance, nullptr, &m_surface));
     m_physicalDevice.PickSuitableDevice(m_instance, m_surface);
     VkCheck(m_logicalDevice.CreateDevice(&m_physicalDevice, nullptr));
-    m_logicalDevice.CreateQueueHandles();
+   m_logicalDevice.CreateQueueHandles();
   }
 
   Application::~Application()
