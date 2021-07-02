@@ -1,9 +1,8 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_PHYSICAL_DEVICE_H
 #define MY_FIRST_VULKAN_ENGINE_PHYSICAL_DEVICE_H
 
-#include <optional>
-
 #include "Vk_Base.h"
+#include "QueueFamilies.h"
 
 namespace MFVE::Vulkan
 {
@@ -12,17 +11,6 @@ namespace MFVE::Vulkan
    public:
     PhysicalDevice()  = default;
     ~PhysicalDevice() = default;
-
-    struct QueueFamily
-    {
-      std::optional<uint32_t> graphicsFamily;
-      std::optional<uint32_t> presentFamily;
-
-      [[nodiscard]] bool IsComplete() const
-      {
-        return graphicsFamily.has_value() && presentFamily.has_value();
-      }
-    };
 
     static inline std::vector<VkPhysicalDevice> FindAllPhysicalDevices(VkInstance _instance)
     {
@@ -36,19 +24,25 @@ namespace MFVE::Vulkan
     }
 
     void PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface);
-    QueueFamily FindQueueFamilies(VkPhysicalDevice _device, VkSurfaceKHR _surface);
 
     /* Getters */
     [[nodiscard]] const VkPhysicalDevice& GetDevice() const { return m_physicalDevice; }
     [[nodiscard]] const VkPhysicalDeviceFeatures& GetFeatures() const { return m_features; }
     [[nodiscard]] const VkPhysicalDeviceProperties& GetProperties() const { return m_properties; }
-    [[nodiscard]] const QueueFamily& GetQueueFamily() const { return m_queueFamily; }
+    [[nodiscard]] const QueueFamilies& GetQueueFamilies() const { return m_queueFamilies; }
+    [[nodiscard]] const std::vector<const char*>& GetDeviceExtensions() const { return m_deviceExtensions; }
+
+   private:
+    bool IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface);
+    bool CheckDeviceExtensionSupport(VkPhysicalDevice _device);
 
    private:
     VkPhysicalDevice m_physicalDevice       = VK_NULL_HANDLE;
     VkPhysicalDeviceFeatures m_features     = {};
     VkPhysicalDeviceProperties m_properties = {};
-    QueueFamily m_queueFamily               = {};
+    QueueFamilies m_queueFamilies           = {};
+
+    const std::vector<const char*> m_deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
   };
 
 } // namespace MFVE::Vulkan

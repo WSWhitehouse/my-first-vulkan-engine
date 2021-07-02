@@ -18,8 +18,8 @@ namespace MFVE::Vulkan
     m_physicalDevice = _physicalDevice;
 
     std::set<uint32_t> uniqueQueueFamilies = {
-      m_physicalDevice->GetQueueFamily().graphicsFamily.value(),
-      m_physicalDevice->GetQueueFamily().presentFamily.value()
+      m_physicalDevice->GetQueueFamilies().graphicsFamily.value(),
+      m_physicalDevice->GetQueueFamilies().presentFamily.value()
     };
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -44,7 +44,8 @@ namespace MFVE::Vulkan
     createInfo.pQueueCreateInfos    = queueCreateInfos.data();
     createInfo.pEnabledFeatures     = &deviceFeatures;
 
-    createInfo.enabledExtensionCount = 0;
+    createInfo.enabledExtensionCount   = m_physicalDevice->GetDeviceExtensions().size();
+    createInfo.ppEnabledExtensionNames = m_physicalDevice->GetDeviceExtensions().data();
 
     if (ValidationLayers::Enabled())
     {
@@ -68,7 +69,7 @@ namespace MFVE::Vulkan
       return;
     }
 
-    const auto& queueFamily = m_physicalDevice->GetQueueFamily();
+    const auto& queueFamily = m_physicalDevice->GetQueueFamilies();
     vkGetDeviceQueue(m_device, queueFamily.graphicsFamily.value(), 0, &m_graphicsQueue);
     vkGetDeviceQueue(m_device, queueFamily.presentFamily.value(), 0, &m_presentQueue);
   }

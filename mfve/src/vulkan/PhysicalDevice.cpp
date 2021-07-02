@@ -15,12 +15,9 @@ namespace MFVE::Vulkan
 
     for (const auto& device : devices)
     {
-      QueueFamily queueFamily = FindQueueFamilies(device, _surface);
-
-      if (queueFamily.IsComplete())
+      if (IsDeviceSuitable(device, _surface))
       {
         m_physicalDevice = device;
-        m_queueFamily    = queueFamily;
         vkGetPhysicalDeviceProperties(m_physicalDevice, &m_properties);
         vkGetPhysicalDeviceFeatures(m_physicalDevice, &m_features);
         return;
@@ -33,40 +30,37 @@ namespace MFVE::Vulkan
     }
   }
 
-  PhysicalDevice::QueueFamily
-  PhysicalDevice::FindQueueFamilies(VkPhysicalDevice _device, VkSurfaceKHR _surface)
+  bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface)
   {
-    QueueFamily family;
-
-    uint32_t queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(_device, &queueFamilyCount, nullptr);
-
-    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(_device, &queueFamilyCount, queueFamilies.data());
-
-    for (int i = 0; i < queueFamilyCount; ++i)
-    {
-      auto queueFamily = queueFamilies.at(i);
-
-      if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
-      {
-        family.graphicsFamily = i;
-      }
-
-      VkBool32 presentSupport = false;
-      vkGetPhysicalDeviceSurfaceSupportKHR(_device, i, _surface, &presentSupport);
-
-      if (presentSupport)
-      {
-        family.presentFamily = i;
-      }
-
-      if (family.IsComplete())
-      {
-        break;
-      }
-    }
-
-    return family;
+    m_queueFamilies.FindQueueFamilies(_device, _surface);
+    bool extensionsSupported = CheckDeviceExtensionSupport(_device);
+    return m_queueFamilies.IsComplete() && extensionsSupported;
   }
-}
+
+  bool PhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice _device)
+  {
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(_device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(
+      _device, nullptr, &extensionCount, availableExtensions.data());
+
+    return std::all_of(
+      m_deviceExtensions.cbegin(),
+      m_deviceExtensions.cend(),
+      [&](const char* extension)
+      {
+        for (const auto& ext : availableExtensions)
+        {
+          if (strcmp(extension, ext.extensionName) == 0)
+          {
+            return true;
+          }
+        }
+
+        return false;
+      });
+  }
+
+} // namespace MFVE::Vulkan
