@@ -9,8 +9,12 @@ namespace MFVE::Vulkan
   class LogicalDevice
   {
    public:
-    explicit LogicalDevice(PhysicalDevice& _physicalDevice);
-    ~LogicalDevice();
+    LogicalDevice()  = default;
+    ~LogicalDevice() = default;
+
+    VkResult
+    CreateLogicalDevice(PhysicalDevice* _physicalDevice, const VkAllocationCallbacks* _allocator);
+    void DestroyLogicalDevice(const VkAllocationCallbacks* _allocator);
 
     /* Getters */
     [[nodiscard]] const VkDevice& GetDevice() const { return m_device; }
@@ -18,12 +22,11 @@ namespace MFVE::Vulkan
 
    private:
     // Logical Device
-    VkDevice m_device = VK_NULL_HANDLE;
+    VkDevice m_device                = VK_NULL_HANDLE;
+    PhysicalDevice* m_physicalDevice = nullptr;
 
     // Queues
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;
-
-    PhysicalDevice& m_physicalDevice;
   };
 
 } // namespace MFVE::Vulkan

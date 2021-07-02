@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Properties.h"
+#include "vulkan/Vk_Base.h"
 
 namespace MFVE
 {
@@ -26,7 +27,10 @@ namespace MFVE
     virtual bool CreateWindow(std::string_view _windowTitle) = 0;
     virtual void DestroyWindow()                             = 0;
 
+    /* Vulkan */
     virtual std::vector<const char*> GetRequiredWindowExtensions() = 0;
+    virtual VkResult CreateWindowSurface(
+      VkInstance _instance, const VkAllocationCallbacks* _allocator, VkSurfaceKHR* _surface) = 0;
 
     virtual void SetWindowTitle(std::string_view _windowTitle) = 0;
     virtual bool WindowShouldClose()                           = 0;

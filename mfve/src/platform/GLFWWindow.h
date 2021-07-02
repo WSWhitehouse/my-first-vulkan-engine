@@ -17,7 +17,10 @@ namespace MFVE
     virtual bool CreateWindow(std::string_view _windowTitle) override;
     virtual void DestroyWindow() override;
 
+    /* Vulkan */
     virtual std::vector<const char*> GetRequiredWindowExtensions() override;
+    virtual VkResult CreateWindowSurface(
+      VkInstance _instance, const VkAllocationCallbacks* _allocator, VkSurfaceKHR* _surface) override;
 
     virtual void SetWindowTitle(std::string_view _windowTitle) override;
     virtual bool WindowShouldClose() override;

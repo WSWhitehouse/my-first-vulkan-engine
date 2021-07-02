@@ -28,14 +28,16 @@ namespace MFVE
     InitExtensions();
     CreateInstance();
     CreateDebugMessenger();
+    VkCheck(m_window->CreateWindowSurface(m_instance, nullptr, &m_surface));
     m_physicalDevice.PickSuitableDevice(m_instance);
-    m_logicalDevice = new LogicalDevice(m_physicalDevice);
+    VkCheck(m_logicalDevice.CreateLogicalDevice(&m_physicalDevice, nullptr));
   }
 
   Application::~Application()
   {
     /* Vulkan */
-    delete m_logicalDevice;
+    m_logicalDevice.DestroyLogicalDevice(nullptr);
+    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
     DestroyDebugMessenger();
     vkDestroyInstance(m_instance, nullptr);
 

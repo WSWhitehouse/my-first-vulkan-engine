@@ -37,6 +37,12 @@ namespace MFVE
     return extensions;
   }
 
+  VkResult GLFWWindow::CreateWindowSurface(
+    VkInstance _instance, const VkAllocationCallbacks* _allocator, VkSurfaceKHR* _surface)
+  {
+    return glfwCreateWindowSurface(_instance, m_window, _allocator, _surface);
+  }
+
   void GLFWWindow::SetWindowTitle(std::string_view _windowTitle)
   {
     glfwSetWindowTitle(m_window, _windowTitle.data());

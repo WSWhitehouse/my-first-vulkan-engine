@@ -70,7 +70,10 @@ namespace MFVE
 
     // Devices
     Vulkan::PhysicalDevice m_physicalDevice = {};
-    Vulkan::LogicalDevice* m_logicalDevice  = nullptr;
+    Vulkan::LogicalDevice m_logicalDevice   = {};
+
+    // Surface
+    VkSurfaceKHR m_surface = VK_NULL_HANDLE;
   };
 } // namespace MFVE
 

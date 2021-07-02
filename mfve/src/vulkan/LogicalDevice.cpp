@@ -5,11 +5,19 @@
 
 namespace MFVE::Vulkan
 {
-  LogicalDevice::LogicalDevice(PhysicalDevice& _physicalDevice) : m_physicalDevice(_physicalDevice)
+  VkResult LogicalDevice::CreateLogicalDevice(
+    PhysicalDevice* _physicalDevice, const VkAllocationCallbacks* _allocator)
   {
+    if (_physicalDevice == nullptr)
+    {
+      MFVE_LOG_FATAL("Physical Device is nullptr! Cannot create Logical Device!");
+    }
+
+    m_physicalDevice = _physicalDevice;
+
     VkDeviceQueueCreateInfo queueCreateInfo{};
     queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueCreateInfo.queueFamilyIndex = m_physicalDevice.GetQueueFamily().graphicsFamily.value();
+    queueCreateInfo.queueFamilyIndex = m_physicalDevice->GetQueueFamily().graphicsFamily.value();
     queueCreateInfo.queueCount       = 1;
 
     float queuePriority              = 1.0f;
@@ -35,9 +43,13 @@ namespace MFVE::Vulkan
       createInfo.enabledLayerCount = 0;
     }
 
-    VkCheck(vkCreateDevice(_physicalDevice.GetDevice(), &createInfo, nullptr, &m_device));
+    return vkCreateDevice(m_physicalDevice->GetDevice(), &createInfo, _allocator, &m_device);
   }
 
-  LogicalDevice::~LogicalDevice() { vkDestroyDevice(m_device, nullptr); }
+  void LogicalDevice::DestroyLogicalDevice(const VkAllocationCallbacks* _allocator)
+  {
+    vkDestroyDevice(m_device, _allocator);
+    m_physicalDevice = nullptr;
+  }
 
 } // namespace MFVE::Vulkan
