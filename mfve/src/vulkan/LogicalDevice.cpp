@@ -1,11 +1,13 @@
 #include "LogicalDevice.h"
 
+#include <mfve_pch.h>
+
 #include "vulkan/Extensions.h"
 #include "vulkan/ValidationLayers.h"
 
 namespace MFVE::Vulkan
 {
-  VkResult LogicalDevice::CreateLogicalDevice(
+  VkResult LogicalDevice::CreateDevice(
     PhysicalDevice* _physicalDevice, const VkAllocationCallbacks* _allocator)
   {
     if (_physicalDevice == nullptr)
@@ -15,20 +17,31 @@ namespace MFVE::Vulkan
 
     m_physicalDevice = _physicalDevice;
 
-    VkDeviceQueueCreateInfo queueCreateInfo{};
-    queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    queueCreateInfo.queueFamilyIndex = m_physicalDevice->GetQueueFamily().graphicsFamily.value();
-    queueCreateInfo.queueCount       = 1;
+    std::set<uint32_t> uniqueQueueFamilies = {
+      m_physicalDevice->GetQueueFamily().graphicsFamily.value(),
+      m_physicalDevice->GetQueueFamily().presentFamily.value()
+    };
 
-    float queuePriority              = 1.0f;
-    queueCreateInfo.pQueuePriorities = &queuePriority;
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos(uniqueQueueFamilies.size());
+
+    float queuePriority = 1.0f;
+    for (const auto& queueFamily : uniqueQueueFamilies)
+    {
+      queueCreateInfos.emplace_back();
+      auto& createInfo = queueCreateInfos.back();
+
+      createInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+      createInfo.queueFamilyIndex = queueFamily;
+      createInfo.queueCount       = 1;
+      createInfo.pQueuePriorities = &queuePriority;
+    }
 
     VkPhysicalDeviceFeatures deviceFeatures{};
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.pQueueCreateInfos    = &queueCreateInfo;
-    createInfo.queueCreateInfoCount = 1;
+    createInfo.queueCreateInfoCount = queueCreateInfos.size();
+    createInfo.pQueueCreateInfos    = queueCreateInfos.data();
     createInfo.pEnabledFeatures     = &deviceFeatures;
 
     createInfo.enabledExtensionCount = 0;
@@ -46,7 +59,21 @@ namespace MFVE::Vulkan
     return vkCreateDevice(m_physicalDevice->GetDevice(), &createInfo, _allocator, &m_device);
   }
 
-  void LogicalDevice::DestroyLogicalDevice(const VkAllocationCallbacks* _allocator)
+  void LogicalDevice::CreateQueueHandles()
+  {
+    if (m_physicalDevice == nullptr)
+    {
+      MFVE_LOG_ERROR("Physical Device is nullptr, try creating logical device first!");
+      return;
+    }
+
+    const auto& queueFamily = m_physicalDevice->GetQueueFamily();
+
+    vkGetDeviceQueue(m_device, queueFamily.graphicsFamily.value(), 0, &m_graphicsQueue);
+    vkGetDeviceQueue(m_device, queueFamily.presentFamily.value(), 0, &m_presentQueue);
+  }
+
+  void LogicalDevice::Destroy(const VkAllocationCallbacks* _allocator)
   {
     vkDestroyDevice(m_device, _allocator);
     m_physicalDevice = nullptr;

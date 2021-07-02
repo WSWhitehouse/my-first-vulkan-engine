@@ -21,7 +21,7 @@ namespace MFVE
     m_window = new GLFWWindow(windowProps); // Creating a GLFW Window for now
     if (!m_window->CreateWindow(GetAppProperties().name))
     {
-      MFVE_LOG_FATAL("Window failed to create!");
+      MFVE_LOG_FATAL("Failed to create Window!");
     }
 
     /* Vulkan */
@@ -29,14 +29,15 @@ namespace MFVE
     CreateInstance();
     CreateDebugMessenger();
     VkCheck(m_window->CreateWindowSurface(m_instance, nullptr, &m_surface));
-    m_physicalDevice.PickSuitableDevice(m_instance);
-    VkCheck(m_logicalDevice.CreateLogicalDevice(&m_physicalDevice, nullptr));
+    m_physicalDevice.PickSuitableDevice(m_instance, m_surface);
+    VkCheck(m_logicalDevice.CreateDevice(&m_physicalDevice, nullptr));
+    m_logicalDevice.CreateQueueHandles();
   }
 
   Application::~Application()
   {
     /* Vulkan */
-    m_logicalDevice.DestroyLogicalDevice(nullptr);
+    m_logicalDevice.Destroy(nullptr);
     vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
     DestroyDebugMessenger();
     vkDestroyInstance(m_instance, nullptr);

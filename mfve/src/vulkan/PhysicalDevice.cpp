@@ -1,8 +1,10 @@
 #include "PhysicalDevice.h"
 
+#include <mfve_pch.h>
+
 namespace MFVE::Vulkan
 {
-  void PhysicalDevice::PickSuitableDevice(VkInstance _instance)
+  void PhysicalDevice::PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface)
   {
     const auto devices = FindAllPhysicalDevices(_instance);
 
@@ -13,12 +15,14 @@ namespace MFVE::Vulkan
 
     for (const auto& device : devices)
     {
-      if (IsDeviceSuitable(device))
+      QueueFamily queueFamily = FindQueueFamilies(device, _surface);
+
+      if (queueFamily.IsComplete())
       {
         m_physicalDevice = device;
+        m_queueFamily    = queueFamily;
         vkGetPhysicalDeviceProperties(m_physicalDevice, &m_properties);
         vkGetPhysicalDeviceFeatures(m_physicalDevice, &m_features);
-        m_queueFamily = FindQueueFamilies(m_physicalDevice);
         return;
       }
     }
@@ -29,14 +33,8 @@ namespace MFVE::Vulkan
     }
   }
 
-  bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice _device)
-  {
-    QueueFamily queueFamily = FindQueueFamilies(_device);
-
-    return queueFamily.IsComplete();
-  }
-
-  PhysicalDevice::QueueFamily PhysicalDevice::FindQueueFamilies(VkPhysicalDevice _device)
+  PhysicalDevice::QueueFamily
+  PhysicalDevice::FindQueueFamilies(VkPhysicalDevice _device, VkSurfaceKHR _surface)
   {
     QueueFamily family;
 
@@ -53,6 +51,14 @@ namespace MFVE::Vulkan
       if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
       {
         family.graphicsFamily = i;
+      }
+
+      VkBool32 presentSupport = false;
+      vkGetPhysicalDeviceSurfaceSupportKHR(_device, i, _surface, &presentSupport);
+
+      if (presentSupport)
+      {
+        family.presentFamily = i;
       }
 
       if (family.IsComplete())

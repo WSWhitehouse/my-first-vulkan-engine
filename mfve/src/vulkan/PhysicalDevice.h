@@ -16,8 +16,12 @@ namespace MFVE::Vulkan
     struct QueueFamily
     {
       std::optional<uint32_t> graphicsFamily;
+      std::optional<uint32_t> presentFamily;
 
-      [[nodiscard]] bool IsComplete() const { return graphicsFamily.has_value(); }
+      [[nodiscard]] bool IsComplete() const
+      {
+        return graphicsFamily.has_value() && presentFamily.has_value();
+      }
     };
 
     static inline std::vector<VkPhysicalDevice> FindAllPhysicalDevices(VkInstance _instance)
@@ -31,9 +35,8 @@ namespace MFVE::Vulkan
       return devices;
     }
 
-    void PickSuitableDevice(VkInstance _instance);
-    bool IsDeviceSuitable(VkPhysicalDevice _device);
-    QueueFamily FindQueueFamilies(VkPhysicalDevice _device);
+    void PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface);
+    QueueFamily FindQueueFamilies(VkPhysicalDevice _device, VkSurfaceKHR _surface);
 
     /* Getters */
     [[nodiscard]] const VkPhysicalDevice& GetDevice() const { return m_physicalDevice; }

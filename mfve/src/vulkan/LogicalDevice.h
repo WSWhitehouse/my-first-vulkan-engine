@@ -12,13 +12,14 @@ namespace MFVE::Vulkan
     LogicalDevice()  = default;
     ~LogicalDevice() = default;
 
-    VkResult
-    CreateLogicalDevice(PhysicalDevice* _physicalDevice, const VkAllocationCallbacks* _allocator);
-    void DestroyLogicalDevice(const VkAllocationCallbacks* _allocator);
+    VkResult CreateDevice(PhysicalDevice* _physicalDevice, const VkAllocationCallbacks* _allocator);
+    void CreateQueueHandles();
+    void Destroy(const VkAllocationCallbacks* _allocator);
 
     /* Getters */
     [[nodiscard]] const VkDevice& GetDevice() const { return m_device; }
     [[nodiscard]] const VkQueue& GetGraphicsQueue() const { return m_graphicsQueue; }
+    [[nodiscard]] const VkQueue& GetPresentQueue() const { return m_presentQueue; }
 
    private:
     // Logical Device
@@ -27,6 +28,7 @@ namespace MFVE::Vulkan
 
     // Queues
     VkQueue m_graphicsQueue = VK_NULL_HANDLE;
+    VkQueue m_presentQueue  = VK_NULL_HANDLE;
   };
 
 } // namespace MFVE::Vulkan
