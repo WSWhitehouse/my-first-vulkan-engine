@@ -2,6 +2,8 @@
 
 #include <mfve_pch.h>
 
+#include "Swapchain.h"
+
 namespace MFVE::Vulkan
 {
   void PhysicalDevice::PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface)
@@ -34,7 +36,16 @@ namespace MFVE::Vulkan
   {
     m_queueFamilies.FindQueueFamilies(_device, _surface);
     bool extensionsSupported = CheckDeviceExtensionSupport(_device);
-    return m_queueFamilies.IsComplete() && extensionsSupported;
+
+    bool swapChainAdequate;
+    if (extensionsSupported)
+    {
+      const auto swapchainSupport = Swapchain::QuerySupport(_device, _surface);
+      swapChainAdequate           = !swapchainSupport.formats.empty() &&
+                          !swapchainSupport.presentModes.empty();
+    }
+
+    return m_queueFamilies.IsComplete() && extensionsSupported && swapChainAdequate;
   }
 
   bool PhysicalDevice::CheckDeviceExtensionSupport(VkPhysicalDevice _device)
