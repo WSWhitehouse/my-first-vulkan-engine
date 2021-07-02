@@ -63,7 +63,8 @@ namespace MFVE::Vulkan
   {
     if (m_physicalDevice == nullptr)
     {
-      MFVE_LOG_ERROR("Physical Device is nullptr, try creating logical device first!");
+      MFVE_LOG_ERROR(
+        "Cannot create queue handles because Physical Device is nullptr, try creating the logical device first!");
       return;
     }
 
