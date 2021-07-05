@@ -10,12 +10,11 @@ namespace MFVE
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-    m_window = glfwCreateWindow(
-      GetWindowProperties().width,
-      GetWindowProperties().height,
-      _windowTitle.data(),
-      nullptr,
-      nullptr);
+    m_window = glfwCreateWindow(GetWindowProperties().width,
+                                GetWindowProperties().height,
+                                _windowTitle.data(),
+                                nullptr,
+                                nullptr);
 
     return m_window != nullptr;
   }
@@ -37,8 +36,7 @@ namespace MFVE
     return extensions;
   }
 
-  VkResult GLFWWindow::CreateSurface(
-    VkInstance _instance, const VkAllocationCallbacks* _allocator)
+  VkResult GLFWWindow::CreateSurface(VkInstance _instance, const VkAllocationCallbacks* _allocator)
   {
     return glfwCreateWindowSurface(_instance, m_window, _allocator, &m_surface);
   }

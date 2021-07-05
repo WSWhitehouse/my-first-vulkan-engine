@@ -47,32 +47,31 @@ namespace MFVE::Vulkan::ValidationLayers
    * ValidationLayers::GetSupported() by default)
    * \return True if they are all supported, false otherwise.
    */
-  static inline bool CheckLayerSupport(
-    const std::vector<VkLayerProperties>& _supportedLayers = GetSupported())
+  static inline bool
+  CheckLayerSupport(const std::vector<VkLayerProperties>& _supportedLayers = GetSupported())
   {
-    return std::all_of(
-      Layers.cbegin(),
-      Layers.cend(),
-      [&](const char* layer)
-      {
-        for (const auto& supportedLayer : _supportedLayers)
-        {
-          if (strcmp(layer, supportedLayer.layerName) == 0)
-          {
-            return true;
-          }
-        }
+    return std::all_of(Layers.cbegin(),
+                       Layers.cend(),
+                       [&](const char* layer)
+                       {
+                         for (const auto& supportedLayer : _supportedLayers)
+                         {
+                           if (strcmp(layer, supportedLayer.layerName) == 0)
+                           {
+                             return true;
+                           }
+                         }
 
-        return false;
-      });
+                         return false;
+                       });
   }
 
   /* Debug Callback */
 
-  static VkBool32 DebugCallback(
-    VkDebugUtilsMessageSeverityFlagBitsEXT _messageSeverity,
-    VkDebugUtilsMessageTypeFlagsEXT _messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* _pCallbackData, void* _pUserData)
+  static VkBool32 DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT _messageSeverity,
+                                VkDebugUtilsMessageTypeFlagsEXT _messageType,
+                                const VkDebugUtilsMessengerCallbackDataEXT* _pCallbackData,
+                                void* _pUserData)
   {
     switch (_messageSeverity)
     {
@@ -124,9 +123,9 @@ namespace MFVE::Vulkan::ValidationLayers
     }
   }
 
-  static void DestroyDebugUtilsMessengerEXT(
-    VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger,
-    const VkAllocationCallbacks* pAllocator)
+  static void DestroyDebugUtilsMessengerEXT(VkInstance instance,
+                                            VkDebugUtilsMessengerEXT debugMessenger,
+                                            const VkAllocationCallbacks* pAllocator)
   {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
       instance, "vkDestroyDebugUtilsMessengerEXT");

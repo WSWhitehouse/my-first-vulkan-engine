@@ -1,8 +1,8 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_PHYSICAL_DEVICE_H
 #define MY_FIRST_VULKAN_ENGINE_PHYSICAL_DEVICE_H
 
-#include "Vk_Base.h"
 #include "QueueFamilies.h"
+#include "Vk_Base.h"
 
 namespace MFVE::Vulkan
 {
@@ -30,7 +30,10 @@ namespace MFVE::Vulkan
     [[nodiscard]] const VkPhysicalDeviceFeatures& GetFeatures() const { return m_features; }
     [[nodiscard]] const VkPhysicalDeviceProperties& GetProperties() const { return m_properties; }
     [[nodiscard]] const QueueFamilies& GetQueueFamilies() const { return m_queueFamilies; }
-    [[nodiscard]] const std::vector<const char*>& GetDeviceExtensions() const { return m_deviceExtensions; }
+    [[nodiscard]] const std::vector<const char*>& GetDeviceExtensions() const
+    {
+      return m_deviceExtensions;
+    }
 
    private:
     bool IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface);

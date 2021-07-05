@@ -2,7 +2,7 @@
 BasedOnStyle: Mozilla
 Language: Cpp
 AccessModifierOffset: -1
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: Consecutive
 AlignConsecutiveDeclarations: None
 AlignConsecutiveMacros: Consecutive
@@ -45,7 +45,7 @@ PenaltyBreakAssignment: 5
 PenaltyBreakComment: 5
 PenaltyBreakString: 5
 PenaltyExcessCharacter: 100
-PenaltyReturnTypeOnItsOwnLine: 10
+PenaltyReturnTypeOnItsOwnLine: 100
 PointerAlignment: Left
 ReflowComments: true
 SpaceBeforeAssignmentOperators: true

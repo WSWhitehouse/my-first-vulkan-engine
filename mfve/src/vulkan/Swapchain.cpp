@@ -4,8 +4,8 @@
 
 namespace MFVE::Vulkan
 {
-  Swapchain::SupportDetails
-  Swapchain::SupportDetails::QuerySupport(VkPhysicalDevice _device, VkSurfaceKHR _surface)
+  Swapchain::SupportDetails Swapchain::SupportDetails::QuerySupport(VkPhysicalDevice _device,
+                                                                    VkSurfaceKHR _surface)
   {
     SupportDetails details;
 
@@ -33,9 +33,9 @@ namespace MFVE::Vulkan
     return details;
   }
 
-  VkResult Swapchain::CreateSwapchain(
-    const PhysicalDevice& _physicalDevice, const LogicalDevice& _logicalDevice, Window* _window,
-    const VkAllocationCallbacks* _allocator)
+  VkResult Swapchain::CreateSwapchain(const PhysicalDevice& _physicalDevice,
+                                      const LogicalDevice& _logicalDevice, Window* _window,
+                                      const VkAllocationCallbacks* _allocator)
   {
     const auto swapchainSupport =
       Swapchain::SupportDetails::QuerySupport(_physicalDevice.GetDevice(), _window->GetSurface());
@@ -46,9 +46,8 @@ namespace MFVE::Vulkan
 
     uint32_t imageCount = swapchainSupport.capabilities.minImageCount + 1;
 
-    if (
-      swapchainSupport.capabilities.maxImageCount > 0 &&
-      imageCount > swapchainSupport.capabilities.maxImageCount)
+    if (swapchainSupport.capabilities.maxImageCount > 0 &&
+        imageCount > swapchainSupport.capabilities.maxImageCount)
     {
       imageCount = swapchainSupport.capabilities.maxImageCount;
     }
@@ -88,8 +87,8 @@ namespace MFVE::Vulkan
     return vkCreateSwapchainKHR(_logicalDevice.GetDevice(), &createInfo, _allocator, &m_swapchain);
   }
 
-  void Swapchain::DestroySwapchain(
-    const LogicalDevice& _logicalDevice, const VkAllocationCallbacks* _allocator)
+  void Swapchain::DestroySwapchain(const LogicalDevice& _logicalDevice,
+                                   const VkAllocationCallbacks* _allocator)
   {
     vkDestroySwapchainKHR(_logicalDevice.GetDevice(), m_swapchain, _allocator);
     m_swapchainImages.clear();
@@ -104,8 +103,8 @@ namespace MFVE::Vulkan
       _logicalDevice.GetDevice(), m_swapchain, &imageCount, m_swapchainImages.data());
   }
 
-  VkResult Swapchain::CreateImageViews(
-    const LogicalDevice& _logicalDevice, const VkAllocationCallbacks* _allocator)
+  VkResult Swapchain::CreateImageViews(const LogicalDevice& _logicalDevice,
+                                       const VkAllocationCallbacks* _allocator)
   {
     m_swapchainImageViews.resize(m_swapchainImages.size());
 
@@ -139,8 +138,8 @@ namespace MFVE::Vulkan
     return VK_SUCCESS;
   }
 
-  void Swapchain::DestroyImageViews(
-    const LogicalDevice& _logicalDevice, const VkAllocationCallbacks* _allocator)
+  void Swapchain::DestroyImageViews(const LogicalDevice& _logicalDevice,
+                                    const VkAllocationCallbacks* _allocator)
   {
     for (auto imageView : m_swapchainImageViews)
     {
@@ -154,9 +153,8 @@ namespace MFVE::Vulkan
 
     for (const auto& availableFormat : availableFormats)
     {
-      if (
-        availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
-        availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+      if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB &&
+          availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
       {
         m_surfaceFormat = availableFormat;
       }
@@ -196,10 +194,9 @@ namespace MFVE::Vulkan
 
       actualExtent.width = std::clamp(
         actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-      actualExtent.height = std::clamp(
-        actualExtent.height,
-        capabilities.minImageExtent.height,
-        capabilities.maxImageExtent.height);
+      actualExtent.height = std::clamp(actualExtent.height,
+                                       capabilities.minImageExtent.height,
+                                       capabilities.maxImageExtent.height);
 
       m_extent = actualExtent;
     }

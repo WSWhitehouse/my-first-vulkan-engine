@@ -7,8 +7,8 @@
 
 namespace MFVE::Vulkan
 {
-  VkResult LogicalDevice::CreateDevice(
-    PhysicalDevice* _physicalDevice, const VkAllocationCallbacks* _allocator)
+  VkResult LogicalDevice::CreateDevice(PhysicalDevice* _physicalDevice,
+                                       const VkAllocationCallbacks* _allocator)
   {
     if (_physicalDevice == nullptr)
     {

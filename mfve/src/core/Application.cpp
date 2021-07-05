@@ -103,13 +103,12 @@ namespace MFVE
     VkApplicationInfo appInfo{};
     appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName   = m_appProperties.name.c_str();
-    appInfo.applicationVersion = VK_MAKE_VERSION(
-      GetAppProperties().versionMajor,
-      GetAppProperties().versionMinor,
-      GetAppProperties().versionPatch);
-    appInfo.pEngineName   = MFVE_ENGINE_NAME;
-    appInfo.engineVersion = VK_MAKE_VERSION(MFVE_VER_MAJOR, MFVE_VER_MINOR, MFVE_VER_PATCH);
-    appInfo.apiVersion    = VK_API_VERSION_1_0;
+    appInfo.applicationVersion = VK_MAKE_VERSION(GetAppProperties().versionMajor,
+                                                 GetAppProperties().versionMinor,
+                                                 GetAppProperties().versionPatch);
+    appInfo.pEngineName        = MFVE_ENGINE_NAME;
+    appInfo.engineVersion      = VK_MAKE_VERSION(MFVE_VER_MAJOR, MFVE_VER_MINOR, MFVE_VER_PATCH);
+    appInfo.apiVersion         = VK_API_VERSION_1_0;
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;

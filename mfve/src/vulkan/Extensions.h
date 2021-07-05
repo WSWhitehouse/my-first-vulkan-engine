@@ -33,21 +33,20 @@ namespace MFVE::Vulkan::Extensions
   static inline bool CheckExtensionSupport(
     const std::vector<VkExtensionProperties>& _supportedExtensions = GetSupported())
   {
-    return std::all_of(
-      Extensions.cbegin(),
-      Extensions.cend(),
-      [&](const char* extension)
-      {
-        for (const auto& ext : _supportedExtensions)
-        {
-          if (strcmp(extension, ext.extensionName) == 0)
-          {
-            return true;
-          }
-        }
+    return std::all_of(Extensions.cbegin(),
+                       Extensions.cend(),
+                       [&](const char* extension)
+                       {
+                         for (const auto& ext : _supportedExtensions)
+                         {
+                           if (strcmp(extension, ext.extensionName) == 0)
+                           {
+                             return true;
+                           }
+                         }
 
-        return false;
-      });
+                         return false;
+                       });
   }
 
 } // namespace MFVE::Vulkan::Extensions

@@ -28,8 +28,8 @@ namespace MFVE
     virtual void DestroyWindow()                             = 0;
 
     /* Surface */
-    virtual VkResult
-    CreateSurface(VkInstance _instance, const VkAllocationCallbacks* _allocator) = 0;
+    virtual VkResult CreateSurface(VkInstance _instance,
+                                   const VkAllocationCallbacks* _allocator) = 0;
     void DestroySurface(VkInstance _instance, const VkAllocationCallbacks* _allocator)
     {
       vkDestroySurfaceKHR(_instance, m_surface, _allocator);

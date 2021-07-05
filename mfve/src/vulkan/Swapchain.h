@@ -20,17 +20,19 @@ namespace MFVE::Vulkan
       static SupportDetails QuerySupport(VkPhysicalDevice _device, VkSurfaceKHR _surface);
     };
 
-    VkResult CreateSwapchain(
-      const PhysicalDevice& _physicalDevice, const LogicalDevice& _logicalDevice, Window* _window,
-      const VkAllocationCallbacks* _allocator);
+    VkResult CreateSwapchain(const PhysicalDevice& _physicalDevice,
+                             const LogicalDevice& _logicalDevice, Window* _window,
+                             const VkAllocationCallbacks* _allocator);
 
-    void
-    DestroySwapchain(const LogicalDevice& _logicalDevice, const VkAllocationCallbacks* _allocator);
+    void DestroySwapchain(const LogicalDevice& _logicalDevice,
+                          const VkAllocationCallbacks* _allocator);
 
     void CreateImageHandles(const LogicalDevice& _logicalDevice);
 
-    VkResult CreateImageViews(const LogicalDevice& _logicalDevice, const VkAllocationCallbacks* _allocator);
-    void DestroyImageViews(const LogicalDevice& _logicalDevice, const VkAllocationCallbacks* _allocator);
+    VkResult CreateImageViews(const LogicalDevice& _logicalDevice,
+                              const VkAllocationCallbacks* _allocator);
+    void DestroyImageViews(const LogicalDevice& _logicalDevice,
+                           const VkAllocationCallbacks* _allocator);
 
     /* Getters */
     [[nodiscard]] VkSwapchainKHR GetSwapchain() const { return m_swapchain; }

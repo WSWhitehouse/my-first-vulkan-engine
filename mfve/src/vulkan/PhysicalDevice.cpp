@@ -57,21 +57,20 @@ namespace MFVE::Vulkan
     vkEnumerateDeviceExtensionProperties(
       _device, nullptr, &extensionCount, availableExtensions.data());
 
-    return std::all_of(
-      m_deviceExtensions.cbegin(),
-      m_deviceExtensions.cend(),
-      [&](const char* extension)
-      {
-        for (const auto& ext : availableExtensions)
-        {
-          if (strcmp(extension, ext.extensionName) == 0)
-          {
-            return true;
-          }
-        }
+    return std::all_of(m_deviceExtensions.cbegin(),
+                       m_deviceExtensions.cend(),
+                       [&](const char* extension)
+                       {
+                         for (const auto& ext : availableExtensions)
+                         {
+                           if (strcmp(extension, ext.extensionName) == 0)
+                           {
+                             return true;
+                           }
+                         }
 
-        return false;
-      });
+                         return false;
+                       });
   }
 
 } // namespace MFVE::Vulkan
