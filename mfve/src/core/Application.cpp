@@ -33,13 +33,16 @@ namespace MFVE
     m_physicalDevice.PickSuitableDevice(m_instance, m_window->GetSurface());
     VkCheck(m_logicalDevice.CreateDevice(&m_physicalDevice, nullptr));
     m_logicalDevice.CreateQueueHandles();
-    VkCheck(m_swapchain.Create(m_physicalDevice, m_logicalDevice, m_window, nullptr));
+    VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
+    m_swapchain.CreateImageHandles(m_logicalDevice);
+    VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
   }
 
   Application::~Application()
   {
     /* Vulkan */
-    m_swapchain.Destroy(m_logicalDevice, nullptr);
+    m_swapchain.DestroyImageViews(m_logicalDevice, nullptr);
+    m_swapchain.DestroySwapchain(m_logicalDevice, nullptr);
     m_logicalDevice.Destroy(nullptr);
     m_window->DestroySurface(m_instance, nullptr);
     DestroyDebugMessenger();
