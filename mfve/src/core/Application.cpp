@@ -7,6 +7,7 @@
 
 // Vulkan
 #include "vulkan/Extensions.h"
+#include "vulkan/QueueFamilies.h"
 #include "vulkan/ValidationLayers.h"
 
 using namespace MFVE::Vulkan;
@@ -28,17 +29,19 @@ namespace MFVE
     InitExtensions();
     CreateInstance();
     CreateDebugMessenger();
-    VkCheck(m_window->CreateWindowSurface(m_instance, nullptr, &m_surface));
-    m_physicalDevice.PickSuitableDevice(m_instance, m_surface);
+    VkCheck(m_window->CreateSurface(m_instance, nullptr));
+    m_physicalDevice.PickSuitableDevice(m_instance, m_window->GetSurface());
     VkCheck(m_logicalDevice.CreateDevice(&m_physicalDevice, nullptr));
     m_logicalDevice.CreateQueueHandles();
+    VkCheck(m_swapchain.Create(m_physicalDevice, m_logicalDevice, m_window, nullptr));
   }
 
   Application::~Application()
   {
     /* Vulkan */
+    m_swapchain.Destroy(m_logicalDevice, nullptr);
     m_logicalDevice.Destroy(nullptr);
-    vkDestroySurfaceKHR(m_instance, m_surface, nullptr);
+    m_window->DestroySurface(m_instance, nullptr);
     DestroyDebugMessenger();
     vkDestroyInstance(m_instance, nullptr);
 

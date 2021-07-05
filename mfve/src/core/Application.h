@@ -10,6 +10,7 @@
 // Vulkan
 #include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"
+#include "vulkan/Swapchain.h"
 #include "vulkan/Vk_Base.h"
 
 // Defines
@@ -72,8 +73,8 @@ namespace MFVE
     Vulkan::PhysicalDevice m_physicalDevice = {};
     Vulkan::LogicalDevice m_logicalDevice   = {};
 
-    // Surface
-    VkSurfaceKHR m_surface = VK_NULL_HANDLE;
+    // Swapchain
+    Vulkan::Swapchain m_swapchain = {};
   };
 } // namespace MFVE
 

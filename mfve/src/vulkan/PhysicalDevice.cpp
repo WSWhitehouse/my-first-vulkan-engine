@@ -40,7 +40,7 @@ namespace MFVE::Vulkan
     bool swapChainAdequate;
     if (extensionsSupported)
     {
-      const auto swapchainSupport = Swapchain::QuerySupport(_device, _surface);
+      const auto swapchainSupport = Swapchain::SupportDetails::QuerySupport(_device, _surface);
       swapChainAdequate           = !swapchainSupport.formats.empty() &&
                           !swapchainSupport.presentModes.empty();
     }

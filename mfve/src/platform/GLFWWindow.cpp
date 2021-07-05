@@ -37,10 +37,15 @@ namespace MFVE
     return extensions;
   }
 
-  VkResult GLFWWindow::CreateWindowSurface(
-    VkInstance _instance, const VkAllocationCallbacks* _allocator, VkSurfaceKHR* _surface)
+  VkResult GLFWWindow::CreateSurface(
+    VkInstance _instance, const VkAllocationCallbacks* _allocator)
   {
-    return glfwCreateWindowSurface(_instance, m_window, _allocator, _surface);
+    return glfwCreateWindowSurface(_instance, m_window, _allocator, &m_surface);
+  }
+
+  void GLFWWindow::GetFrameBufferSize(int& _outWidth, int& _outHeight)
+  {
+    glfwGetFramebufferSize(m_window, &_outWidth, &_outHeight);
   }
 
   void GLFWWindow::SetWindowTitle(std::string_view _windowTitle)

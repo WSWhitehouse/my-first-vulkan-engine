@@ -19,8 +19,9 @@ namespace MFVE
 
     /* Vulkan */
     virtual std::vector<const char*> GetRequiredWindowExtensions() override;
-    virtual VkResult CreateWindowSurface(
-      VkInstance _instance, const VkAllocationCallbacks* _allocator, VkSurfaceKHR* _surface) override;
+    virtual VkResult
+    CreateSurface(VkInstance _instance, const VkAllocationCallbacks* _allocator) override;
+    virtual void GetFrameBufferSize(int& _outWidth, int& _outHeight) override;
 
     virtual void SetWindowTitle(std::string_view _windowTitle) override;
     virtual bool WindowShouldClose() override;
