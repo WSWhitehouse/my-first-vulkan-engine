@@ -34,7 +34,6 @@ namespace MFVE
     VkCheck(m_logicalDevice.CreateDevice(&m_physicalDevice, nullptr));
     m_logicalDevice.CreateQueueHandles();
     VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
-    m_swapchain.CreateImageHandles(m_logicalDevice);
     VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
   }
 

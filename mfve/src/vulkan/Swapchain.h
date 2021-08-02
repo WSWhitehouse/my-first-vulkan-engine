@@ -23,11 +23,8 @@ namespace MFVE::Vulkan
     VkResult CreateSwapchain(const PhysicalDevice& _physicalDevice,
                              const LogicalDevice& _logicalDevice, Window* _window,
                              const VkAllocationCallbacks* _allocator);
-
     void DestroySwapchain(const LogicalDevice& _logicalDevice,
                           const VkAllocationCallbacks* _allocator);
-
-    void CreateImageHandles(const LogicalDevice& _logicalDevice);
 
     VkResult CreateImageViews(const LogicalDevice& _logicalDevice,
                               const VkAllocationCallbacks* _allocator);

@@ -94,18 +94,15 @@ namespace MFVE::Vulkan
     m_swapchainImages.clear();
   }
 
-  void Swapchain::CreateImageHandles(const LogicalDevice& _logicalDevice)
+  VkResult Swapchain::CreateImageViews(const LogicalDevice& _logicalDevice,
+                                       const VkAllocationCallbacks* _allocator)
   {
     uint32_t imageCount = 0;
     vkGetSwapchainImagesKHR(_logicalDevice.GetDevice(), m_swapchain, &imageCount, nullptr);
     m_swapchainImages.resize(imageCount);
     vkGetSwapchainImagesKHR(
       _logicalDevice.GetDevice(), m_swapchain, &imageCount, m_swapchainImages.data());
-  }
 
-  VkResult Swapchain::CreateImageViews(const LogicalDevice& _logicalDevice,
-                                       const VkAllocationCallbacks* _allocator)
-  {
     m_swapchainImageViews.resize(m_swapchainImages.size());
 
     for (size_t i = 0; i < m_swapchainImages.size(); i++)
