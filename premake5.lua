@@ -10,6 +10,8 @@ workspace "my-first-vulkan-engine"
     _targetdir = "%{wks.location}/bin/" .. _outputdir
     _objdir    = "%{wks.location}/bin-int/" .. _outputdir
 
+    _assetdir = "%{wks.location}/assets/"
+
     --# Dependencies #--
     include "vendor/vendor.lua"
 

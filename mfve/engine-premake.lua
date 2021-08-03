@@ -57,12 +57,12 @@ links {
     "GLFW"
 }
 
-filter "action:vs*"
-pchheader("mfve_pch.h")
-pchsource(_enginefiledir .. "src/mfve_pch.cpp")
+filter "action: vs*"
+    pchheader("mfve_pch.h")
+    pchsource(_enginefiledir .. "src/mfve_pch.cpp")
 
-filter "action:not vs*"
---pchheader ("mfve_pch.h")
+filter "action: not vs*"
+    pchheader ("mfve_pch.h")
 
 filter "system:linux"
 links {
@@ -73,6 +73,11 @@ links {
     "Xxf86vm",
     "Xrandr",
     "Xi",
+
+    --# SPIR-V & ShaderC #--
+    "shaderc_combined",
+    "spirv-cross-core",
+    "spirv-cross-glsl",
 
     --# Vulkan SDK #--
     "vulkan"
@@ -96,6 +101,12 @@ links {
     "uuid.lib",
     "odbc32.lib",
     "odbccp32.lib",
+
+    --# SPIR-V & ShaderC #--
+    "shaderc_combined.lib",
+    --"shaderc_shared.lib",
+    "spirv-cross-core.lib",
+    "spirv-cross-glsl.lib",
 
     --# Vulkan SDK #--
     "vulkan-1.lib",
