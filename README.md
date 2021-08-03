@@ -22,20 +22,24 @@ My First Vulkan Engine (MFVE) is an open source game and rendering engine writte
   - `Linux`
   - `Windows x64`
 
-The development of this engine is mainly focused on `Linux` so expect missing/incomplete features and bugs in other platforms.
+The development of this engine is mainly focused on `Linux` so expect missing/incomplete features and bugs on other platforms.
+
+### Prerequisites 
+- Download and install the `VulkanSDK` - available on the [LunarG Website](https://vulkan.lunarg.com/sdk/home)
+- Download `Premake5` - available here: [https://premake.github.io/](https://premake.github.io/)
 
 ### Cloning The Repo
 - Clone the repo recursively to initialise the submodules
-  - `git clone --recursive https://github.com/WSWhitehouse/my-first-vulkan-engine`
+  - HTTPS: `git clone --recursive https://github.com/WSWhitehouse/my-first-vulkan-engine`
+  - SSH: `git clone --recursive git@github.com:WSWhitehouse/my-first-vulkan-engine.git`
   
 
 - Initialise the submodules if the repository was not cloned recursively 
   - `git submodule update --init`
 
 ### Running Premake5
-1. Download and install premake5. You can download if from here: [`https://premake.github.io/`](https://premake.github.io/)
-2. Open the terminal/cmd in the root of the project directory.
-3. Run the premake5 command for the required IDE, for example `premake5 vs2019` to generate Visual Studio 2019 project files
+1. Open the terminal/cmd in the root of the project directory.
+2. Run the premake5 command for the required IDE, for example `premake5 vs2019` which will generate Visual Studio 2019 project files
 
 ![Seperator](./resources/readme-seperator.png)
 
