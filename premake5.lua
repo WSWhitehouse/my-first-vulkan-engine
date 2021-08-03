@@ -1,9 +1,9 @@
 --# Application #--
 
 -- Change these variables to customise your app!
--- Don't change anything below the "Workspace" comment or any other premake files unless you know what you're doing
+-- Don't edit anything below the "Workspace" comment or any other premake/lua files unless you know what you're doing
 
-AppName = "App" -- Name of your application
+AppName = "App"  -- Name of your application
 AppVer = "1.0.0" -- Version of your application
 
 --# Workspace #--

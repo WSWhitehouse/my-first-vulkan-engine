@@ -36,6 +36,18 @@ The development of this engine is mainly focused on `Linux` so expect missing/in
 
 - Initialise the submodules if the repository was not cloned recursively 
   - `git submodule update --init`
+  
+### Customising Your Application
+
+Your application is automatically generated through Premake. 
+In order to change and customise it, you can edit some values from within the premake lua files.
+
+1. Open the `premake5.lua` file in the root of this repository.
+2. Edit the variables in the first section of the file.
+
+<p align="center">
+  <b><i> - Don't edit anything below the "Workspace" comment or any other premake / lua files unless you know what you're doing - </i></b>
+</p>
 
 ### Running Premake5
 1. Open the terminal/cmd in the root of the project directory.
