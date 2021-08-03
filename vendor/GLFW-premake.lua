@@ -7,8 +7,8 @@ project "GLFW"
     systemversion "latest"
     staticruntime "On"
 
-    targetdir (_targetdir)
-    objdir    (_objdir)
+    targetdir (_apptargetdir)
+    objdir    (_appobjdir)
 
     files
     {

@@ -1,4 +1,4 @@
-project "App"
+project (AppName)
     _appfiledir = "%{wks.location}/app/"
 
     location (_appfiledir)
@@ -8,8 +8,8 @@ project "App"
     cppdialect "C++17"
     staticruntime "on"
 
-    targetdir (_targetdir)
-    objdir    (_objdir)
+    targetdir (_apptargetdir)
+    objdir    (_appobjdir)
 
     defines
     {
