@@ -46,7 +46,7 @@ In order to change and customise it, you can edit some values from within the pr
 2. Edit the variables in the first section of the file.
 
 <p align="center">
-  <b><i> - Don't edit anything below the "Workspace" comment or any other premake / lua files unless you know what you're doing - </i></b>
+  <b><i> Don't edit anything below the "Workspace" comment or any other premake / lua files unless you know what you're doing </i></b>
 </p>
 
 ### Running Premake5
