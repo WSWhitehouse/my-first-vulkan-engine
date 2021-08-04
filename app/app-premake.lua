@@ -59,15 +59,18 @@ project (AppName)
     links
     {
         --# MFVE #--
-        "MFVE"
+        "MFVE",
+
+        --# Vendor #--
+        "GLFW"
     }
 
-    filter "action:vs*"
+    filter "action: vs*"
         pchheader  ("pch.h")
         pchsource  (_enginefiledir .. "src/pch.cpp")
 
-    filter "action:not vs*"
-        --pchheader ("pch.h")
+    filter "action: not vs*"
+        pchheader ("pch.h")
 
     filter "system:linux"
         links
@@ -79,6 +82,11 @@ project (AppName)
             "Xxf86vm",
             "Xrandr",
             "Xi",
+
+            --# SPIR-V & ShaderC #--
+            "shaderc_combined",
+            "spirv-cross-core",
+            "spirv-cross-glsl",
 
             --# Vulkan SDK #--
             "vulkan"
@@ -104,6 +112,12 @@ project (AppName)
             "odbc32.lib",
             "odbccp32.lib",
 
+            --# SPIR-V & ShaderC #--
+            "shaderc_combined.lib",
+            --"shaderc_shared.lib",
+            "spirv-cross-core.lib",
+            "spirv-cross-glsl.lib",
+
             --# Vulkan SDK #--
             "vulkan-1.lib",
             "VkLayer_utils.lib"
@@ -115,11 +129,6 @@ project (AppName)
         symbols "On"
 
     filter "configurations:Release"
-        defines { "NDEBUG", "MFVE_RELEASE", "MFVE_ENABLE_LOGGER" }
-        runtime "Release"
-        optimize "On"
-
-    filter "configurations:Dist"
-        defines { "NDEBUG", "MFVE_DIST" }
+        defines { "NDEBUG", "MFVE_RELEASE" }
         runtime "Release"
         optimize "On"

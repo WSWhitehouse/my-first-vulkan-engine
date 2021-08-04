@@ -11,7 +11,7 @@ workspace "my-first-vulkan-engine"
     architecture ("x86_64")
     startproject (AppName)
 
-    configurations { "Debug", "Release", "Dist" }
+    configurations { "Debug", "Release" }
 
     --# Directories #--
     _outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/"
@@ -19,14 +19,14 @@ workspace "my-first-vulkan-engine"
     _targetdir = "%{wks.location}/bin/" .. _outputdir
     _objdir    = "%{wks.location}/bin-int/" .. _outputdir
 
-    _apptargetdir = _targetdir .. AppName .. "-" .. AppVer
-    _appobjdir = _objdir .. AppName .. "-" .. AppVer
+    _apptargetdir = _targetdir .. AppName
+    _appobjdir = _objdir .. AppName
 
     _assetdir = "%{wks.location}/assets/"
 
     --# Dependencies #--
     include "vendor/vendor.lua"
-    include "tools/tools.lua"
+    include "utils/utils.lua"
 
     --# Projects #--
     include "mfve/engine-premake"

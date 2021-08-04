@@ -1,5 +1,5 @@
 project "Asset-Pipeline"
-    _assetpipelinedir = _tooldir .. "asset-pipeline/"
+    _assetpipelinedir = _utildir .. "asset-pipeline/"
 
     location (_assetpipelinedir)
     uuid (os.uuid())

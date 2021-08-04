@@ -2,7 +2,24 @@
 
 #include <iostream>
 
-bool AssetFilesystem::LocateAssetsFolder()
+bool AssetFilesystem::locateDirectories()
+{
+  if (!locateAssetPath())
+  {
+    return false;
+  }
+
+  if (!locateOutPath())
+  {
+    return false;
+  }
+
+  return true;
+}
+
+void AssetFilesystem::CompileAssets() {}
+
+bool AssetFilesystem::locateAssetPath()
 {
   namespace fs = std::filesystem;
 
@@ -44,4 +61,7 @@ bool AssetFilesystem::LocateAssetsFolder()
   }
 }
 
-void AssetFilesystem::CompileAssets() {}
+bool AssetFilesystem::locateOutPath()
+{
+  return true;
+}

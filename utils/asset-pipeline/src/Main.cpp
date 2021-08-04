@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 
   AssetFilesystem assetFilesystem;
 
-  if (!assetFilesystem.LocateAssetsFolder())
+  if (!assetFilesystem.locateDirectories())
   {
     std::cerr << "Could not find Assets folder!" << std::endl;
   }
