@@ -1,7 +1,7 @@
-project "Asset-Management"
-    _assetmanagementdir = _tooldir .. "asset-management/"
+project "Asset-Pipeline"
+    _assetpipelinedir = _tooldir .. "asset-pipeline/"
 
-    location (_assetmanagementdir)
+    location (_assetpipelinedir)
     uuid (os.uuid())
     kind "ConsoleApp"
     language "C++"
@@ -14,15 +14,15 @@ project "Asset-Management"
     files
     {
         --# App Src #--
-        _assetmanagementdir .. "src/**.h",
-        _assetmanagementdir .. "src/**.c",
-        _assetmanagementdir .. "src/**.hpp",
-        _assetmanagementdir .. "src/**.cpp",
+        _assetpipelinedir .. "src/**.h",
+        _assetpipelinedir .. "src/**.c",
+        _assetpipelinedir .. "src/**.hpp",
+        _assetpipelinedir .. "src/**.cpp",
     }
 
     includedirs
     {
-        _assetmanagementdir .. "src/",
+        _assetpipelinedir .. "src/",
     }
 
     filter "system:windows"
