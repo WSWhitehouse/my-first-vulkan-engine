@@ -16,6 +16,7 @@ namespace MFVE
 
     // Base Path
     {
+      // Using the 'whereami' C API to find the path of the executable
       int length = wai_getExecutablePath(nullptr, 0, nullptr);
       std::string path;
       path.resize(length);
@@ -57,7 +58,14 @@ namespace MFVE
     MFVE_LOG_INFO("------------------------------");
   }
 
-  void FileSystem::Terminate() {}
+  void FileSystem::Terminate()
+  {
+    MFVE_LOG_INFO("------------------------------");
+    MFVE_LOG_INFO("Terminating File System");
+
+    MFVE_LOG_INFO("Finished Terminating File System");
+    MFVE_LOG_INFO("------------------------------");
+  }
 
   std::filesystem::path
   FileSystem::GetAssetPathFromRelativePath(const std::filesystem::path& _relPath)
@@ -69,24 +77,31 @@ namespace MFVE
 
     auto path = _relPath;
 
-    // Finding relative root
+    // Remove first '/' from relative path
+    if (path.string()[0] == '/')
     {
-      const auto& relRoot = *_relPath.begin();
+      MFVE_LOG_WARNING("'/' is first char in relative path, consider removing it. Relative Path: " +
+                       _relPath.string());
 
-      // Remove 'assets/' from relative path if it exitsts
-      if (relRoot == ASSETS_FOLDER)
+      std::string pathStr = path.string();
+      pathStr.erase(pathStr.cbegin());
+
+      path = pathStr;
+    }
+
+    // Remove 'assets/' from relative path if it exitsts
+    if (*_relPath.begin() == ASSETS_FOLDER)
+    {
+      MFVE_LOG_WARNING(
+        "'assets/' is included in relative path, consider removing it. Relative Path: " +
+        _relPath.string());
+
+      path.clear();
+
+      // Putting the path back together without 'assets/'
+      for (auto itr = ++_relPath.begin(); itr != _relPath.end(); ++itr)
       {
-        MFVE_LOG_WARNING(
-          "'assets/' is included in relative path, consider removing it. Relative Path: " +
-          _relPath.string());
-
-        path.clear();
-
-        // Putting the path back together without 'assets/'
-        for (auto itr = ++_relPath.begin(); itr != _relPath.end(); ++itr)
-        {
-          path /= *itr;
-        }
+        path /= *itr;
       }
     }
 

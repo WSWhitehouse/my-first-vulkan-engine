@@ -72,7 +72,7 @@ namespace MFVE::Vulkan::ValidationLayers
                                 VkDebugUtilsMessageTypeFlagsEXT _messageType,
                                 const VkDebugUtilsMessengerCallbackDataEXT* _pCallbackData,
                                 void* _pUserData)
-  {return VK_FALSE;
+  {
     switch (_messageSeverity)
     {
       case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
