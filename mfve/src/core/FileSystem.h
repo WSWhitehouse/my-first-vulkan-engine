@@ -30,10 +30,12 @@ namespace MFVE
     /* Getters */
     [[nodiscard]] static inline const std::filesystem::path& GetBasePath() { return m_basePath; }
     [[nodiscard]] static inline const std::filesystem::path& GetAssetPath() { return m_assetPath; }
+    [[nodiscard]] static inline const std::filesystem::path& GetCachePath() { return m_cachePath; }
 
    private:
     static inline std::filesystem::path m_basePath;
     static inline std::filesystem::path m_assetPath;
+    static inline std::filesystem::path m_cachePath;
   };
 } // namespace MFVE
 

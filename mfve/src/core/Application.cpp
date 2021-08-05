@@ -61,6 +61,9 @@ namespace MFVE
     DestroyDebugMessenger();
     vkDestroyInstance(m_instance, nullptr);
 
+    /* File System */
+    FileSystem::Terminate();
+
     /* Window */
     m_window->DestroyWindow();
     delete m_window;

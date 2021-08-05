@@ -37,7 +37,7 @@ namespace MFVE
     {
       m_assetPath = m_basePath / "assets";
 
-      if (!std::filesystem::exists(m_assetPath))
+      if (!fs::exists(m_assetPath))
       {
         MFVE_LOG_FATAL(
           "ABORTING! Unable to locate Assets. Have you tried running 'Generate-Assets'?");
@@ -47,7 +47,14 @@ namespace MFVE
       MFVE_LOG_INFO("    Assets Path: " + m_assetPath.string());
     }
 
+    // Cache Path
+    {
+      m_cachePath = fs::temp_directory_path();
+    }
+
     MFVE_LOG_INFO("Finished Initialising File System");
     MFVE_LOG_INFO("------------------------------");
   }
+
+  void FileSystem::Terminate() {}
 } // namespace MFVE
