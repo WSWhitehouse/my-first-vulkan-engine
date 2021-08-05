@@ -50,6 +50,7 @@ namespace MFVE
     // Cache Path
     {
       m_cachePath = fs::temp_directory_path();
+      MFVE_LOG_INFO("    Cache Path:  " + m_cachePath.string());
     }
 
     MFVE_LOG_INFO("Finished Initialising File System");
