@@ -26,6 +26,7 @@ namespace MFVE
     FileSystem& operator=(FileSystem&& _fileSystem) = delete;
 
     static void Init();
+    static void Terminate();
 
     /* Getters */
     [[nodiscard]] static inline const std::filesystem::path& GetBasePath() { return m_basePath; }
