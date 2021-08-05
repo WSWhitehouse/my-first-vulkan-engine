@@ -1,5 +1,5 @@
-#ifndef MY_FIRST_VULKAN_ENGINE_FRAME_TIMER_H
-#define MY_FIRST_VULKAN_ENGINE_FRAME_TIMER_H
+#ifndef MY_FIRST_VULKAN_ENGINE_TIME_H
+#define MY_FIRST_VULKAN_ENGINE_TIME_H
 
 #include <chrono>
 
@@ -28,4 +28,4 @@ namespace MFVE
   };
 } // namespace MFVE
 
-#endif // MY_FIRST_VULKAN_ENGINE_FRAME_TIMER_H
+#endif // MY_FIRST_VULKAN_ENGINE_TIME_H
