@@ -49,6 +49,7 @@ namespace MFVE
     VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
     VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
     Shader shader("shaders/shader.frag");
+    shader.OpenShader();
   }
 
   void Application::Terminate()

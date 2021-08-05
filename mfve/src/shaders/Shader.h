@@ -1,12 +1,15 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_SHADER_H
 #define MY_FIRST_VULKAN_ENGINE_SHADER_H
 
-#include <filesystem>
-#include <shaderc/shaderc.hpp>
-#include <spirv_cross/spirv_cross.hpp>
-#include <spirv_cross/spirv_glsl.hpp>
-
+// Vulkan
 #include "vulkan/Vk_Base.h"
+
+// Shaders
+#include "shaders/Shader_Base.h"
+
+// FileSystem
+#include "core/FileSystem.h"
+#include "core/Cache.h"
 
 namespace MFVE
 {
@@ -16,11 +19,22 @@ namespace MFVE
     explicit Shader(std::string_view _filePath);
     ~Shader();
 
-   private:
-    std::string filePath;
+    void OpenShader();
 
-    static const char* CacheDir() { return "assets/cache/"; }
+   private:
+    // File Paths
+    std::filesystem::path m_filePath;
+    std::filesystem::path m_cacheFilePath;
+
+    ShaderKind m_shaderKind;
+    std::vector<uint32_t> m_shaderData;
+
+    std::string ReadSourceFile();
+    void CompileFromSource(const bool& _optimize = true);
+
+static inline const char* SHADER_CACHE_FOLDER = "shaders/";
+    static inline const char* SPIRV_EXTENSION = ".spv";
   };
-}
+} // namespace MFVE
 
 #endif // MY_FIRST_VULKAN_ENGINE_SHADER_H

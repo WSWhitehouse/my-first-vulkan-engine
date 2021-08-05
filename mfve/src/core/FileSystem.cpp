@@ -1,6 +1,8 @@
 #include "FileSystem.h"
 
+#include <fstream>
 #include <mfve_pch.h>
+#include <string>
 
 // Where Am I
 #include "whereami.h"
@@ -50,7 +52,7 @@ namespace MFVE
 
     // Cache Path
     {
-      m_cachePath = fs::temp_directory_path();
+      m_cachePath = m_basePath / CACHE_FOLDER;
       MFVE_LOG_INFO("    Cache Path:  " + GetCachePath().string());
     }
 
@@ -75,6 +77,11 @@ namespace MFVE
       return GetAssetPath();
     }
 
+    return GetAssetPath() / CleanUpRelativePath(_relPath);
+  }
+
+  std::filesystem::path FileSystem::CleanUpRelativePath(const std::filesystem::path& _relPath)
+  {
     auto path = _relPath;
 
     // Remove first '/' from relative path
@@ -89,22 +96,24 @@ namespace MFVE
       path = pathStr;
     }
 
-    // Remove 'assets/' from relative path if it exitsts
-    if (*_relPath.begin() == ASSETS_FOLDER)
-    {
-      MFVE_LOG_WARNING(
-        "'assets/' is included in relative path, consider removing it. Relative Path: " +
-        _relPath.string());
-
-      path.clear();
-
-      // Putting the path back together without 'assets/'
-      for (auto itr = ++_relPath.begin(); itr != _relPath.end(); ++itr)
+    /*
+      // Remove folder from relative path if it exitsts
+      if (*_relPath.begin() == ASSETS_FOLDER)
       {
-        path /= *itr;
-      }
-    }
+        MFVE_LOG_WARNING(
+          "Folder name is included in relative path, consider removing it. Relative Path: " +
+          _relPath.string());
 
-    return GetAssetPath() / path;
+        path.clear();
+
+        // Putting the path back together without 'assets/'
+        for (auto itr = ++_relPath.begin(); itr != _relPath.end(); ++itr)
+        {
+          path /= *itr;
+        }
+      }
+     */
+
+    return path;
   }
 } // namespace MFVE
