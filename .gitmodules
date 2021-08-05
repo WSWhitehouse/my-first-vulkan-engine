@@ -7,3 +7,6 @@
 [submodule "vendor/CppLog"]
 	path = vendor/CppLog
 	url = https://github.com/WSWhitehouse/CppLog.git
+[submodule "vendor/whereami"]
+	path = vendor/whereami
+	url = git@github.com:gpakosz/whereami.git

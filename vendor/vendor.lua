@@ -2,9 +2,10 @@ _vendordir = "%{wks.location}/vendor/"
 
 --# Include Directory #--
 IncludeDir = {}
-IncludeDir["GLFW"]      = _vendordir .. "GLFW/include/"
-IncludeDir["glm"]       = _vendordir .. "glm/"
+IncludeDir["GLFW"]     = _vendordir .. "GLFW/include/"
+IncludeDir["glm"]      = _vendordir .. "glm/"
 IncludeDir["CppLog"]   = _vendordir .. "CppLog/"
+IncludeDir["whereami"] = _vendordir .. "whereami/src/"
 
 --# Lib Directory #--
 LibDir = {}
