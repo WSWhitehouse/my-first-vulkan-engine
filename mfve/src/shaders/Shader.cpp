@@ -5,7 +5,7 @@
 
 namespace MFVE
 {
-  Shader::Shader(std::string_view _filePath)
+  Shader::Shader(std::filesystem::path _filePath)
   {
     m_filePath      = FileSystem::GetAssetPathFromRelativePath(_filePath);
     m_cacheFilePath = SHADER_CACHE_FOLDER + m_filePath.filename().string() + SPIRV_EXTENSION;

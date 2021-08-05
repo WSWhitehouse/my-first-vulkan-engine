@@ -8,15 +8,15 @@
 #include "shaders/Shader_Base.h"
 
 // FileSystem
-#include "core/FileSystem.h"
 #include "core/Cache.h"
+#include "core/FileSystem.h"
 
 namespace MFVE
 {
   class Shader
   {
    public:
-    explicit Shader(std::string_view _filePath);
+    explicit Shader(std::filesystem::path _filePath);
     ~Shader();
 
     void OpenShader();
@@ -32,8 +32,8 @@ namespace MFVE
     std::string ReadSourceFile();
     void CompileFromSource(const bool& _optimize = true);
 
-static inline const char* SHADER_CACHE_FOLDER = "shaders/";
-    static inline const char* SPIRV_EXTENSION = ".spv";
+    static inline const char* SHADER_CACHE_FOLDER = "shaders/";
+    static inline const char* SPIRV_EXTENSION     = ".spv";
   };
 } // namespace MFVE
 
