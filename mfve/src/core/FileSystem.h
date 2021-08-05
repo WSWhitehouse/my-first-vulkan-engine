@@ -5,7 +5,8 @@
 #include <string>
 
 /* --- MFVE FILE SYSTEM ---
- *  Base Path = Path where executable is
+ *  Base Path  = Path where executable is
+ *  Asset Path = Path where assets folder is
  */
 
 namespace MFVE
