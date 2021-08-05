@@ -33,10 +33,15 @@ namespace MFVE
     [[nodiscard]] static inline const std::filesystem::path& GetAssetPath() { return m_assetPath; }
     [[nodiscard]] static inline const std::filesystem::path& GetCachePath() { return m_cachePath; }
 
+    static std::filesystem::path GetAssetPathFromRelativePath(const std::filesystem::path& _relPath);
+
    private:
     static inline std::filesystem::path m_basePath;
     static inline std::filesystem::path m_assetPath;
     static inline std::filesystem::path m_cachePath;
+
+    // const
+    static inline const std::string ASSETS_FOLDER = "assets";
   };
 } // namespace MFVE
 
