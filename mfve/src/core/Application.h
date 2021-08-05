@@ -25,7 +25,7 @@ namespace MFVE
   {
    public:
     explicit Application(AppProperties _appProperties);
-    virtual ~Application();
+    virtual ~Application() = default;
 
     /* Copy Constructors */
     Application(const Application&) = delete;
@@ -36,18 +36,21 @@ namespace MFVE
     Application& operator=(Application&&) = delete;
 
    public: /* Engine Functions */
+    void Init(int argc, char** argv);
+    void Terminate();
+
     void Run();
     void SignalExit() { m_signalExit = true; }
+
+    /* Getters */
+    [[nodiscard]] inline const AppProperties& GetAppProperties() const { return m_appProperties; }
+    [[nodiscard]] inline Window* GetWindow() const { return m_window; }
 
    protected: /* Application Functions */
     virtual void AppInit()                    = 0;
     virtual void AppUpdate(const Time& _time) = 0;
     virtual void AppRender()                  = 0;
     virtual void AppCleanUp()                 = 0;
-
-   public: /* Getters */
-    [[nodiscard]] inline const AppProperties& GetAppProperties() const { return m_appProperties; }
-    [[nodiscard]] inline Window* GetWindow() const { return m_window; }
 
    private: /* Variables */
     bool m_signalExit             = false;

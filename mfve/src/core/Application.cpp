@@ -5,6 +5,9 @@
 // Platform
 #include "platform/GLFWWindow.h"
 
+// FileSystem
+#include "core/FileSystem.h"
+
 // Vulkan
 #include "vulkan/Extensions.h"
 #include "vulkan/QueueFamilies.h"
@@ -20,6 +23,10 @@ namespace MFVE
   Application::Application(AppProperties _appProperties) :
     m_appProperties(std::move(_appProperties))
   {
+  }
+
+  void Application::Init(int argc, char** argv)
+  {
     /* Window */
     WindowProperties windowProps{};
     m_window = new GLFWWindow(windowProps); // Creating a GLFW Window for now
@@ -27,6 +34,9 @@ namespace MFVE
     {
       MFVE_LOG_FATAL("Failed to create Window!");
     }
+
+    /* File System */
+    FileSystem::Init();
 
     /* Vulkan */
     InitExtensions();
@@ -41,7 +51,7 @@ namespace MFVE
     Shader shader("assets/shaders/shader.frag");
   }
 
-  Application::~Application()
+  void Application::Terminate()
   {
     /* Vulkan */
     m_swapchain.DestroyImageViews(m_logicalDevice, nullptr);

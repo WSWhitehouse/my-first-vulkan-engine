@@ -8,7 +8,7 @@ namespace MFVE::Vulkan
 {
   void PhysicalDevice::PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface)
   {
-    const auto devices = FindAllPhysicalDevices(_instance);
+    const std::vector<VkPhysicalDevice> devices = FindAllPhysicalDevices(_instance);
 
     if (devices.empty())
     {
@@ -22,6 +22,7 @@ namespace MFVE::Vulkan
         m_physicalDevice = device;
         vkGetPhysicalDeviceProperties(m_physicalDevice, &m_properties);
         vkGetPhysicalDeviceFeatures(m_physicalDevice, &m_features);
+
         return;
       }
     }

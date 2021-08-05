@@ -20,6 +20,9 @@ namespace MFVE::Vulkan
       static SupportDetails QuerySupport(VkPhysicalDevice _device, VkSurfaceKHR _surface);
     };
 
+    Swapchain()  = default;
+    ~Swapchain() = default;
+
     VkResult CreateSwapchain(const PhysicalDevice& _physicalDevice,
                              const LogicalDevice& _logicalDevice, Window* _window,
                              const VkAllocationCallbacks* _allocator);
