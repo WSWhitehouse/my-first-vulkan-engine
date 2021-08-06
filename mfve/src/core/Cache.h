@@ -83,6 +83,11 @@ namespace MFVE
 
       const auto path = FileSystem::GetCachePath() / FileSystem::CleanUpRelativePath(_relPath);
 
+      if (!std::filesystem::exists(path))
+      {
+        return false;
+      }
+
       std::ifstream stream(path, std::ios::in | std::ios::binary);
       if (stream.is_open())
       {
@@ -105,6 +110,11 @@ namespace MFVE
       static_assert(!std::is_pointer_v<T>, "No Pointers");
 
       const auto path = FileSystem::GetCachePath() / FileSystem::CleanUpRelativePath(_relPath);
+
+      if (!std::filesystem::exists(path))
+      {
+        return false;
+      }
 
       std::ifstream stream(path, std::ios::ate | std::ios::binary);
       if (stream.is_open())
