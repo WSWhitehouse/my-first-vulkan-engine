@@ -10,6 +10,7 @@ namespace MFVE
 {
   enum ShaderKind : int
   {
+    UNKNOWN_SHADER = -1,
     VERTEX_SHADER,
     FRAGMENT_SHADER
   };

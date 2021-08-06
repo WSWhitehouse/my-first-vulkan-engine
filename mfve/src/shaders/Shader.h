@@ -2,6 +2,7 @@
 #define MY_FIRST_VULKAN_ENGINE_SHADER_H
 
 // Vulkan
+#include "vulkan/LogicalDevice.h"
 #include "vulkan/Vk_Base.h"
 
 // Shaders
@@ -16,22 +17,34 @@ namespace MFVE
   class Shader
   {
    public:
-    explicit Shader(std::filesystem::path _filePath);
-    ~Shader();
+    /* Constructors */
+    Shader()  = default;
+    ~Shader() = default;
 
-    void OpenShader();
+    void Load(const std::filesystem::path& _filePath, const ShaderKind& _shaderKind, const bool& _forceCompile = false);
+
+    VkResult CreateShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+                                const VkAllocationCallbacks* _allocator);
+    void DestroyShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+                             const VkAllocationCallbacks* _allocator);
+
+    /* Getters */
+    [[nodiscard]] const VkShaderModule& GetShaderModule() { return m_shaderModule; }
 
    private:
-    // File Paths
+    /* File Paths */
     std::filesystem::path m_filePath;
-    std::filesystem::path m_cacheFilePath;
 
-    ShaderKind m_shaderKind;
-    std::vector<uint32_t> m_shaderData;
+    /* Shader */
+    std::vector<char> m_shaderData;
+    bool m_shaderLoaded           = false;
+    ShaderKind m_shaderKind       = UNKNOWN_SHADER;
+    VkShaderModule m_shaderModule = VK_NULL_HANDLE;
 
     std::string ReadSourceFile();
-    void CompileFromSource(const bool& _optimize = true);
+    std::vector<uint32_t> CompileFromSource(const bool& _optimize = true);
 
+    /* Const */
     static inline const char* SHADER_CACHE_FOLDER = "shaders/";
     static inline const char* SPIRV_EXTENSION     = ".spv";
   };

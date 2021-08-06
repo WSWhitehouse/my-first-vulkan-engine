@@ -5,83 +5,106 @@
 
 namespace MFVE
 {
-  Shader::Shader(std::filesystem::path _filePath)
+  void Shader::Load(const std::filesystem::path& _filePath, const ShaderKind& _shaderKind,
+                    const bool& _forceCompile)
   {
-    m_filePath      = FileSystem::GetAssetPathFromRelativePath(_filePath);
-    m_cacheFilePath = SHADER_CACHE_FOLDER + m_filePath.filename().string() + SPIRV_EXTENSION;
-    m_shaderKind    = ShaderUtils::ExtensionToShaderKind(m_filePath.extension().string());
-  }
+    // Set up file paths
+    m_filePath         = _filePath;
+    m_shaderKind       = _shaderKind;
+    auto cacheFilePath = SHADER_CACHE_FOLDER + m_filePath.filename().string() + SPIRV_EXTENSION;
 
-  Shader::~Shader() {}
-
-  void Shader::OpenShader()
-  {
     // Remove any previous data
     m_shaderData.clear();
 
     // Try opening cached data first
-    if (Cache::Read(m_cacheFilePath, m_shaderData))
+    if (!Cache::Read(cacheFilePath, m_shaderData) || _forceCompile)
     {
-      MFVE_LOG_DEBUG("Loaded shader from cache");
-      return;
+      // Remove any previous data
+      m_shaderData.clear();
+
+      // If cache doesnt exist compile from source and cache
+      std::vector<uint32_t> spriv = CompileFromSource();
+      Cache::Write(cacheFilePath, spriv);
+
+      m_shaderData = std::vector<char>(spriv.cbegin(), spriv.cend());
+
+      MFVE_LOG_INFO("Compiled Shader: " + m_filePath.filename().string() +
+                    " size: " + std::to_string(m_shaderData.size()));
     }
+  }
 
-    // If cache doesnt exist compile from source and cache
-    CompileFromSource();
-    Cache::Write(m_cacheFilePath, m_shaderData);
+  VkResult Shader::CreateShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+                                      const VkAllocationCallbacks* _allocator)
+  {
+    MFVE_LOG_DEBUG("Shader Module " + m_filePath.filename().string());
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = m_shaderData.size();
+    createInfo.pCode    = reinterpret_cast<const uint32_t*>(m_shaderData.data());
 
-    MFVE_LOG_DEBUG("Compiled shader from source & cached");
+    return vkCreateShaderModule(
+      _logicalDevice.GetDevice(), &createInfo, _allocator, &m_shaderModule);
+  }
+
+  void Shader::DestroyShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+                                   const VkAllocationCallbacks* _allocator)
+  {
+    vkDestroyShaderModule(_logicalDevice.GetDevice(), m_shaderModule, _allocator);
   }
 
   std::string Shader::ReadSourceFile()
   {
     std::string result;
-    std::ifstream in(m_filePath, std::ios::in | std::ios::binary);
+    std::ifstream in(FileSystem::GetAssetPathFromRelativePath(m_filePath),
+                     std::ios::ate | std::ios::in | std::ios::binary);
 
     if (in)
     {
-      in.seekg(0, std::ios::end);
       size_t size = in.tellg();
-      if (size != -1)
-      {
-        result.resize(size);
-        in.seekg(0, std::ios::beg);
-        in.read(&result[0], size);
-      }
-      else
-      {
-        MFVE_LOG_ERROR("Could not read from file " + m_filePath.string());
-      }
+      in.seekg(0);
+
+      result.resize(size);
+      in.read(&result[0], size);
+
+      in.close();
     }
     else
     {
       MFVE_LOG_ERROR("Could not open file " + m_filePath.string());
     }
 
-    in.close();
     return result;
   }
 
-  void Shader::CompileFromSource(const bool& _optimize)
+  std::vector<uint32_t> Shader::CompileFromSource(const bool& _optimize)
   {
     shaderc::Compiler compiler;
     shaderc::CompileOptions options;
 
-    options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_2);
+    // options.SetTargetEnvironment(shaderc_target_env_vulkan, shaderc_env_version_vulkan_1_0);
+    // options.SetTargetSpirv(shaderc_spirv_version_1_0);
+
     if (_optimize)
-      options.SetOptimizationLevel(shaderc_optimization_level_performance);
+    {
+      options.SetOptimizationLevel(shaderc_optimization_level_size);
+    }
 
     std::string shaderSrc = ReadSourceFile();
 
-    shaderc::SpvCompilationResult module = compiler.CompileGlslToSpv(
-      shaderSrc, ShaderUtils::ShaderKindToShaderC(m_shaderKind), m_filePath.c_str(), options);
+    MFVE_LOG_DEBUG(shaderSrc);
+
+    shaderc::SpvCompilationResult module =
+      compiler.CompileGlslToSpv(shaderSrc,
+                                ShaderUtils::ShaderKindToShaderC(m_shaderKind),
+                                FileSystem::GetAssetPathFromRelativePath(m_filePath).c_str(),
+                                options);
 
     if (module.GetCompilationStatus() != shaderc_compilation_status_success)
     {
       MFVE_LOG_ERROR(module.GetErrorMessage());
-      return;
+      return std::vector<uint32_t>();
     }
 
-    m_shaderData = std::vector<uint32_t>(module.cbegin(), module.cend());
+    return std::vector<uint32_t>(module.cbegin(), module.cend());
   }
 } // namespace MFVE

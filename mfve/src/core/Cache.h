@@ -40,7 +40,8 @@ namespace MFVE
       std::ofstream stream(path, std::ios::out | std::ios::binary);
       if (stream.is_open())
       {
-        stream.write(reinterpret_cast<const char*>(&_data), sizeof(T));
+        stream.write(reinterpret_cast<const char*>(_data), sizeof(T));
+
         stream.flush();
         stream.close();
       }
@@ -64,7 +65,8 @@ namespace MFVE
       std::ofstream stream(path, std::ios::out | std::ios::binary);
       if (stream.is_open())
       {
-        stream.write((char*)_data.data(), _data.size() * sizeof(T));
+        stream.write(reinterpret_cast<const char*>(_data.data()), _data.size() * sizeof(T));
+
         stream.flush();
         stream.close();
       }
@@ -84,7 +86,9 @@ namespace MFVE
       std::ifstream stream(path, std::ios::in | std::ios::binary);
       if (stream.is_open())
       {
-        stream.read((char*)_outData.data(), sizeof(T));
+        stream.read(reinterpret_cast<char*>(_outData.data()), sizeof(T));
+
+        stream.close();
         return true;
       }
 
@@ -102,17 +106,17 @@ namespace MFVE
 
       const auto path = FileSystem::GetCachePath() / FileSystem::CleanUpRelativePath(_relPath);
 
-      std::ifstream stream(path, std::ios::in | std::ios::binary);
+      std::ifstream stream(path, std::ios::ate | std::ios::binary);
       if (stream.is_open())
       {
         // Find length of file
-        stream.seekg(0, std::ios::end);
         auto size = stream.tellg();
-        stream.seekg(0, std::ios::beg);
+        stream.seekg(0);
 
         _outData.resize(size / sizeof(T));
-        stream.read((char*)_outData.data(), size);
+        stream.read(reinterpret_cast<char*>(_outData.data()), size);
 
+        stream.close();
         return true;
       }
 

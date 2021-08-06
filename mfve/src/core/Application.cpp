@@ -13,9 +13,6 @@
 #include "vulkan/QueueFamilies.h"
 #include "vulkan/ValidationLayers.h"
 
-// Shaders
-#include "shaders/Shader.h"
-
 using namespace MFVE::Vulkan;
 
 namespace MFVE
@@ -48,12 +45,21 @@ namespace MFVE
     m_logicalDevice.CreateQueueHandles();
     VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
     VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
-    Shader shader("shaders/shader.frag");
-    shader.OpenShader();
+
+    /* Shaders */
+    m_fragShader.Load("shaders/fragshader.glsl", FRAGMENT_SHADER);
+    m_vertShader.Load("shaders/vertshader.glsl", VERTEX_SHADER);
+
+    VkCheck(m_fragShader.CreateShaderModule(m_logicalDevice, nullptr));
+    VkCheck(m_vertShader.CreateShaderModule(m_logicalDevice, nullptr));
   }
 
   void Application::Terminate()
   {
+    /* Shaders */
+    m_fragShader.DestroyShaderModule(m_logicalDevice, nullptr);
+    m_vertShader.DestroyShaderModule(m_logicalDevice, nullptr);
+
     /* Vulkan */
     m_swapchain.DestroyImageViews(m_logicalDevice, nullptr);
     m_swapchain.DestroySwapchain(m_logicalDevice, nullptr);

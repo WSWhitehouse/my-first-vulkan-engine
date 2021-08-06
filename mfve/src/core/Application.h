@@ -13,6 +13,9 @@
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vk_Base.h"
 
+// Shaders
+#include "shaders/Shader.h"
+
 // Defines
 #define MFVE_ENGINE_NAME "my-first-vulkan-engine"
 #define MFVE_VER_MAJOR   0
@@ -57,7 +60,12 @@ namespace MFVE
     AppProperties m_appProperties = {};
     Time m_appTimer               = {};
 
+    // Window
     Window* m_window = nullptr;
+
+    // Shaders
+    Shader m_fragShader;
+    Shader m_vertShader;
 
    private: /* Vulkan */
     // Extensions
