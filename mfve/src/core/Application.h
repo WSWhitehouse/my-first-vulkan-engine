@@ -8,6 +8,8 @@
 #include "Window.h"
 
 // Vulkan
+#include "vulkan/CommandBuffer.h"
+#include "vulkan/Framebuffer.h"
 #include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"
 #include "vulkan/Pipeline.h"
@@ -85,11 +87,11 @@ namespace MFVE
     Vulkan::PhysicalDevice m_physicalDevice = {};
     Vulkan::LogicalDevice m_logicalDevice   = {};
 
-    // Swapchain
-    Vulkan::Swapchain m_swapchain = {};
-
-    // Pipeline
-    Vulkan::Pipeline m_pipeline = {};
+    // Renderer
+    Vulkan::Swapchain m_swapchain         = {};
+    Vulkan::Pipeline m_pipeline           = {};
+    Vulkan::Framebuffer m_framebuffer     = {};
+    Vulkan::CommandBuffer m_commandBuffer = {};
   };
 } // namespace MFVE
 

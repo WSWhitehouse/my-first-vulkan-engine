@@ -41,19 +41,22 @@ namespace MFVE
     CreateDebugMessenger();
     VkCheck(m_window->CreateSurface(m_instance, nullptr));
     m_physicalDevice.PickSuitableDevice(m_instance, m_window->GetSurface());
-    VkCheck(m_logicalDevice.CreateDevice(&m_physicalDevice, nullptr));
-    m_logicalDevice.CreateQueueHandles();
+    VkCheck(m_logicalDevice.CreateDevice(m_physicalDevice, nullptr));
+    m_logicalDevice.CreateQueueHandles(m_physicalDevice);
     VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
     VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
     VkCheck(m_pipeline.CreateRenderPasses(m_logicalDevice, m_swapchain, nullptr));
     VkCheck(m_pipeline.CreatePipeline(m_logicalDevice, m_swapchain, nullptr));
-    VkCheck(m_pipeline.CreateFramebuffers(m_logicalDevice, m_swapchain, nullptr));
+    VkCheck(m_framebuffer.CreateFramebuffers(m_logicalDevice, m_swapchain, m_pipeline, nullptr));
+    VkCheck(m_commandBuffer.CreateCommandPool(m_logicalDevice, m_physicalDevice, nullptr));
+    VkCheck(m_commandBuffer.AllocateCommandBuffers(m_logicalDevice, m_framebuffer, nullptr));
   }
 
   void Application::Terminate()
   {
     /* Vulkan */
-    m_pipeline.DestroyFramebuffers(m_logicalDevice, nullptr);
+    m_commandBuffer.DestroyCommandPool(m_logicalDevice, nullptr);
+    m_framebuffer.DestroyFramebuffers(m_logicalDevice, nullptr);
     m_pipeline.DestroyPipeline(m_logicalDevice, nullptr);
     m_pipeline.DestroyRenderPasses(m_logicalDevice, nullptr);
     m_swapchain.DestroyImageViews(m_logicalDevice, nullptr);

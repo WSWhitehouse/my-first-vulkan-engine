@@ -7,19 +7,12 @@
 
 namespace MFVE::Vulkan
 {
-  VkResult LogicalDevice::CreateDevice(PhysicalDevice* _physicalDevice,
+  VkResult LogicalDevice::CreateDevice(const PhysicalDevice& _physicalDevice,
                                        const VkAllocationCallbacks* _allocator)
   {
-    if (_physicalDevice == nullptr)
-    {
-      MFVE_LOG_FATAL("Physical Device is nullptr! Cannot create Logical Device!");
-    }
-
-    m_physicalDevice = _physicalDevice;
-
     std::set<uint32_t> uniqueQueueFamilies = {
-      m_physicalDevice->GetQueueFamilies().graphicsFamily.value(),
-      m_physicalDevice->GetQueueFamilies().presentFamily.value()
+      _physicalDevice.GetQueueFamilies().graphicsFamily.value(),
+      _physicalDevice.GetQueueFamilies().presentFamily.value()
     };
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -44,8 +37,8 @@ namespace MFVE::Vulkan
     createInfo.pQueueCreateInfos    = queueCreateInfos.data();
     createInfo.pEnabledFeatures     = &deviceFeatures;
 
-    createInfo.enabledExtensionCount   = m_physicalDevice->GetDeviceExtensions().size();
-    createInfo.ppEnabledExtensionNames = m_physicalDevice->GetDeviceExtensions().data();
+    createInfo.enabledExtensionCount   = _physicalDevice.GetDeviceExtensions().size();
+    createInfo.ppEnabledExtensionNames = _physicalDevice.GetDeviceExtensions().data();
 
     if (ValidationLayers::Enabled())
     {
@@ -57,19 +50,12 @@ namespace MFVE::Vulkan
       createInfo.enabledLayerCount = 0;
     }
 
-    return vkCreateDevice(m_physicalDevice->GetDevice(), &createInfo, _allocator, &m_device);
+    return vkCreateDevice(_physicalDevice.GetDevice(), &createInfo, _allocator, &m_device);
   }
 
-  void LogicalDevice::CreateQueueHandles()
+  void LogicalDevice::CreateQueueHandles(const PhysicalDevice& _physicalDevice)
   {
-    if (m_physicalDevice == nullptr)
-    {
-      MFVE_LOG_ERROR(
-        "Cannot create queue handles because Physical Device is nullptr, try creating the logical device first!");
-      return;
-    }
-
-    const auto& queueFamily = m_physicalDevice->GetQueueFamilies();
+    const auto& queueFamily = _physicalDevice.GetQueueFamilies();
     vkGetDeviceQueue(m_device, queueFamily.graphicsFamily.value(), 0, &m_graphicsQueue);
     vkGetDeviceQueue(m_device, queueFamily.presentFamily.value(), 0, &m_presentQueue);
   }
@@ -77,9 +63,8 @@ namespace MFVE::Vulkan
   void LogicalDevice::Destroy(const VkAllocationCallbacks* _allocator)
   {
     vkDestroyDevice(m_device, _allocator);
-    m_physicalDevice = nullptr;
-    m_graphicsQueue  = VK_NULL_HANDLE;
-    m_presentQueue   = VK_NULL_HANDLE;
+    m_graphicsQueue = VK_NULL_HANDLE;
+    m_presentQueue  = VK_NULL_HANDLE;
   }
 
 } // namespace MFVE::Vulkan

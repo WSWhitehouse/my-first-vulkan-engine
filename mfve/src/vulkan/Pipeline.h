@@ -32,11 +32,10 @@ namespace MFVE::Vulkan
     void DestroyPipeline(const LogicalDevice& _logicalDevice,
                          const VkAllocationCallbacks* _allocator);
 
-    // Framebuffers
-    VkResult CreateFramebuffers(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
-                                const VkAllocationCallbacks* _allocator);
-    void DestroyFramebuffers(const LogicalDevice& _logicalDevice,
-                             const VkAllocationCallbacks* _allocator);
+    // Getters
+    [[nodiscard]] const VkRenderPass& GetRenderPass() const { return m_renderPass; }
+    [[nodiscard]] const VkPipelineLayout& GetPipelineLayout() const { return m_pipelineLayout; }
+    [[nodiscard]] const VkPipeline& GetPipeline() const { return m_pipeline; }
 
    private:
     Shader m_fragShader = {};
@@ -48,10 +47,7 @@ namespace MFVE::Vulkan
     // Graphics Pipeline
     VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
     VkPipeline m_pipeline             = VK_NULL_HANDLE;
-
-    // Framebuffers
-    std::vector<VkFramebuffer> m_framebuffers = {};
   };
-} // namepsace MFVE
+} // namepsace MFVE::Vulkan
 
 #endif // MY_FIRST_VULKAN_ENGINE_PIPELINE_H
