@@ -21,7 +21,8 @@ namespace MFVE
     Shader()  = default;
     ~Shader() = default;
 
-    void Load(const std::filesystem::path& _filePath, const ShaderKind& _shaderKind, const bool& _forceCompile = false);
+    void Load(const std::filesystem::path& _filePath, const ShaderKind& _shaderKind,
+              const bool& _forceCompile = false);
 
     VkResult CreateShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
                                 const VkAllocationCallbacks* _allocator);
@@ -36,10 +37,10 @@ namespace MFVE
     std::filesystem::path m_filePath;
 
     /* Shader */
-    std::vector<char> m_shaderData;
-    bool m_shaderLoaded           = false;
-    ShaderKind m_shaderKind       = UNKNOWN_SHADER;
-    VkShaderModule m_shaderModule = VK_NULL_HANDLE;
+    std::vector<char> m_shaderData = {};
+    bool m_shaderLoaded            = false;
+    ShaderKind m_shaderKind        = UNKNOWN_SHADER;
+    VkShaderModule m_shaderModule  = VK_NULL_HANDLE;
 
     std::string ReadSourceFile();
     std::vector<uint32_t> CompileFromSource(const bool& _optimize = true);

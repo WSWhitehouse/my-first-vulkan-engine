@@ -23,10 +23,10 @@ namespace MFVE
       m_shaderData.clear();
 
       // If cache doesnt exist compile from source and cache
-      std::vector<uint32_t> spriv = CompileFromSource();
-      Cache::Write(cacheFilePath, spriv);
-
-      m_shaderData = std::vector<char>(spriv.cbegin(), spriv.cend());
+      std::vector<uint32_t> spirv = CompileFromSource();
+      Cache::Write(cacheFilePath, spirv);
+      Cache::Read(cacheFilePath, m_shaderData);
+      //m_shaderData = std::vector<char>(spirv.cbegin(), spirv.cend());
 
       MFVE_LOG_INFO("Compiled Shader: " + m_filePath.filename().string() +
                     " size: " + std::to_string(m_shaderData.size()));
@@ -91,7 +91,7 @@ namespace MFVE
 
     std::string shaderSrc = ReadSourceFile();
 
-    MFVE_LOG_DEBUG(shaderSrc);
+    MFVE_LOG_DEBUG("\n" + shaderSrc);
 
     shaderc::SpvCompilationResult module =
       compiler.CompileGlslToSpv(shaderSrc,

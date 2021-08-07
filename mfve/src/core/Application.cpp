@@ -46,20 +46,11 @@ namespace MFVE
     VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
     VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
 
-    /* Shaders */
-    m_fragShader.Load("shaders/fragshader.glsl", FRAGMENT_SHADER);
-    m_vertShader.Load("shaders/vertshader.glsl", VERTEX_SHADER);
-
-    VkCheck(m_fragShader.CreateShaderModule(m_logicalDevice, nullptr));
-    VkCheck(m_vertShader.CreateShaderModule(m_logicalDevice, nullptr));
+    m_pipeline.CreatePipeline(m_logicalDevice);
   }
 
   void Application::Terminate()
   {
-    /* Shaders */
-    m_fragShader.DestroyShaderModule(m_logicalDevice, nullptr);
-    m_vertShader.DestroyShaderModule(m_logicalDevice, nullptr);
-
     /* Vulkan */
     m_swapchain.DestroyImageViews(m_logicalDevice, nullptr);
     m_swapchain.DestroySwapchain(m_logicalDevice, nullptr);

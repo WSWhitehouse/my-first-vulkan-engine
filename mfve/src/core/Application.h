@@ -10,6 +10,7 @@
 // Vulkan
 #include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"
+#include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vk_Base.h"
 
@@ -86,6 +87,9 @@ namespace MFVE
 
     // Swapchain
     Vulkan::Swapchain m_swapchain = {};
+
+    // Pipeline
+    Vulkan::Pipeline m_pipeline = {};
   };
 } // namespace MFVE
 
