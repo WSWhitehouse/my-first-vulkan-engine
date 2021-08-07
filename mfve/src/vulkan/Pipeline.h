@@ -3,6 +3,7 @@
 
 // Vulkan
 #include "vulkan/LogicalDevice.h"
+#include "vulkan/Swapchain.h"
 #include "vulkan/Vk_Base.h"
 
 // Shaders
@@ -16,11 +17,22 @@ namespace MFVE::Vulkan
     Pipeline()  = default;
     ~Pipeline() = default;
 
-    void CreatePipeline(const LogicalDevice& _logicalDevice);
+    VkResult CreateRenderPasses(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+                                const VkAllocationCallbacks* _allocator);
+    void DestroyRenderPasses(const LogicalDevice& _logicalDevice,
+                             const VkAllocationCallbacks* _allocator);
+
+    VkResult CreatePipelineLayout(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+                                  const VkAllocationCallbacks* _allocator);
+    void DestroyPipelineLayout(const LogicalDevice& _logicalDevice,
+                               const VkAllocationCallbacks* _allocator);
 
    private:
     Shader m_fragShader = {};
     Shader m_vertShader = {};
+
+    VkRenderPass m_renderPass;
+    VkPipelineLayout m_pipelineLayout;
   };
 } // namepsace MFVE
 

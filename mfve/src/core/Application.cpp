@@ -46,7 +46,7 @@ namespace MFVE
     VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
     VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
 
-    m_pipeline.CreatePipeline(m_logicalDevice);
+    m_pipeline.CreatePipelineLayout(m_logicalDevice);
   }
 
   void Application::Terminate()
