@@ -44,9 +44,9 @@ namespace MFVE::Vulkan
     vkDestroyRenderPass(_logicalDevice.GetDevice(), m_renderPass, _allocator);
   }
 
-  VkResult Pipeline::CreatePipelineLayout(const LogicalDevice& _logicalDevice,
-                                          const Swapchain& _swapchain,
-                                          const VkAllocationCallbacks* _allocator)
+  VkResult Pipeline::CreatePipeline(const LogicalDevice& _logicalDevice,
+                                    const Swapchain& _swapchain,
+                                    const VkAllocationCallbacks* _allocator)
   {
     // Shaders
     m_fragShader.Load("shaders/fragshader.glsl", FRAGMENT_SHADER);
@@ -166,12 +166,38 @@ namespace MFVE::Vulkan
     pipelineLayoutInfo.pushConstantRangeCount = 0;
     pipelineLayoutInfo.pPushConstantRanges    = nullptr;
 
-    auto result = vkCreatePipelineLayout(
+    auto pipelineLayoutResult = vkCreatePipelineLayout(
       _logicalDevice.GetDevice(), &pipelineLayoutInfo, _allocator, &m_pipelineLayout);
 
-    if (result != VK_SUCCESS)
+    if (pipelineLayoutResult != VK_SUCCESS)
     {
-      return result;
+      return pipelineLayoutResult;
+    }
+
+    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    pipelineInfo.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipelineInfo.stageCount          = 2;
+    pipelineInfo.pStages             = shaderStages;
+    pipelineInfo.pVertexInputState   = &vertexInputInfo;
+    pipelineInfo.pInputAssemblyState = &inputAssembly;
+    pipelineInfo.pViewportState      = &viewportState;
+    pipelineInfo.pRasterizationState = &rasterizer;
+    pipelineInfo.pMultisampleState   = &multisampling;
+    pipelineInfo.pDepthStencilState  = nullptr;
+    pipelineInfo.pColorBlendState    = &colorBlending;
+    pipelineInfo.pDynamicState       = nullptr;
+    pipelineInfo.layout              = m_pipelineLayout;
+    pipelineInfo.renderPass          = m_renderPass;
+    pipelineInfo.subpass             = 0;
+    pipelineInfo.basePipelineHandle  = VK_NULL_HANDLE;
+    pipelineInfo.basePipelineIndex   = -1;
+
+    auto pipelineResult = vkCreateGraphicsPipelines(
+      _logicalDevice.GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, _allocator, &m_pipeline);
+
+    if (pipelineResult != VK_SUCCESS)
+    {
+      return pipelineResult;
     }
 
     // Destroy shaders
@@ -181,9 +207,10 @@ namespace MFVE::Vulkan
     return VK_SUCCESS;
   }
 
-  void Pipeline::DestroyPipelineLayout(const LogicalDevice& _logicalDevice,
-                                       const VkAllocationCallbacks* _allocator)
+  void Pipeline::DestroyPipeline(const LogicalDevice& _logicalDevice,
+                                 const VkAllocationCallbacks* _allocator)
   {
+    vkDestroyPipeline(_logicalDevice.GetDevice(), m_pipeline, _allocator);
     vkDestroyPipelineLayout(_logicalDevice.GetDevice(), m_pipelineLayout, _allocator);
   }
 } // namespace MFVE

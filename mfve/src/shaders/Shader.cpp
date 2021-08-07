@@ -36,7 +36,6 @@ namespace MFVE
   VkResult Shader::CreateShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
                                       const VkAllocationCallbacks* _allocator)
   {
-    MFVE_LOG_DEBUG("Shader Module " + m_filePath.filename().string());
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = m_shaderData.size();

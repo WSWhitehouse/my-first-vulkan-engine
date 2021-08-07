@@ -45,13 +45,15 @@ namespace MFVE
     m_logicalDevice.CreateQueueHandles();
     VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
     VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
-
-    m_pipeline.CreatePipelineLayout(m_logicalDevice);
+    VkCheck(m_pipeline.CreateRenderPasses(m_logicalDevice, m_swapchain, nullptr));
+    VkCheck(m_pipeline.CreatePipeline(m_logicalDevice, m_swapchain, nullptr));
   }
 
   void Application::Terminate()
   {
     /* Vulkan */
+    m_pipeline.DestroyPipeline(m_logicalDevice, nullptr);
+    m_pipeline.DestroyRenderPasses(m_logicalDevice, nullptr);
     m_swapchain.DestroyImageViews(m_logicalDevice, nullptr);
     m_swapchain.DestroySwapchain(m_logicalDevice, nullptr);
     m_logicalDevice.Destroy(nullptr);

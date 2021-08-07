@@ -22,17 +22,18 @@ namespace MFVE::Vulkan
     void DestroyRenderPasses(const LogicalDevice& _logicalDevice,
                              const VkAllocationCallbacks* _allocator);
 
-    VkResult CreatePipelineLayout(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
-                                  const VkAllocationCallbacks* _allocator);
-    void DestroyPipelineLayout(const LogicalDevice& _logicalDevice,
-                               const VkAllocationCallbacks* _allocator);
+    VkResult CreatePipeline(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+                            const VkAllocationCallbacks* _allocator);
+    void DestroyPipeline(const LogicalDevice& _logicalDevice,
+                         const VkAllocationCallbacks* _allocator);
 
    private:
     Shader m_fragShader = {};
     Shader m_vertShader = {};
 
-    VkRenderPass m_renderPass;
-    VkPipelineLayout m_pipelineLayout;
+    VkRenderPass m_renderPass         = VK_NULL_HANDLE;
+    VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
+    VkPipeline m_pipeline             = VK_NULL_HANDLE;
   };
 } // namepsace MFVE
 
