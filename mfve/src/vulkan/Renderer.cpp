@@ -4,8 +4,9 @@
 
 namespace MFVE::Vulkan
 {
-  VkResult Renderer::Render(const Pipeline& _pipeline, const Framebuffer& _framebuffer,
-                            const CommandBuffer& _commandBuffer, const Swapchain& _swapchain)
+  VkResult Renderer::SetUpCmdBuffers(const Pipeline& _pipeline, const Framebuffer& _framebuffer,
+                                     const CommandBuffer& _commandBuffer,
+                                     const Swapchain& _swapchain)
   {
     for (size_t i = 0; i < _commandBuffer.GetCommandBuffers().size(); i++)
     {
@@ -52,5 +53,89 @@ namespace MFVE::Vulkan
     }
 
     return VK_SUCCESS;
+  }
+
+  VkResult Renderer::DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
+                               const Framebuffer& _framebuffer, const CommandBuffer& _commandBuffer,
+                               const Swapchain& _swapchain)
+  {
+    // Acquire image from swap chain
+    uint32_t imageIndex;
+    vkAcquireNextImageKHR(_logicalDevice.GetDevice(),
+                          _swapchain.GetSwapchain(),
+                          UINT64_MAX,
+                          m_imageAvailableSemaphore,
+                          VK_NULL_HANDLE,
+                          &imageIndex);
+
+    // Submitting the command buffer
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[]      = { m_imageAvailableSemaphore };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores    = waitSemaphores;
+    submitInfo.pWaitDstStageMask  = waitStages;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers    = &_commandBuffer.GetCommandBuffers()[imageIndex];
+
+    VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore };
+
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores    = signalSemaphores;
+
+    const auto queueSubmitResult =
+      vkQueueSubmit(_logicalDevice.GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+
+    if (queueSubmitResult != VK_SUCCESS)
+    {
+      return VK_SUCCESS;
+    }
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores    = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = { _swapchain.GetSwapchain() };
+
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains    = swapChains;
+    presentInfo.pImageIndices  = &imageIndex;
+    presentInfo.pResults       = nullptr;
+
+    vkQueuePresentKHR(_logicalDevice.GetPresentQueue(), &presentInfo);
+
+    // Wait for renderering to finish
+    vkQueueWaitIdle(_logicalDevice.GetPresentQueue());
+
+    return VK_SUCCESS;
+  }
+
+  VkResult Renderer::CreateSemaphores(const LogicalDevice& _logicalDevice,
+                                      const VkAllocationCallbacks* _allocator)
+  {
+    VkSemaphoreCreateInfo semaphoreInfo{};
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    const auto imageResult = vkCreateSemaphore(
+      _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_imageAvailableSemaphore);
+
+    if (imageResult != VK_SUCCESS)
+    {
+      return imageResult;
+    }
+
+    return vkCreateSemaphore(
+      _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_renderFinishedSemaphore);
+  }
+
+  void Renderer::DestroySemaphores(const LogicalDevice& _logicalDevice,
+                                   const VkAllocationCallbacks* _allocator)
+  {
+    vkDestroySemaphore(_logicalDevice.GetDevice(), m_renderFinishedSemaphore, _allocator);
+    vkDestroySemaphore(_logicalDevice.GetDevice(), m_imageAvailableSemaphore, _allocator);
   }
 } // namespace MFVE::Vulkan

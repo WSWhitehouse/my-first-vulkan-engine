@@ -16,8 +16,22 @@ namespace MFVE::Vulkan
     Renderer()  = default;
     ~Renderer() = default;
 
-    VkResult Render(const Pipeline& _pipeline, const Framebuffer& _framebuffer,
-                    const CommandBuffer& _commandBuffer, const Swapchain& _swapchain);
+    VkResult SetUpCmdBuffers(const Pipeline& _pipeline, const Framebuffer& _framebuffer,
+                             const CommandBuffer& _commandBuffer, const Swapchain& _swapchain);
+
+    // Semaphores
+    VkResult CreateSemaphores(const LogicalDevice& _logicalDevice,
+                              const VkAllocationCallbacks* _allocator);
+    void DestroySemaphores(const LogicalDevice& _logicalDevice,
+                           const VkAllocationCallbacks* _allocator);
+
+    VkResult DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
+                   const Framebuffer& _framebuffer, const CommandBuffer& _commandBuffer,
+                   const Swapchain& _swapchain);
+
+   private:
+    VkSemaphore m_imageAvailableSemaphore;
+    VkSemaphore m_renderFinishedSemaphore;
   };
 } // namepsace MFVE::Vulkan
 

@@ -67,10 +67,6 @@ namespace MFVE
     // Window
     Window* m_window = nullptr;
 
-    // Shaders
-    Shader m_fragShader;
-    Shader m_vertShader;
-
    private: /* Vulkan */
     // Extensions
     void InitExtensions();
