@@ -50,6 +50,7 @@ namespace MFVE
     VkCheck(m_framebuffer.CreateFramebuffers(m_logicalDevice, m_swapchain, m_pipeline, nullptr));
     VkCheck(m_commandBuffer.CreateCommandPool(m_logicalDevice, m_physicalDevice, nullptr));
     VkCheck(m_commandBuffer.AllocateCommandBuffers(m_logicalDevice, m_framebuffer, nullptr));
+    VkCheck(m_renderer.Render(m_pipeline, m_framebuffer, m_commandBuffer, m_swapchain));
   }
 
   void Application::Terminate()

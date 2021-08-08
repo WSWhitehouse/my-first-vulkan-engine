@@ -13,6 +13,7 @@
 #include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"
 #include "vulkan/Pipeline.h"
+#include "vulkan/Renderer.h"
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vk_Base.h"
 
@@ -92,6 +93,7 @@ namespace MFVE
     Vulkan::Pipeline m_pipeline           = {};
     Vulkan::Framebuffer m_framebuffer     = {};
     Vulkan::CommandBuffer m_commandBuffer = {};
+    Vulkan::Renderer m_renderer           = {};
   };
 } // namespace MFVE
 

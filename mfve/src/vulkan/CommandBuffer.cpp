@@ -37,4 +37,22 @@ namespace MFVE::Vulkan
     return vkAllocateCommandBuffers(
       _logicalDevice.GetDevice(), &allocInfo, m_commandBuffers.data());
   }
+
+  VkResult CommandBuffer::BeginCommandBuffer()
+  {
+    for (size_t i = 0; i < m_commandBuffers.size(); i++)
+    {
+      VkCommandBufferBeginInfo beginInfo{};
+      beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+      beginInfo.flags            = 0;
+      beginInfo.pInheritanceInfo = nullptr;
+
+      const VkResult result = vkBeginCommandBuffer(m_commandBuffers[i], &beginInfo);
+
+      if (result != VK_SUCCESS)
+      {
+        return result;
+      }
+    }
+  }
 } // namepsace MFVE::Vulkan
