@@ -13,6 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - run: git submodule update --init --recursive
       
     - name: Install Premake
       uses: abel0b/setup-premake@v1
