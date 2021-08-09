@@ -43,27 +43,13 @@ namespace MFVE
     m_physicalDevice.PickSuitableDevice(m_instance, m_window->GetSurface());
     VkCheck(m_logicalDevice.CreateDevice(m_physicalDevice, nullptr));
     m_logicalDevice.CreateQueueHandles(m_physicalDevice);
-    VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, nullptr));
-    VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, nullptr));
-    VkCheck(m_pipeline.CreateRenderPasses(m_logicalDevice, m_swapchain, nullptr));
-    VkCheck(m_pipeline.CreatePipeline(m_logicalDevice, m_swapchain, nullptr));
-    VkCheck(m_framebuffer.CreateFramebuffers(m_logicalDevice, m_swapchain, m_pipeline, nullptr));
-    VkCheck(m_commandBuffer.CreateCommandPool(m_logicalDevice, m_physicalDevice, nullptr));
-    VkCheck(m_commandBuffer.AllocateCommandBuffers(m_logicalDevice, m_framebuffer));
-    VkCheck(m_renderer.SetUpCmdBuffers(m_pipeline, m_framebuffer, m_commandBuffer, m_swapchain));
-    m_renderer.CreateSyncObjects(m_logicalDevice, m_swapchain, nullptr);
+    m_renderer.CreateRenderer(m_physicalDevice, m_logicalDevice, m_window, nullptr);
   }
 
   void Application::Terminate()
   {
     /* Vulkan */
-    m_renderer.DestroySyncObjects(m_logicalDevice, nullptr);
-    m_commandBuffer.DestroyCommandPool(m_logicalDevice, nullptr);
-    m_framebuffer.DestroyFramebuffers(m_logicalDevice, nullptr);
-    m_pipeline.DestroyPipeline(m_logicalDevice, nullptr);
-    m_pipeline.DestroyRenderPasses(m_logicalDevice, nullptr);
-    m_swapchain.DestroyImageViews(m_logicalDevice, nullptr);
-    m_swapchain.DestroySwapchain(m_logicalDevice, nullptr);
+    m_renderer.DestroyRenderer(m_logicalDevice, nullptr);
     m_logicalDevice.Destroy(nullptr);
     m_window->DestroySurface(m_instance, nullptr);
     DestroyDebugMessenger();
@@ -94,8 +80,7 @@ namespace MFVE
 
       // Render Application
       AppRender();
-      m_renderer.DrawFrame(
-        m_logicalDevice, m_pipeline, m_framebuffer, m_commandBuffer, m_swapchain);
+      m_renderer.DrawFrame(m_logicalDevice);
     }
 
     // Wait for logical device to finish up

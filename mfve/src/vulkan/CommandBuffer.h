@@ -21,8 +21,8 @@ namespace MFVE::Vulkan
                             const VkAllocationCallbacks* _allocator);
 
     // Command Buffer
-    VkResult AllocateCommandBuffers(const LogicalDevice& _logicalDevice,
-                                    const Framebuffer& _framebuffer);
+    void AllocateCommandBuffers(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+                                const Pipeline& _pipeline, const Framebuffer& _framebuffer);
     void FreeCommandBuffers(const LogicalDevice& _logicalDevice);
 
     // Getters

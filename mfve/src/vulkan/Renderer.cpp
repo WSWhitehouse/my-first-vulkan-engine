@@ -4,60 +4,56 @@
 
 namespace MFVE::Vulkan
 {
-  VkResult Renderer::SetUpCmdBuffers(const Pipeline& _pipeline, const Framebuffer& _framebuffer,
-                                     const CommandBuffer& _commandBuffer,
-                                     const Swapchain& _swapchain)
+  void Renderer::CreateRenderer(const PhysicalDevice& _physicalDevice,
+                                const LogicalDevice& _logicalDevice, Window* _window,
+                                const VkAllocationCallbacks* _allocator)
   {
-    for (size_t i = 0; i < _commandBuffer.GetCommandBuffers().size(); i++)
-    {
-      VkCommandBufferBeginInfo beginInfo{};
-      beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-      beginInfo.flags            = 0;
-      beginInfo.pInheritanceInfo = nullptr;
-
-      const auto beginResult =
-        vkBeginCommandBuffer(_commandBuffer.GetCommandBuffers()[i], &beginInfo);
-
-      if (beginResult != VK_SUCCESS)
-      {
-        return beginResult;
-      }
-
-      VkRenderPassBeginInfo renderPassInfo{};
-      renderPassInfo.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      renderPassInfo.renderPass        = _pipeline.GetRenderPass();
-      renderPassInfo.framebuffer       = _framebuffer.GetFramebuffers()[i];
-      renderPassInfo.renderArea.offset = { 0, 0 };
-      renderPassInfo.renderArea.extent = _swapchain.GetExtent();
-      VkClearValue clearColor          = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
-      renderPassInfo.clearValueCount   = 1;
-      renderPassInfo.pClearValues      = &clearColor;
-
-      vkCmdBeginRenderPass(
-        _commandBuffer.GetCommandBuffers()[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-      vkCmdBindPipeline(_commandBuffer.GetCommandBuffers()[i],
-                        VK_PIPELINE_BIND_POINT_GRAPHICS,
-                        _pipeline.GetPipeline());
-
-      vkCmdDraw(_commandBuffer.GetCommandBuffers()[i], 3, 1, 0, 0);
-
-      vkCmdEndRenderPass(_commandBuffer.GetCommandBuffers()[i]);
-
-      const auto endResult = vkEndCommandBuffer(_commandBuffer.GetCommandBuffers()[i]);
-
-      if (endResult != VK_SUCCESS)
-      {
-        return endResult;
-      }
-    }
-
-    return VK_SUCCESS;
+    VkCheck(m_swapchain.CreateSwapchain(_physicalDevice, _logicalDevice, _window, _allocator));
+    VkCheck(m_swapchain.CreateImageViews(_logicalDevice, _allocator));
+    VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
+    VkCheck(m_commandBuffer.CreateCommandPool(_logicalDevice, _physicalDevice, nullptr));
+    m_commandBuffer.AllocateCommandBuffers(_logicalDevice, m_swapchain, m_pipeline, m_framebuffer);
+    CreateSyncObjects(_logicalDevice, _allocator);
   }
 
-  void Renderer::DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
-                           const Framebuffer& _framebuffer, const CommandBuffer& _commandBuffer,
-                           const Swapchain& _swapchain)
+  void Renderer::DestroyRenderer(const LogicalDevice& _logicalDevice,
+                                 const VkAllocationCallbacks* _allocator)
+  {
+    CleanUpRenderer(_logicalDevice, _allocator);
+    DestroySyncObjects(_logicalDevice, _allocator);
+    m_commandBuffer.DestroyCommandPool(_logicalDevice, _allocator);
+  }
+
+  void Renderer::RecreateRenderer(const PhysicalDevice& _physicalDevice,
+                                  const LogicalDevice& _logicalDevice, Window* _window,
+                                  const VkAllocationCallbacks* _allocator)
+  {
+    vkDeviceWaitIdle(_logicalDevice.GetDevice());
+
+    CleanUpRenderer(_logicalDevice, _allocator);
+
+    VkCheck(m_swapchain.CreateSwapchain(_physicalDevice, _logicalDevice, _window, _allocator));
+    VkCheck(m_swapchain.CreateImageViews(_logicalDevice, _allocator));
+    VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
+    m_commandBuffer.AllocateCommandBuffers(_logicalDevice, m_swapchain, m_pipeline, m_framebuffer);
+  }
+
+  void Renderer::CleanUpRenderer(const LogicalDevice& _logicalDevice,
+                                 const VkAllocationCallbacks* _allocator)
+  {
+    m_commandBuffer.FreeCommandBuffers(_logicalDevice);
+    m_framebuffer.DestroyFramebuffers(_logicalDevice, _allocator);
+    m_pipeline.DestroyPipeline(_logicalDevice, _allocator);
+    m_pipeline.DestroyRenderPasses(_logicalDevice, _allocator);
+    m_swapchain.DestroyImageViews(_logicalDevice, _allocator);
+    m_swapchain.DestroySwapchain(_logicalDevice, _allocator);
+  }
+
+  void Renderer::DrawFrame(const LogicalDevice& _logicalDevice)
   {
     vkWaitForFences(
       _logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
@@ -65,7 +61,7 @@ namespace MFVE::Vulkan
     // Acquire image from swap chain
     uint32_t imageIndex;
     vkAcquireNextImageKHR(_logicalDevice.GetDevice(),
-                          _swapchain.GetSwapchain(),
+                          m_swapchain.GetSwapchain(),
                           UINT64_MAX,
                           m_imageAvailableSemaphore[m_currentFrame],
                           VK_NULL_HANDLE,
@@ -92,7 +88,7 @@ namespace MFVE::Vulkan
     submitInfo.pWaitSemaphores    = waitSemaphores;
     submitInfo.pWaitDstStageMask  = waitStages;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &_commandBuffer.GetCommandBuffers()[imageIndex];
+    submitInfo.pCommandBuffers    = &m_commandBuffer.GetCommandBuffers()[imageIndex];
 
     VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore[m_currentFrame] };
 
@@ -109,7 +105,7 @@ namespace MFVE::Vulkan
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores    = signalSemaphores;
 
-    VkSwapchainKHR swapChains[] = { _swapchain.GetSwapchain() };
+    VkSwapchainKHR swapChains[] = { m_swapchain.GetSwapchain() };
 
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains    = swapChains;
@@ -124,13 +120,13 @@ namespace MFVE::Vulkan
     m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
   }
 
-  void Renderer::CreateSyncObjects(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+  void Renderer::CreateSyncObjects(const LogicalDevice& _logicalDevice,
                                    const VkAllocationCallbacks* _allocator)
   {
     m_imageAvailableSemaphore.resize(MAX_FRAMES_IN_FLIGHT);
     m_renderFinishedSemaphore.resize(MAX_FRAMES_IN_FLIGHT);
     m_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-    m_imagesInFlight.resize(_swapchain.GetImages().size(), VK_NULL_HANDLE);
+    m_imagesInFlight.resize(m_swapchain.GetImages().size(), VK_NULL_HANDLE);
 
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;

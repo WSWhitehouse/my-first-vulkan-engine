@@ -85,11 +85,7 @@ namespace MFVE
     Vulkan::LogicalDevice m_logicalDevice   = {};
 
     // Renderer
-    Vulkan::Swapchain m_swapchain         = {};
-    Vulkan::Pipeline m_pipeline           = {};
-    Vulkan::Framebuffer m_framebuffer     = {};
-    Vulkan::CommandBuffer m_commandBuffer = {};
-    Vulkan::Renderer m_renderer           = {};
+    Vulkan::Renderer m_renderer = {};
   };
 } // namespace MFVE
 

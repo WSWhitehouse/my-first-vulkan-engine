@@ -19,26 +19,46 @@ namespace MFVE::Vulkan
     Renderer()  = default;
     ~Renderer() = default;
 
-    VkResult SetUpCmdBuffers(const Pipeline& _pipeline, const Framebuffer& _framebuffer,
-                             const CommandBuffer& _commandBuffer, const Swapchain& _swapchain);
+    // Renderer
+    void CreateRenderer(const PhysicalDevice& _physicalDevice, const LogicalDevice& _logicalDevice,
+                        Window* _window, const VkAllocationCallbacks* _allocator);
+    void DestroyRenderer(const LogicalDevice& _logicalDevice,
+                         const VkAllocationCallbacks* _allocator);
 
-    // Sync Objects
-    void CreateSyncObjects(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
-                           const VkAllocationCallbacks* _allocator);
-    void DestroySyncObjects(const LogicalDevice& _logicalDevice,
-                            const VkAllocationCallbacks* _allocator);
+    void RecreateRenderer(const PhysicalDevice& _physicalDevice,
+                          const LogicalDevice& _logicalDevice, Window* _window,
+                          const VkAllocationCallbacks* _allocator);
 
-    void DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
-                   const Framebuffer& _framebuffer, const CommandBuffer& _commandBuffer,
-                   const Swapchain& _swapchain);
+    // Drawing
+    void DrawFrame(const LogicalDevice& _logicalDevice);
+
+    // Getters
+    [[nodiscard]] const Swapchain& GetSwapchain() const { return m_swapchain; }
+    [[nodiscard]] const Pipeline& GetPipeline() const { return m_pipeline; }
+    [[nodiscard]] const Framebuffer& GetFramebuffer() const { return m_framebuffer; }
+    [[nodiscard]] const CommandBuffer& GetCommandBuffer() const { return m_commandBuffer; }
 
    private:
+    void CleanUpRenderer(const LogicalDevice& _logicalDevice,
+                         const VkAllocationCallbacks* _allocator);
+
+    // Vulkan
+    Swapchain m_swapchain         = {};
+    Pipeline m_pipeline           = {};
+    Framebuffer m_framebuffer     = {};
+    CommandBuffer m_commandBuffer = {};
+
     // Sync Objects
     std::vector<VkSemaphore> m_imageAvailableSemaphore;
     std::vector<VkSemaphore> m_renderFinishedSemaphore;
 
     std::vector<VkFence> m_inFlightFences;
     std::vector<VkFence> m_imagesInFlight;
+
+    void CreateSyncObjects(const LogicalDevice& _logicalDevice,
+                           const VkAllocationCallbacks* _allocator);
+    void DestroySyncObjects(const LogicalDevice& _logicalDevice,
+                            const VkAllocationCallbacks* _allocator);
 
     // Frames
     const int MAX_FRAMES_IN_FLIGHT = 2;
