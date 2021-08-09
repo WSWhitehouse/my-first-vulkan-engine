@@ -55,24 +55,37 @@ namespace MFVE::Vulkan
     return VK_SUCCESS;
   }
 
-  VkResult Renderer::DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
-                               const Framebuffer& _framebuffer, const CommandBuffer& _commandBuffer,
-                               const Swapchain& _swapchain)
+  void Renderer::DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
+                           const Framebuffer& _framebuffer, const CommandBuffer& _commandBuffer,
+                           const Swapchain& _swapchain)
   {
+    vkWaitForFences(
+      _logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
+
     // Acquire image from swap chain
     uint32_t imageIndex;
     vkAcquireNextImageKHR(_logicalDevice.GetDevice(),
                           _swapchain.GetSwapchain(),
                           UINT64_MAX,
-                          m_imageAvailableSemaphore,
+                          m_imageAvailableSemaphore[m_currentFrame],
                           VK_NULL_HANDLE,
                           &imageIndex);
+
+    // Check if a previous frame is using this image (i.e. there is its fence to wait on)
+    if (m_imagesInFlight[imageIndex] != VK_NULL_HANDLE)
+    {
+      vkWaitForFences(
+        _logicalDevice.GetDevice(), 1, &m_imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+    }
+
+    // Mark the image as now being in use by this frame
+    m_imagesInFlight[imageIndex] = m_inFlightFences[m_currentFrame];
 
     // Submitting the command buffer
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[]      = { m_imageAvailableSemaphore };
+    VkSemaphore waitSemaphores[]      = { m_imageAvailableSemaphore[m_currentFrame] };
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
     submitInfo.waitSemaphoreCount = 1;
@@ -81,18 +94,15 @@ namespace MFVE::Vulkan
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers    = &_commandBuffer.GetCommandBuffers()[imageIndex];
 
-    VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore };
+    VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore[m_currentFrame] };
 
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = signalSemaphores;
 
-    const auto queueSubmitResult =
-      vkQueueSubmit(_logicalDevice.GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkResetFences(_logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame]);
 
-    if (queueSubmitResult != VK_SUCCESS)
-    {
-      return VK_SUCCESS;
-    }
+    VkCheck(vkQueueSubmit(
+      _logicalDevice.GetGraphicsQueue(), 1, &submitInfo, m_inFlightFences[m_currentFrame]));
 
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -111,31 +121,45 @@ namespace MFVE::Vulkan
     // Wait for renderering to finish
     vkQueueWaitIdle(_logicalDevice.GetPresentQueue());
 
-    return VK_SUCCESS;
+    m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
   }
 
-  VkResult Renderer::CreateSemaphores(const LogicalDevice& _logicalDevice,
-                                      const VkAllocationCallbacks* _allocator)
+  void Renderer::CreateSyncObjects(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+                                   const VkAllocationCallbacks* _allocator)
   {
+    m_imageAvailableSemaphore.resize(MAX_FRAMES_IN_FLIGHT);
+    m_renderFinishedSemaphore.resize(MAX_FRAMES_IN_FLIGHT);
+    m_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+    m_imagesInFlight.resize(_swapchain.GetImages().size(), VK_NULL_HANDLE);
+
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
-    const auto imageResult = vkCreateSemaphore(
-      _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_imageAvailableSemaphore);
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
 
-    if (imageResult != VK_SUCCESS)
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-      return imageResult;
-    }
+      VkCheck(vkCreateSemaphore(
+        _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_imageAvailableSemaphore[i]));
 
-    return vkCreateSemaphore(
-      _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_renderFinishedSemaphore);
+      VkCheck(vkCreateSemaphore(
+        _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_renderFinishedSemaphore[i]));
+
+      VkCheck(
+        vkCreateFence(_logicalDevice.GetDevice(), &fenceInfo, _allocator, &m_inFlightFences[i]));
+    }
   }
 
-  void Renderer::DestroySemaphores(const LogicalDevice& _logicalDevice,
-                                   const VkAllocationCallbacks* _allocator)
+  void Renderer::DestroySyncObjects(const LogicalDevice& _logicalDevice,
+                                    const VkAllocationCallbacks* _allocator)
   {
-    vkDestroySemaphore(_logicalDevice.GetDevice(), m_renderFinishedSemaphore, _allocator);
-    vkDestroySemaphore(_logicalDevice.GetDevice(), m_imageAvailableSemaphore, _allocator);
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+    {
+      vkDestroySemaphore(_logicalDevice.GetDevice(), m_renderFinishedSemaphore[i], _allocator);
+      vkDestroySemaphore(_logicalDevice.GetDevice(), m_imageAvailableSemaphore[i], _allocator);
+      vkDestroyFence(_logicalDevice.GetDevice(), m_inFlightFences[i], _allocator);
+    }
   }
 } // namespace MFVE::Vulkan

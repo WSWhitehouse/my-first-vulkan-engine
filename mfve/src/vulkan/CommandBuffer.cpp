@@ -23,8 +23,7 @@ namespace MFVE::Vulkan
   }
 
   VkResult CommandBuffer::AllocateCommandBuffers(const LogicalDevice& _logicalDevice,
-                                                 const Framebuffer& _framebuffer,
-                                                 const VkAllocationCallbacks* _allocator)
+                                                 const Framebuffer& _framebuffer)
   {
     m_commandBuffers.resize(_framebuffer.GetFramebuffers().size());
 
@@ -36,5 +35,13 @@ namespace MFVE::Vulkan
 
     return vkAllocateCommandBuffers(
       _logicalDevice.GetDevice(), &allocInfo, m_commandBuffers.data());
+  }
+
+  void CommandBuffer::FreeCommandBuffers(const LogicalDevice& _logicalDevice)
+  {
+    vkFreeCommandBuffers(_logicalDevice.GetDevice(),
+                         m_commandPool,
+                         static_cast<uint32_t>(m_commandBuffers.size()),
+                         m_commandBuffers.data());
   }
 } // namepsace MFVE::Vulkan

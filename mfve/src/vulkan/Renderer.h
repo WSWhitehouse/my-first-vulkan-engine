@@ -1,6 +1,9 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_RENDERER_H
 #define MY_FIRST_VULKAN_ENGINE_RENDERER_H
 
+// Cpp
+#include <vector>
+
 // Vulkan
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/Framebuffer.h"
@@ -19,19 +22,27 @@ namespace MFVE::Vulkan
     VkResult SetUpCmdBuffers(const Pipeline& _pipeline, const Framebuffer& _framebuffer,
                              const CommandBuffer& _commandBuffer, const Swapchain& _swapchain);
 
-    // Semaphores
-    VkResult CreateSemaphores(const LogicalDevice& _logicalDevice,
-                              const VkAllocationCallbacks* _allocator);
-    void DestroySemaphores(const LogicalDevice& _logicalDevice,
+    // Sync Objects
+    void CreateSyncObjects(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
                            const VkAllocationCallbacks* _allocator);
+    void DestroySyncObjects(const LogicalDevice& _logicalDevice,
+                            const VkAllocationCallbacks* _allocator);
 
-    VkResult DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
+    void DrawFrame(const LogicalDevice& _logicalDevice, const Pipeline& _pipeline,
                    const Framebuffer& _framebuffer, const CommandBuffer& _commandBuffer,
                    const Swapchain& _swapchain);
 
    private:
-    VkSemaphore m_imageAvailableSemaphore;
-    VkSemaphore m_renderFinishedSemaphore;
+    // Sync Objects
+    std::vector<VkSemaphore> m_imageAvailableSemaphore;
+    std::vector<VkSemaphore> m_renderFinishedSemaphore;
+
+    std::vector<VkFence> m_inFlightFences;
+    std::vector<VkFence> m_imagesInFlight;
+
+    // Frames
+    const int MAX_FRAMES_IN_FLIGHT = 2;
+    size_t m_currentFrame          = 0;
   };
 } // namepsace MFVE::Vulkan
 
