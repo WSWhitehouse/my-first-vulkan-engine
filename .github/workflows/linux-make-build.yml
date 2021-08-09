@@ -21,7 +21,7 @@ jobs:
       run: premake5 gmake2
 
     - name: Debug Build
-      run: make config=debug All
+      run: make config=debug all
       
     - name: Release Build
-      run: make config=release All
+      run: make config=release all
