@@ -18,4 +18,3 @@ VULKAN_SDK = os.getenv("VULKAN_SDK")
 
 --# Vendor #--
 include "GLFW-premake"
-include "premake/premake5"
