@@ -60,12 +60,12 @@ namespace MFVE::Vulkan
 
     // Acquire image from swap chain
     uint32_t imageIndex;
-    vkAcquireNextImageKHR(_logicalDevice.GetDevice(),
-                          m_swapchain.GetSwapchain(),
-                          UINT64_MAX,
-                          m_imageAvailableSemaphore[m_currentFrame],
-                          VK_NULL_HANDLE,
-                          &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(_logicalDevice.GetDevice(),
+                                            m_swapchain.GetSwapchain(),
+                                            UINT64_MAX,
+                                            m_imageAvailableSemaphore[m_currentFrame],
+                                            VK_NULL_HANDLE,
+                                            &imageIndex);
 
     // Check if a previous frame is using this image (i.e. there is its fence to wait on)
     if (m_imagesInFlight[imageIndex] != VK_NULL_HANDLE)
@@ -113,9 +113,6 @@ namespace MFVE::Vulkan
     presentInfo.pResults       = nullptr;
 
     vkQueuePresentKHR(_logicalDevice.GetPresentQueue(), &presentInfo);
-
-    // Wait for renderering to finish
-    vkQueueWaitIdle(_logicalDevice.GetPresentQueue());
 
     m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
   }
