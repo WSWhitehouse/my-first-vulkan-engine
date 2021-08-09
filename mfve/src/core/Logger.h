@@ -41,7 +41,7 @@ namespace MFVE
   #define MFVE_LOG_ERROR(msg)
   #define MFVE_LOG_FATAL(msg)
   #define MFVE_LOG_INVALID(msg)
-
+  
 #endif
 
 #endif // MY_FIRST_VULKAN_ENGINE_LOGGER_H
