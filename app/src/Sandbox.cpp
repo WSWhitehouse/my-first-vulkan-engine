@@ -1,7 +1,7 @@
 #include "Sandbox.h"
 
 #include <pch.h>
-#include <platform/GLFWWindow.h>
+#include <platform/WindowGLFW.h>
 
 void Sandbox::AppInit()
 {

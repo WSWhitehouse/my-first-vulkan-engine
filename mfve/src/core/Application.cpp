@@ -3,7 +3,7 @@
 #include <mfve_pch.h>
 
 // Platform
-#include "platform/GLFWWindow.h"
+#include "platform/WindowGLFW.h"
 
 // FileSystem
 #include "core/FileSystem.h"
@@ -26,7 +26,7 @@ namespace MFVE
   {
     /* Window */
     WindowProperties windowProps{};
-    m_window = new GLFWWindow(windowProps); // Creating a GLFW Window for now
+    m_window = new WindowGLFW(windowProps); // Creating a GLFW Window for now
     if (!m_window->CreateWindow(GetAppProperties().name))
     {
       MFVE_LOG_FATAL("Failed to create Window!");

@@ -7,11 +7,11 @@
 
 namespace MFVE
 {
-  class GLFWWindow : public Window
+  class WindowGLFW : public Window
   {
    public:
-    explicit GLFWWindow(const WindowProperties& _appProperties) : Window(_appProperties) {}
-    ~GLFWWindow() override = default;
+    explicit WindowGLFW(const WindowProperties& _appProperties) : Window(_appProperties) {}
+    ~WindowGLFW() override = default;
 
     // Window
     virtual bool CreateWindow(std::string_view _windowTitle) override;
@@ -39,7 +39,7 @@ namespace MFVE
     // Window Resize
     static inline void WindowResizeCallback(GLFWwindow* _window, int _width, int _height)
     {
-      auto glfwWindow = reinterpret_cast<GLFWWindow*>(glfwGetWindowUserPointer(_window));
+      auto glfwWindow = reinterpret_cast<WindowGLFW*>(glfwGetWindowUserPointer(_window));
       glfwWindow->SetWindowResized(true);
     }
 
