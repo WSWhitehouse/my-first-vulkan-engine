@@ -1,6 +1,6 @@
 ![My First Vulkan Engine - Written in Cpp](./resources/readme-title.png)
 
-![Seperator](./resources/readme-seperator.png)
+---
 
 <p align="center">
   <b> 
@@ -15,7 +15,7 @@ My First Vulkan Engine (MFVE) is an open source game and rendering engine writte
   </b>
 </p>
 
-![Seperator](./resources/readme-seperator.png)
+---
 
 # Getting Started
 ### Platform Support 
@@ -28,17 +28,21 @@ The development of this engine is mainly focused on `Linux` so expect missing/in
 - Download and install the `VulkanSDK` - available on the [LunarG Website](https://vulkan.lunarg.com/sdk/home)
 - Download `Premake5` - available here: [https://premake.github.io/](https://premake.github.io/)
 
-### Cloning The Repo
-- Clone the repo recursively to initialise the submodules
+### Vendor Dependencies
+GLFW is included in the project, but requires additional dependencies to be downloaded depending on your platform. Go to the [GLFW Docs](https://www.glfw.org/docs/latest/compile_guide.html#compile_deps) and install the required dependencies for your platform. Don't worry about generating build files with CMake - this is handled automatically by Premake.
+
+### Cloning The Repository
+- Clone the repo recursively to initialise the submodules:
   - HTTPS: `git clone --recursive https://github.com/WSWhitehouse/my-first-vulkan-engine`
   - SSH: `git clone --recursive git@github.com:WSWhitehouse/my-first-vulkan-engine.git`
   
-
-- Initialise the submodules if the repository was not cloned recursively 
+- Or, initialise the submodules if the repository was not cloned recursively:
   - `git submodule update --init`
-  
-### Customising Your Application
 
+---
+
+# Setting Up & Building The Application
+### Customising Your Application
 Your application is automatically generated through Premake. 
 In order to change and customise it, you can edit some values from within the premake lua files.
 
@@ -50,17 +54,16 @@ In order to change and customise it, you can edit some values from within the pr
 </p>
 
 ### Running Premake5
-1. Open the terminal/cmd in the root of the project directory.
-2. Run the premake5 command for the required IDE, for example `premake5 vs2019` which will generate Visual Studio 2019 project files
+1. Open the terminal in the root of the project directory.
+2. Run the premake5 command for the IDE / Build System, for example `premake5 vs2019` which will generate Visual Studio 2019 project files. You only need to re-run premake when adding/removing files to the project.
 
-![Seperator](./resources/readme-seperator.png)
+### Building
+1. Build the `Generate-Assets` project. This will move the assets to the target directory.
+2. Build the application project, which is named the same as the `AppName` field in the premake files (see Customising Your Application above). 
+
+---
 
 # About MFVE
  about ...
 
-![Seperator](./resources/readme-seperator.png)
-
-# License
-This project is under the MIT License. Check out the [License file](https://github.com/WSWhitehouse/my-first-vulkan-engine/blob/main/LICENSE.md) for more information.
-
-![Seperator](./resources/readme-seperator.png)
+---
