@@ -17,8 +17,14 @@ jobs:
         submodules: recursive
         
     - name: Install Dependencies 
-      run: sudo apt-get install xorg
+      run: |
+        sudo apt update
+        sudo apt-get install xorg-dev
+        sudo apt-get install make
       
+    - name: Setup Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.0.2
+
     - name: Install Premake
       uses: abel0b/setup-premake@v1
       
