@@ -34,32 +34,33 @@ namespace MFVE
     explicit Application(AppProperties _appProperties);
     virtual ~Application() = default;
 
-    /* Copy Constructors */
+    // Copy Constructors
     Application(const Application&) = delete;
     Application(Application&&)      = delete;
 
-    /* Assignment Operator */
+    // Assignment Operator
     Application& operator=(const Application&) = delete;
     Application& operator=(Application&&) = delete;
 
-   public: /* Engine Functions */
+    // Engine Functions
     void Init(int argc, char** argv);
     void Terminate();
-
     void Run();
+
     void SignalExit() { m_signalExit = true; }
 
-    /* Getters */
+    // Getters
     [[nodiscard]] inline const AppProperties& GetAppProperties() const { return m_appProperties; }
     [[nodiscard]] inline Window* GetWindow() const { return m_window; }
 
-   protected: /* Application Functions */
+   protected:
+    // Application Functions
     virtual void AppInit()                    = 0;
     virtual void AppUpdate(const Time& _time) = 0;
     virtual void AppRender()                  = 0;
     virtual void AppCleanUp()                 = 0;
 
-   private: /* Variables */
+   private:
     bool m_signalExit             = false;
     AppProperties m_appProperties = {};
     Time m_appTimer               = {};
@@ -67,7 +68,6 @@ namespace MFVE
     // Window
     Window* m_window = nullptr;
 
-   private: /* Vulkan */
     // Extensions
     void InitExtensions();
 
