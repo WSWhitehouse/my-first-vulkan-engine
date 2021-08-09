@@ -6,8 +6,8 @@ project "Generate-Assets"
 
     kind "StaticLib"
 
-    targetdir (_targetdir)
-    objdir    (_objdir)
+    targetdir (_apptargetdir)
+    objdir    (_appobjdir)
 
     -- Post build command to generate assets (currently only moving them to target dir)
     postbuildcommands{

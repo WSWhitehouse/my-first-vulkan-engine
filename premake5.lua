@@ -22,7 +22,7 @@ workspace "my-first-vulkan-engine"
     _apptargetdir = _targetdir .. AppName
     _appobjdir = _objdir .. AppName
 
-    _assetdir = "%{wks.location}/assets/"
+    _assetdir = "%{wks.location}/assets"
 
     --# Dependencies #--
     include "vendor/vendor.lua"
