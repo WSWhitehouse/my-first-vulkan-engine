@@ -23,11 +23,17 @@ namespace MFVE
     Window& operator=(const Window&) = delete;
     Window& operator=(Window&&) = delete;
 
-   public: /* Functions */
+    // Window
     virtual bool CreateWindow(std::string_view _windowTitle) = 0;
     virtual void DestroyWindow()                             = 0;
 
-    /* Surface */
+    // Window Resized
+    // TODO : Perhaps create a window event system?
+    bool HasWindowResized() const { return m_windowResized; }
+    void ResetWindowResized() { m_windowResized = false; }
+    virtual void WaitWhileMinimised() = 0;
+
+    // Surface
     virtual VkResult CreateSurface(VkInstance _instance,
                                    const VkAllocationCallbacks* _allocator) = 0;
     void DestroySurface(VkInstance _instance, const VkAllocationCallbacks* _allocator)
@@ -35,7 +41,7 @@ namespace MFVE
       vkDestroySurfaceKHR(_instance, m_surface, _allocator);
     }
 
-    /* Vulkan */
+    // Vulkan
     virtual std::vector<const char*> GetRequiredWindowExtensions()   = 0;
     virtual void GetFrameBufferSize(int& _outWidth, int& _outHeight) = 0;
 
@@ -43,13 +49,20 @@ namespace MFVE
     virtual bool WindowShouldClose()                           = 0;
     virtual void UpdateEvents()                                = 0;
 
-   public: /* Getters */
+    // Getters
     [[nodiscard]] const WindowProperties& GetWindowProperties() const { return m_windowProperties; }
     [[nodiscard]] VkSurfaceKHR GetSurface() const { return m_surface; }
     [[nodiscard]] virtual void* GetNativeWindow() const = 0;
 
+    // Setters
+    void SetWindowResized(const bool& _windowResized) { m_windowResized = _windowResized; }
+
    protected:
+    // Window
     WindowProperties m_windowProperties;
+    bool m_windowResized = false;
+
+    // Vulkan
     VkSurfaceKHR m_surface = VK_NULL_HANDLE;
   };
 

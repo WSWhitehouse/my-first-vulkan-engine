@@ -1,5 +1,5 @@
-#ifndef MFVE_VK_BASE_H
-#define MFVE_VK_BASE_H
+#ifndef MY_FIRST_VULKAN_ENGINE_VK_BASE_H
+#define MY_FIRST_VULKAN_ENGINE_VK_BASE_H
 
 #include <mfve_pch.h>
 #include <stdexcept>
@@ -16,10 +16,9 @@ namespace MFVE::Vulkan
   {
     if (_result != VK_SUCCESS)
     {
-      MFVE_LOG_FATAL("VK RUNTIME ERROR: " + std::to_string(_result));
-      throw std::runtime_error("VK ERROR: " + std::to_string(_result));
+      MFVE_LOG_FATAL("VK CHECK FAILED: " + std::to_string(_result));
     }
   }
 }
 
-#endif // MFVE_VK_BASE_H
+#endif // MY_FIRST_VULKAN_ENGINE_VK_BASE_H

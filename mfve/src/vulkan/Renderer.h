@@ -30,7 +30,8 @@ namespace MFVE::Vulkan
                           const VkAllocationCallbacks* _allocator);
 
     // Drawing
-    void DrawFrame(const LogicalDevice& _logicalDevice);
+    void DrawFrame(const PhysicalDevice& _physicalDevice, const LogicalDevice& _logicalDevice,
+                   Window* _window, const VkAllocationCallbacks* _allocator);
 
     // Getters
     [[nodiscard]] const Swapchain& GetSwapchain() const { return m_swapchain; }

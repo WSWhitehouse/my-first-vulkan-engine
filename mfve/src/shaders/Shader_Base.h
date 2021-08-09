@@ -1,6 +1,8 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_SHADER_BASE_H
 #define MY_FIRST_VULKAN_ENGINE_SHADER_BASE_H
 
+#include <mfve_pch.h>
+
 // Shaders
 #include <shaderc/shaderc.hpp>
 #include <spirv_cross/spirv_cross.hpp>

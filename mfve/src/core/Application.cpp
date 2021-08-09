@@ -80,7 +80,7 @@ namespace MFVE
 
       // Render Application
       AppRender();
-      m_renderer.DrawFrame(m_logicalDevice);
+      m_renderer.DrawFrame(m_physicalDevice, m_logicalDevice, m_window, nullptr);
     }
 
     // Wait for logical device to finish up

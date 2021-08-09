@@ -13,22 +13,35 @@ namespace MFVE
     explicit GLFWWindow(const WindowProperties& _appProperties) : Window(_appProperties) {}
     ~GLFWWindow() override = default;
 
-   public: /* Functions */
+    // Window
     virtual bool CreateWindow(std::string_view _windowTitle) override;
     virtual void DestroyWindow() override;
 
-    /* Vulkan */
-    virtual std::vector<const char*> GetRequiredWindowExtensions() override;
+     // Window Resized
+     virtual void WaitWhileMinimised() override;
+
+    // Surface
     virtual VkResult CreateSurface(VkInstance _instance,
                                    const VkAllocationCallbacks* _allocator) override;
+
+    // Vulkan
+    virtual std::vector<const char*> GetRequiredWindowExtensions() override;
+
     virtual void GetFrameBufferSize(int& _outWidth, int& _outHeight) override;
 
     virtual void SetWindowTitle(std::string_view _windowTitle) override;
     virtual bool WindowShouldClose() override;
     virtual void UpdateEvents() override;
 
-   public: /* Getters */
+    // Getters
     [[nodiscard]] virtual void* GetNativeWindow() const override { return m_window; }
+
+    // Window Resize
+    static inline void WindowResizeCallback(GLFWwindow* _window, int _width, int _height)
+    {
+      auto glfwWindow = reinterpret_cast<GLFWWindow*>(glfwGetWindowUserPointer(_window));
+      glfwWindow->SetWindowResized(true);
+    }
 
    private:
     GLFWwindow* m_window = nullptr;

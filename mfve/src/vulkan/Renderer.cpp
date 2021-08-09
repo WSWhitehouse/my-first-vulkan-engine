@@ -30,6 +30,8 @@ namespace MFVE::Vulkan
                                   const LogicalDevice& _logicalDevice, Window* _window,
                                   const VkAllocationCallbacks* _allocator)
   {
+    _window->WaitWhileMinimised();
+
     vkDeviceWaitIdle(_logicalDevice.GetDevice());
 
     CleanUpRenderer(_logicalDevice, _allocator);
@@ -53,7 +55,9 @@ namespace MFVE::Vulkan
     m_swapchain.DestroySwapchain(_logicalDevice, _allocator);
   }
 
-  void Renderer::DrawFrame(const LogicalDevice& _logicalDevice)
+  void Renderer::DrawFrame(const PhysicalDevice& _physicalDevice,
+                           const LogicalDevice& _logicalDevice, Window* _window,
+                           const VkAllocationCallbacks* _allocator)
   {
     vkWaitForFences(
       _logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
@@ -66,6 +70,16 @@ namespace MFVE::Vulkan
                                             m_imageAvailableSemaphore[m_currentFrame],
                                             VK_NULL_HANDLE,
                                             &imageIndex);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR)
+    {
+      RecreateRenderer(_physicalDevice, _logicalDevice, _window, _allocator);
+      return;
+    }
+    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
+    {
+      VkCheck(result);
+    }
 
     // Check if a previous frame is using this image (i.e. there is its fence to wait on)
     if (m_imagesInFlight[imageIndex] != VK_NULL_HANDLE)
@@ -112,7 +126,18 @@ namespace MFVE::Vulkan
     presentInfo.pImageIndices  = &imageIndex;
     presentInfo.pResults       = nullptr;
 
-    vkQueuePresentKHR(_logicalDevice.GetPresentQueue(), &presentInfo);
+    result = vkQueuePresentKHR(_logicalDevice.GetPresentQueue(), &presentInfo);
+
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
+        _window->HasWindowResized())
+    {
+      _window->ResetWindowResized();
+      RecreateRenderer(_physicalDevice, _logicalDevice, _window, _allocator);
+    }
+    else
+    {
+      VkCheck(result);
+    }
 
     m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
   }

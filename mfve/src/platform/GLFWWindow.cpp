@@ -8,13 +8,15 @@ namespace MFVE
   {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     m_window = glfwCreateWindow(GetWindowProperties().width,
                                 GetWindowProperties().height,
                                 _windowTitle.data(),
                                 nullptr,
                                 nullptr);
+
+    glfwSetWindowUserPointer(m_window, this);
+    glfwSetFramebufferSizeCallback(m_window, WindowResizeCallback);
 
     return m_window != nullptr;
   }
@@ -23,6 +25,18 @@ namespace MFVE
   {
     glfwDestroyWindow(m_window);
     glfwTerminate();
+  }
+
+  void GLFWWindow::WaitWhileMinimised()
+  {
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(m_window, &width, &height);
+    
+    while (width == 0 || height == 0)
+    {
+      glfwGetFramebufferSize(m_window, &width, &height);
+      glfwWaitEvents();
+    }
   }
 
   std::vector<const char*> GLFWWindow::GetRequiredWindowExtensions()
