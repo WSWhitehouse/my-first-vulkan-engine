@@ -64,6 +64,14 @@ In order to change and customise it, you can edit some values from within the pr
 ---
 
 # About MFVE
- about ...
+MFVE is a personal project that was started in the summer of 2021. I initially started by following the [Vulkan Tutorial](https://vulkan-tutorial.com) online, but quickly wanted to grow my engine beyond the tutorial. This engine has been a huge learning experience on so many topics, such as understanding build tools, how engines are structured & programmed, and the Vulkan API itself. 
+
+This engine is not designed to be another "Unity" or "Unreal", it is my first engine after all.
+
+### Initial Goals
+- Crossplatform Support
+- Use modern C++
+- Easy setup and build process (using Premake)
+- Make a game using this engine 
 
 ---
