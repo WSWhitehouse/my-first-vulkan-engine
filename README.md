@@ -59,7 +59,7 @@ In order to change and customise it, you can edit some values from within the pr
 
 ### Building
 1. Build the `Generate-Assets` project. This will move the assets to the target directory.
-2. Build the application project, which is named the same as the `AppName` field in the premake files (see Customising Your Application above). 
+2. Build the application project, which is named the same as the `AppName` field in the premake files (see [Customising Your Application](#customising-your-application) above). 
 
 ---
 
