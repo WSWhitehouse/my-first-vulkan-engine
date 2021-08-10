@@ -1,4 +1,4 @@
-#include "vulkan/Vertex.h"
+#include "vulkan/VertexBuffer.h"
 
 #include <mfve_pch.h>
 
@@ -10,10 +10,25 @@ namespace MFVE::Vulkan
   {
     // Creating vertex buffer
     VkBufferCreateInfo bufferInfo{};
-    bufferInfo.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size        = sizeof(vertices[0]) * vertices.size();
-    bufferInfo.usage       = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size  = sizeof(vertices[0]) * vertices.size();
+    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
+
+    std::set<uint32_t> queueFamilyIndiciesSet = _logicalDevice.GetUniqueQueueFamilyIndicies();
+    std::vector<uint32_t> indicies(queueFamilyIndiciesSet.begin(), queueFamilyIndiciesSet.end());
+
+    if (queueFamilyIndiciesSet.size() > 1)
+    {
+      bufferInfo.sharingMode           = VK_SHARING_MODE_CONCURRENT;
+      bufferInfo.queueFamilyIndexCount = indicies.size();
+      bufferInfo.pQueueFamilyIndices   = indicies.data();
+    }
+    else
+    {
+      bufferInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
+      bufferInfo.queueFamilyIndexCount = 0;
+      bufferInfo.pQueueFamilyIndices   = nullptr;
+    }
 
     VkCheck(vkCreateBuffer(_logicalDevice.GetDevice(), &bufferInfo, _allocator, &m_vertexBuffer));
 

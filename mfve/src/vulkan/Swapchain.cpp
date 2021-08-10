@@ -62,15 +62,14 @@ namespace MFVE::Vulkan
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    const auto& queueFamilies     = _physicalDevice.GetQueueFamilies();
-    uint32_t queueFamilyIndices[] = { queueFamilies.graphicsFamily.value(),
-                                      queueFamilies.presentFamily.value() };
+    std::set<uint32_t> queueFamilyIndiciesSet = _logicalDevice.GetUniqueQueueFamilyIndicies();
+    std::vector<uint32_t> indicies(queueFamilyIndiciesSet.begin(), queueFamilyIndiciesSet.end());
 
-    if (queueFamilies.graphicsFamily != queueFamilies.presentFamily)
+    if (queueFamilyIndiciesSet.size() > 1)
     {
       createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
-      createInfo.queueFamilyIndexCount = 2;
-      createInfo.pQueueFamilyIndices   = queueFamilyIndices;
+      createInfo.queueFamilyIndexCount = indicies.size();
+      createInfo.pQueueFamilyIndices   = indicies.data();
     }
     else
     {

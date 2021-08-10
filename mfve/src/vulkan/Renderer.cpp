@@ -13,7 +13,7 @@ namespace MFVE::Vulkan
     VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
-    VkCheck(m_commandBuffer.CreateCommandPool(_logicalDevice, _physicalDevice, nullptr));
+    VkCheck(m_commandBuffer.CreateCommandPool(_logicalDevice, nullptr));
     m_vertexBuffer.CreateVertexBuffer(_physicalDevice, _logicalDevice, nullptr);
     m_commandBuffer.AllocateCommandBuffers(
       _logicalDevice, m_swapchain, m_vertexBuffer, m_pipeline, m_framebuffer);
@@ -117,7 +117,7 @@ namespace MFVE::Vulkan
     vkResetFences(_logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame]);
 
     VkCheck(vkQueueSubmit(
-      _logicalDevice.GetGraphicsQueue(), 1, &submitInfo, m_inFlightFences[m_currentFrame]));
+      _logicalDevice.GetGraphicsQueue().queue, 1, &submitInfo, m_inFlightFences[m_currentFrame]));
 
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -131,7 +131,7 @@ namespace MFVE::Vulkan
     presentInfo.pImageIndices  = &imageIndex;
     presentInfo.pResults       = nullptr;
 
-    result = vkQueuePresentKHR(_logicalDevice.GetPresentQueue(), &presentInfo);
+    result = vkQueuePresentKHR(_logicalDevice.GetPresentQueue().queue, &presentInfo);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
         _window->HasWindowResized())

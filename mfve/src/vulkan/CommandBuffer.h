@@ -3,7 +3,7 @@
 
 // Vulkan
 #include "vulkan/Framebuffer.h"
-#include "vulkan/Vertex.h"
+#include "vulkan/VertexBuffer.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
@@ -16,7 +16,6 @@ namespace MFVE::Vulkan
 
     // Command Pool
     VkResult CreateCommandPool(const LogicalDevice& _logicalDevice,
-                               const PhysicalDevice& _physicalDevice,
                                const VkAllocationCallbacks* _allocator);
     void DestroyCommandPool(const LogicalDevice& _logicalDevice,
                             const VkAllocationCallbacks* _allocator);

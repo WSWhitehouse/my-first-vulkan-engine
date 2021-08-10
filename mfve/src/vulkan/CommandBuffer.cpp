@@ -5,12 +5,11 @@
 namespace MFVE::Vulkan
 {
   VkResult CommandBuffer::CreateCommandPool(const LogicalDevice& _logicalDevice,
-                                            const PhysicalDevice& _physicalDevice,
                                             const VkAllocationCallbacks* _allocator)
   {
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.queueFamilyIndex = _physicalDevice.GetQueueFamilies().graphicsFamily.value();
+    poolInfo.queueFamilyIndex = _logicalDevice.GetGraphicsQueue().familyIndex;
     poolInfo.flags            = 0;
 
     return vkCreateCommandPool(_logicalDevice.GetDevice(), &poolInfo, _allocator, &m_commandPool);

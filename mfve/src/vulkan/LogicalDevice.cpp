@@ -7,15 +7,16 @@
 
 namespace MFVE::Vulkan
 {
-  VkResult LogicalDevice::CreateDevice(const PhysicalDevice& _physicalDevice,
-                                       const VkAllocationCallbacks* _allocator)
+  void LogicalDevice::CreateDevice(const PhysicalDevice& _physicalDevice,
+                                   const VkAllocationCallbacks* _allocator)
   {
-    std::set<uint32_t> uniqueQueueFamilies = {
-      _physicalDevice.GetQueueFamilies().graphicsFamily.value(),
-      _physicalDevice.GetQueueFamilies().presentFamily.value()
-    };
+    const auto& queueFamily = _physicalDevice.GetQueueFamilies();
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+
+    std::set<uint32_t> uniqueQueueFamilies = { queueFamily.graphicsFamily.value(),
+                                               queueFamily.presentFamily.value(),
+                                               queueFamily.transferFamily.value() };
 
     float queuePriority = 1.0f;
     for (const auto& queueFamily : uniqueQueueFamilies)
@@ -50,21 +51,16 @@ namespace MFVE::Vulkan
       createInfo.enabledLayerCount = 0;
     }
 
-    return vkCreateDevice(_physicalDevice.GetDevice(), &createInfo, _allocator, &m_device);
-  }
+    VkCheck(vkCreateDevice(_physicalDevice.GetDevice(), &createInfo, _allocator, &m_device));
 
-  void LogicalDevice::CreateQueueHandles(const PhysicalDevice& _physicalDevice)
-  {
-    const auto& queueFamily = _physicalDevice.GetQueueFamilies();
-    vkGetDeviceQueue(m_device, queueFamily.graphicsFamily.value(), 0, &m_graphicsQueue);
-    vkGetDeviceQueue(m_device, queueFamily.presentFamily.value(), 0, &m_presentQueue);
+    m_graphicsQueue.CreateHandle(m_device, queueFamily.graphicsFamily.value(), 0);
+    m_presentQueue.CreateHandle(m_device, queueFamily.presentFamily.value(), 0);
+    m_transferQueue.CreateHandle(m_device, queueFamily.transferFamily.value(), 0);
   }
 
   void LogicalDevice::Destroy(const VkAllocationCallbacks* _allocator)
   {
     vkDestroyDevice(m_device, _allocator);
-    m_graphicsQueue = VK_NULL_HANDLE;
-    m_presentQueue  = VK_NULL_HANDLE;
   }
 
 } // namespace MFVE::Vulkan

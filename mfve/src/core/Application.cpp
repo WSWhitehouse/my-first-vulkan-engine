@@ -10,7 +10,7 @@
 
 // Vulkan
 #include "vulkan/Extensions.h"
-#include "vulkan/QueueFamilies.h"
+#include "vulkan/QueueFamilyIndicies.h"
 #include "vulkan/ValidationLayers.h"
 
 using namespace MFVE::Vulkan;
@@ -41,8 +41,7 @@ namespace MFVE
     CreateDebugMessenger();
     VkCheck(m_window->CreateSurface(m_instance, nullptr));
     m_physicalDevice.PickSuitableDevice(m_instance, m_window->GetSurface());
-    VkCheck(m_logicalDevice.CreateDevice(m_physicalDevice, nullptr));
-    m_logicalDevice.CreateQueueHandles(m_physicalDevice);
+    m_logicalDevice.CreateDevice(m_physicalDevice, nullptr);
     m_renderer.CreateRenderer(m_physicalDevice, m_logicalDevice, m_window, nullptr);
   }
 

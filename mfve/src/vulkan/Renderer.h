@@ -9,7 +9,7 @@
 #include "vulkan/Framebuffer.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
-#include "vulkan/Vertex.h"
+#include "vulkan/VertexBuffer.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan

@@ -9,8 +9,6 @@
 #include <glm/glm.hpp>
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/PhysicalDevice.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
@@ -46,30 +44,6 @@ namespace MFVE::Vulkan
 
       return attributeDescriptions;
     }
-  };
-
-  static inline const std::vector<Vertex> vertices = { { { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
-                                                       { { 0.5f, 0.5f }, { 0.0f, 1.0f, 0.0f } },
-                                                       { { -0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } } };
-
-  class VertexBuffer
-  {
-   public:
-    VertexBuffer()  = default;
-    ~VertexBuffer() = default;
-
-    void CreateVertexBuffer(const PhysicalDevice& _physicalDevice,
-                            const LogicalDevice& _logicalDevice,
-                            const VkAllocationCallbacks* _allocator);
-    void DestroyVertexBuffer(const LogicalDevice& _logicalDevice,
-                             const VkAllocationCallbacks* _allocator);
-
-    // Getters
-    [[nodiscard]] VkBuffer GetVertexBuffer() const { return m_vertexBuffer; }
-
-   private:
-    VkBuffer m_vertexBuffer;
-    VkDeviceMemory m_vertexBufferMemory;
   };
 } // namespace MFVE::Vulkan
 
