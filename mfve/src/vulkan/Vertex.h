@@ -65,7 +65,7 @@ namespace MFVE::Vulkan
                              const VkAllocationCallbacks* _allocator);
 
     // Getters
-    [[nodiscard]] const VkBuffer& GetVertexBuffer() const { return m_vertexBuffer; }
+    [[nodiscard]] VkBuffer GetVertexBuffer() const { return m_vertexBuffer; }
 
    private:
     VkBuffer m_vertexBuffer;

@@ -28,7 +28,7 @@ namespace MFVE::Vulkan
     void FreeCommandBuffers(const LogicalDevice& _logicalDevice);
 
     // Getters
-    [[nodiscard]] const VkCommandPool& GetCommandPool() const { return m_commandPool; }
+    [[nodiscard]] VkCommandPool GetCommandPool() const { return m_commandPool; }
     [[nodiscard]] const std::vector<VkCommandBuffer>& GetCommandBuffers() const
     {
       return m_commandBuffers;

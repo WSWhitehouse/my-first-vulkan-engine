@@ -28,7 +28,7 @@ namespace MFVE::Vulkan
     uint32_t FindMemoryType(uint32_t _typeFilter, VkMemoryPropertyFlags _properties) const;
 
     /* Getters */
-    [[nodiscard]] const VkPhysicalDevice& GetDevice() const { return m_physicalDevice; }
+    [[nodiscard]] VkPhysicalDevice GetDevice() const { return m_physicalDevice; }
     [[nodiscard]] const VkPhysicalDeviceFeatures& GetFeatures() const { return m_features; }
     [[nodiscard]] const VkPhysicalDeviceProperties& GetProperties() const { return m_properties; }
     [[nodiscard]] const QueueFamilies& GetQueueFamilies() const { return m_queueFamilies; }

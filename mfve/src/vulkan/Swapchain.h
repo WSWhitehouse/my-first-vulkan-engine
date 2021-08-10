@@ -36,9 +36,9 @@ namespace MFVE::Vulkan
 
     /* Getters */
     [[nodiscard]] VkSwapchainKHR GetSwapchain() const { return m_swapchain; }
-    [[nodiscard]] VkSurfaceFormatKHR GetSurfaceFormat() const { return m_surfaceFormat; }
-    [[nodiscard]] VkPresentModeKHR GetPresentMode() const { return m_presentMode; }
-    [[nodiscard]] VkExtent2D GetExtent() const { return m_extent; }
+    [[nodiscard]] const VkSurfaceFormatKHR& GetSurfaceFormat() const { return m_surfaceFormat; }
+    [[nodiscard]] const VkPresentModeKHR& GetPresentMode() const { return m_presentMode; }
+    [[nodiscard]] const VkExtent2D& GetExtent() const { return m_extent; }
     [[nodiscard]] const std::vector<VkImage>& GetImages() const { return m_swapchainImages; }
     [[nodiscard]] const std::vector<VkImageView>& GetImageViews() const
     {

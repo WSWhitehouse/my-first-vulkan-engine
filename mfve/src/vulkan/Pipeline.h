@@ -33,9 +33,9 @@ namespace MFVE::Vulkan
                          const VkAllocationCallbacks* _allocator);
 
     // Getters
-    [[nodiscard]] const VkRenderPass& GetRenderPass() const { return m_renderPass; }
-    [[nodiscard]] const VkPipelineLayout& GetPipelineLayout() const { return m_pipelineLayout; }
-    [[nodiscard]] const VkPipeline& GetPipeline() const { return m_pipeline; }
+    [[nodiscard]] VkRenderPass GetRenderPass() const { return m_renderPass; }
+    [[nodiscard]] VkPipelineLayout GetPipelineLayout() const { return m_pipelineLayout; }
+    [[nodiscard]] VkPipeline GetPipeline() const { return m_pipeline; }
 
    private:
     Shader m_fragShader = {};
