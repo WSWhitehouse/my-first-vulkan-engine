@@ -2,59 +2,28 @@
 
 #include <mfve_pch.h>
 
+#include "vulkan/Buffer.h"
+
 namespace MFVE::Vulkan
 {
   void VertexBuffer::CreateVertexBuffer(const PhysicalDevice& _physicalDevice,
                                         const LogicalDevice& _logicalDevice,
                                         const VkAllocationCallbacks* _allocator)
   {
-    // Creating vertex buffer
-    VkBufferCreateInfo bufferInfo{};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size  = sizeof(vertices[0]) * vertices.size();
-    bufferInfo.usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-
-    std::set<uint32_t> queueFamilyIndiciesSet = _logicalDevice.GetUniqueQueueFamilyIndicies();
-    std::vector<uint32_t> indicies(queueFamilyIndiciesSet.begin(), queueFamilyIndiciesSet.end());
-
-    if (queueFamilyIndiciesSet.size() > 1)
-    {
-      bufferInfo.sharingMode           = VK_SHARING_MODE_CONCURRENT;
-      bufferInfo.queueFamilyIndexCount = indicies.size();
-      bufferInfo.pQueueFamilyIndices   = indicies.data();
-    }
-    else
-    {
-      bufferInfo.sharingMode           = VK_SHARING_MODE_EXCLUSIVE;
-      bufferInfo.queueFamilyIndexCount = 0;
-      bufferInfo.pQueueFamilyIndices   = nullptr;
-    }
-
-    VkCheck(vkCreateBuffer(_logicalDevice.GetDevice(), &bufferInfo, _allocator, &m_vertexBuffer));
-
-    // Allocating memory for vertex buffer
-    VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(_logicalDevice.GetDevice(), m_vertexBuffer, &memRequirements);
-
-    VkMemoryAllocateInfo allocInfo{};
-    allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    allocInfo.allocationSize  = memRequirements.size;
-    allocInfo.memoryTypeIndex = _physicalDevice.FindMemoryType(
-      memRequirements.memoryTypeBits,
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-
-    VkCheck(
-      vkAllocateMemory(_logicalDevice.GetDevice(), &allocInfo, _allocator, &m_vertexBufferMemory));
-
-    // Bind memory
-    vkBindBufferMemory(_logicalDevice.GetDevice(), m_vertexBuffer, m_vertexBufferMemory, 0);
+    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+    Buffer::Create(_physicalDevice,
+                   _logicalDevice,
+                   bufferSize,
+                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                   VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                   m_vertexBuffer,
+                   m_vertexBufferMemory,
+                   _allocator);
 
     // Fill Vertex Buffer
     void* data;
-    vkMapMemory(_logicalDevice.GetDevice(), m_vertexBufferMemory, 0, bufferInfo.size, 0, &data);
-
-    memcpy(data, vertices.data(), (size_t)bufferInfo.size);
-
+    vkMapMemory(_logicalDevice.GetDevice(), m_vertexBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, vertices.data(), (size_t)bufferSize);
     vkUnmapMemory(_logicalDevice.GetDevice(), m_vertexBufferMemory);
   }
 
