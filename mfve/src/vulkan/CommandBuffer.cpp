@@ -60,12 +60,12 @@ namespace MFVE::Vulkan
 
       vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+      vkCmdBindPipeline(
+        m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline.GetPipeline());
+
       VkBuffer vertexBuffers[] = { _vertexBuffer.GetVertexBuffer() };
       VkDeviceSize offsets[]   = { 0 };
       vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
-
-      vkCmdBindPipeline(
-        m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline.GetPipeline());
 
       vkCmdDraw(m_commandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
