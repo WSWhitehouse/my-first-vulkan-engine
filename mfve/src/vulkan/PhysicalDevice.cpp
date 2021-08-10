@@ -33,6 +33,25 @@ namespace MFVE::Vulkan
     }
   }
 
+  uint32_t PhysicalDevice::FindMemoryType(uint32_t _typeFilter,
+                                          VkMemoryPropertyFlags _properties) const
+  {
+    VkPhysicalDeviceMemoryProperties memProperties;
+    vkGetPhysicalDeviceMemoryProperties(m_physicalDevice, &memProperties);
+
+    for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++)
+    {
+      if ((_typeFilter & (1 << i)) &&
+          (memProperties.memoryTypes[i].propertyFlags & _properties) == _properties)
+      {
+        return i;
+      }
+    }
+
+    MFVE_LOG_FATAL("Failed to find suitable memory type on Physical Device!");
+    return 0;
+  }
+
   bool PhysicalDevice::IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface)
   {
     m_queueFamilies.FindQueueFamilies(_device, _surface);

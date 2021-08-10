@@ -3,6 +3,7 @@
 
 // Vulkan
 #include "vulkan/Framebuffer.h"
+#include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
@@ -22,7 +23,8 @@ namespace MFVE::Vulkan
 
     // Command Buffer
     void AllocateCommandBuffers(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
-                                const Pipeline& _pipeline, const Framebuffer& _framebuffer);
+                                const VertexBuffer& _vertexBuffer, const Pipeline& _pipeline,
+                                const Framebuffer& _framebuffer);
     void FreeCommandBuffers(const LogicalDevice& _logicalDevice);
 
     // Getters

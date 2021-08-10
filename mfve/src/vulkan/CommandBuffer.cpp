@@ -23,7 +23,9 @@ namespace MFVE::Vulkan
   }
 
   void CommandBuffer::AllocateCommandBuffers(const LogicalDevice& _logicalDevice,
-                                             const Swapchain& _swapchain, const Pipeline& _pipeline,
+                                             const Swapchain& _swapchain,
+                                             const VertexBuffer& _vertexBuffer,
+                                             const Pipeline& _pipeline,
                                              const Framebuffer& _framebuffer)
   {
     m_commandBuffers.resize(_framebuffer.GetFramebuffers().size());
@@ -58,10 +60,14 @@ namespace MFVE::Vulkan
 
       vkCmdBeginRenderPass(m_commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+      VkBuffer vertexBuffers[] = { _vertexBuffer.GetVertexBuffer() };
+      VkDeviceSize offsets[]   = { 0 };
+      vkCmdBindVertexBuffers(m_commandBuffers[i], 0, 1, vertexBuffers, offsets);
+
       vkCmdBindPipeline(
         m_commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, _pipeline.GetPipeline());
 
-      vkCmdDraw(m_commandBuffers[i], 3, 1, 0, 0);
+      vkCmdDraw(m_commandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
 
       vkCmdEndRenderPass(m_commandBuffers[i]);
 

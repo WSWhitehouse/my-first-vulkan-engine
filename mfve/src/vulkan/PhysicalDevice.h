@@ -25,6 +25,8 @@ namespace MFVE::Vulkan
 
     void PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface);
 
+    uint32_t FindMemoryType(uint32_t _typeFilter, VkMemoryPropertyFlags _properties) const;
+
     /* Getters */
     [[nodiscard]] const VkPhysicalDevice& GetDevice() const { return m_physicalDevice; }
     [[nodiscard]] const VkPhysicalDeviceFeatures& GetFeatures() const { return m_features; }
@@ -39,7 +41,6 @@ namespace MFVE::Vulkan
     bool IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface);
     bool CheckDeviceExtensionSupport(VkPhysicalDevice _device);
 
-   private:
     VkPhysicalDevice m_physicalDevice       = VK_NULL_HANDLE;
     VkPhysicalDeviceFeatures m_features     = {};
     VkPhysicalDeviceProperties m_properties = {};

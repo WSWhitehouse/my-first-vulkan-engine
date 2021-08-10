@@ -9,6 +9,7 @@
 #include "vulkan/Framebuffer.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
+#include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
@@ -48,6 +49,8 @@ namespace MFVE::Vulkan
     Pipeline m_pipeline           = {};
     Framebuffer m_framebuffer     = {};
     CommandBuffer m_commandBuffer = {};
+
+    VertexBuffer m_vertexBuffer = {};
 
     // Sync Objects
     std::vector<VkSemaphore> m_imageAvailableSemaphore;
