@@ -2,7 +2,9 @@
 
 #include <mfve_pch.h>
 
+// Vulkan
 #include "vulkan/Extensions.h"
+#include "vulkan/PhysicalDevice.h"
 #include "vulkan/ValidationLayers.h"
 
 namespace MFVE::Vulkan

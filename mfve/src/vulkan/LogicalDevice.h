@@ -6,11 +6,13 @@
 
 // Vulkan
 #include "Vk_Base.h"
-#include "vulkan/PhysicalDevice.h"
 #include "vulkan/QueueFamily.h"
 
 namespace MFVE::Vulkan
 {
+  // Forward Declarations
+  class PhysicalDevice;
+
   class LogicalDevice
   {
    public:

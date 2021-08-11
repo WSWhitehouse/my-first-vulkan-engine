@@ -2,6 +2,11 @@
 
 #include <mfve_pch.h>
 
+// Vulkan
+#include "vulkan/LogicalDevice.h"
+#include "vulkan/Pipeline.h"
+#include "vulkan/Swapchain.h"
+
 namespace MFVE::Vulkan
 {
   VkResult Framebuffer::CreateFramebuffers(const LogicalDevice& _logicalDevice,

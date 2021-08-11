@@ -1,12 +1,7 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_PIPELINE_H
 #define MY_FIRST_VULKAN_ENGINE_PIPELINE_H
 
-// Cpp
-#include <vector>
-
 // Vulkan
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/Swapchain.h"
 #include "vulkan/Vk_Base.h"
 
 // Shaders
@@ -14,6 +9,10 @@
 
 namespace MFVE::Vulkan
 {
+  // Forward Declarations
+  class LogicalDevice;
+  class Swapchain;
+
   class Pipeline
   {
    public:

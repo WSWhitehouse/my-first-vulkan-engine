@@ -2,8 +2,11 @@
 
 #include <mfve_pch.h>
 
+// Vulkan
 #include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
+#include "vulkan/LogicalDevice.h"
+#include "vulkan/PhysicalDevice.h"
 
 namespace MFVE::Vulkan
 {

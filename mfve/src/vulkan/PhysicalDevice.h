@@ -1,8 +1,9 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_PHYSICAL_DEVICE_H
 #define MY_FIRST_VULKAN_ENGINE_PHYSICAL_DEVICE_H
 
+// Vulkan
 #include "vulkan/QueueFamilyIndicies.h"
-#include "Vk_Base.h"
+#include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
 {
@@ -44,7 +45,7 @@ namespace MFVE::Vulkan
     VkPhysicalDevice m_physicalDevice       = VK_NULL_HANDLE;
     VkPhysicalDeviceFeatures m_features     = {};
     VkPhysicalDeviceProperties m_properties = {};
-    QueueFamilyIndicies m_queueFamilies           = {};
+    QueueFamilyIndicies m_queueFamilies     = {};
 
     const std::vector<const char*> m_deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
   };

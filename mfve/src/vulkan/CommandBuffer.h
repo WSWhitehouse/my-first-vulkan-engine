@@ -2,11 +2,15 @@
 #define MY_FIRST_VULKAN_ENGINE_COMMAND_BUFFERS_H
 
 // Vulkan
-#include "vulkan/Framebuffer.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
 {
+  // Forward Declarations
+  class Framebuffer;
+  class LogicalDevice;
+  class Pipeline;
+  class Swapchain;
   class VertexBuffer;
 
   class CommandBuffer

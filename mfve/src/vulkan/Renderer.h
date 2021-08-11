@@ -14,6 +14,10 @@
 
 namespace MFVE::Vulkan
 {
+  // Forward Declarations
+  class LogicalDevice;
+  class PhysicalDevice;
+
   class Renderer
   {
    public:

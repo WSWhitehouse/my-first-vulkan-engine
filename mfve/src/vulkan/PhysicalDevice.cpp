@@ -1,8 +1,9 @@
-#include "PhysicalDevice.h"
+#include "vulkan/PhysicalDevice.h"
 
 #include <mfve_pch.h>
 
-#include "Swapchain.h"
+// Vulkan
+#include "vulkan/Swapchain.h"
 
 namespace MFVE::Vulkan
 {

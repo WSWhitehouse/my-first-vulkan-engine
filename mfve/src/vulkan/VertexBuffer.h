@@ -9,14 +9,15 @@
 #include <glm/glm.hpp>
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/PhysicalDevice.h"
 #include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
 {
+  // Forward Declarations
   class CommandBuffer;
+  class LogicalDevice;
+  class PhysicalDevice;
 
   static inline const std::vector<Vertex> vertices = { { { 0.0f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
                                                        { { 0.5f, 0.5f }, { 0.0f, 1.0f, 0.0f } },

@@ -2,6 +2,11 @@
 
 #include <mfve_pch.h>
 
+// Vulkan
+#include "vulkan/Framebuffer.h"
+#include "vulkan/LogicalDevice.h"
+#include "vulkan/Pipeline.h"
+#include "vulkan/Swapchain.h"
 #include "vulkan/VertexBuffer.h"
 
 namespace MFVE::Vulkan

@@ -2,12 +2,15 @@
 #define MY_FIRST_VULKAN_ENGINE_FRAMEBUFFER_H
 
 // Vulkan
-#include "vulkan/Pipeline.h"
-#include "vulkan/Swapchain.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
 {
+  // Forward Declarations
+  class LogicalDevice;
+  class Pipeline;
+  class Swapchain;
+
   class Framebuffer
   {
    public:

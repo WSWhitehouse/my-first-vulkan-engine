@@ -1,13 +1,21 @@
 #ifndef MY_FIRST_VULKAN_ENGINE_SWAPCHAIN_H
 #define MY_FIRST_VULKAN_ENGINE_SWAPCHAIN_H
 
-#include "LogicalDevice.h"
-#include "PhysicalDevice.h"
+// Cpp
+#include <vector>
+
+// Vulkan
 #include "Vk_Base.h"
+
+// Core
 #include "core/Window.h"
 
 namespace MFVE::Vulkan
 {
+  // Forward Declarations
+  class LogicalDevice;
+  class PhysicalDevice;
+
   class Swapchain
   {
    public:

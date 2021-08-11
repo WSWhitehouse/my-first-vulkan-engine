@@ -3,6 +3,8 @@
 #include <mfve_pch.h>
 
 // Vulkan
+#include "vulkan/LogicalDevice.h"
+#include "vulkan/Swapchain.h"
 #include "vulkan/Vertex.h"
 
 namespace MFVE::Vulkan

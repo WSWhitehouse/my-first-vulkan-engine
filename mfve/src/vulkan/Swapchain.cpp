@@ -2,6 +2,10 @@
 
 #include <mfve_pch.h>
 
+// Vulkan
+#include "vulkan/LogicalDevice.h"
+#include "vulkan/PhysicalDevice.h"
+
 namespace MFVE::Vulkan
 {
   Swapchain::SupportDetails Swapchain::SupportDetails::QuerySupport(VkPhysicalDevice _device,
