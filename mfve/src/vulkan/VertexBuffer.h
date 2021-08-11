@@ -15,7 +15,7 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
-  class CommandBuffer;
+  class CommandPool;
   class LogicalDevice;
   class PhysicalDevice;
 
@@ -30,8 +30,7 @@ namespace MFVE::Vulkan
     ~VertexBuffer() = default;
 
     void CreateVertexBuffer(const PhysicalDevice& _physicalDevice,
-                            const LogicalDevice& _logicalDevice,
-                            const CommandBuffer& _commandBuffer,
+                            const LogicalDevice& _logicalDevice, const CommandPool& _commandPool,
                             const VkAllocationCallbacks* _allocator);
     void DestroyVertexBuffer(const LogicalDevice& _logicalDevice,
                              const VkAllocationCallbacks* _allocator);

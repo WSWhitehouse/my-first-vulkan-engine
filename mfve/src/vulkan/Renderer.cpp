@@ -17,10 +17,11 @@ namespace MFVE::Vulkan
     VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
-    VkCheck(m_commandBuffer.CreateCommandPool(_logicalDevice, nullptr));
-    m_vertexBuffer.CreateVertexBuffer(_physicalDevice, _logicalDevice, m_commandBuffer, nullptr);
-    m_commandBuffer.AllocateCommandBuffers(
-      _logicalDevice, m_swapchain, m_vertexBuffer, m_pipeline, m_framebuffer);
+    VkCheck(m_graphicsCommandPool.CreateCommandPool(
+      _logicalDevice, _logicalDevice.GetGraphicsQueue(), _allocator));
+    m_vertexBuffer.CreateVertexBuffer(
+      _physicalDevice, _logicalDevice, m_graphicsCommandPool, _allocator);
+    SetUpGraphicsCommandBuffer(_logicalDevice);
     CreateSyncObjects(_logicalDevice, _allocator);
   }
 
@@ -31,7 +32,7 @@ namespace MFVE::Vulkan
 
     DestroySyncObjects(_logicalDevice, _allocator);
     m_vertexBuffer.DestroyVertexBuffer(_logicalDevice, _allocator);
-    m_commandBuffer.DestroyCommandPool(_logicalDevice, _allocator);
+    m_graphicsCommandPool.DestroyCommandPool(_logicalDevice, _allocator);
   }
 
   void Renderer::RecreateRenderer(const PhysicalDevice& _physicalDevice,
@@ -49,19 +50,61 @@ namespace MFVE::Vulkan
     VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
-    m_commandBuffer.AllocateCommandBuffers(
-      _logicalDevice, m_swapchain, m_vertexBuffer, m_pipeline, m_framebuffer);
+    SetUpGraphicsCommandBuffer(_logicalDevice);
   }
 
   void Renderer::CleanUpRenderer(const LogicalDevice& _logicalDevice,
                                  const VkAllocationCallbacks* _allocator)
   {
-    m_commandBuffer.FreeCommandBuffers(_logicalDevice);
+    m_graphicsCommandBuffer.FreeCommandBuffers(_logicalDevice, m_graphicsCommandPool);
     m_framebuffer.DestroyFramebuffers(_logicalDevice, _allocator);
     m_pipeline.DestroyPipeline(_logicalDevice, _allocator);
     m_pipeline.DestroyRenderPasses(_logicalDevice, _allocator);
     m_swapchain.DestroyImageViews(_logicalDevice, _allocator);
     m_swapchain.DestroySwapchain(_logicalDevice, _allocator);
+  }
+
+  void Renderer::SetUpGraphicsCommandBuffer(const LogicalDevice& _logicalDevice)
+  {
+    m_graphicsCommandBuffer.AllocateCommandBuffers(
+      _logicalDevice, m_graphicsCommandPool, m_framebuffer.GetFramebuffers().size());
+
+    auto& commandBuffers = m_graphicsCommandBuffer.GetCommandBuffers();
+
+    for (size_t i = 0; i < commandBuffers.size(); i++)
+    {
+      VkCommandBufferBeginInfo beginInfo{};
+      beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+      beginInfo.flags            = 0;
+      beginInfo.pInheritanceInfo = nullptr;
+
+      VkCheck(vkBeginCommandBuffer(commandBuffers[i], &beginInfo));
+
+      VkRenderPassBeginInfo renderPassInfo{};
+      renderPassInfo.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+      renderPassInfo.renderPass        = m_pipeline.GetRenderPass();
+      renderPassInfo.framebuffer       = m_framebuffer.GetFramebuffers()[i];
+      renderPassInfo.renderArea.offset = { 0, 0 };
+      renderPassInfo.renderArea.extent = m_swapchain.GetExtent();
+      VkClearValue clearColor          = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
+      renderPassInfo.clearValueCount   = 1;
+      renderPassInfo.pClearValues      = &clearColor;
+
+      vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+      vkCmdBindPipeline(
+        commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.GetPipeline());
+
+      VkBuffer vertexBuffers[] = { m_vertexBuffer.GetVertexBuffer() };
+      VkDeviceSize offsets[]   = { 0 };
+      vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
+
+      vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+
+      vkCmdEndRenderPass(commandBuffers[i]);
+
+      VkCheck(vkEndCommandBuffer(commandBuffers[i]));
+    }
   }
 
   void Renderer::DrawFrame(const PhysicalDevice& _physicalDevice,
@@ -111,7 +154,7 @@ namespace MFVE::Vulkan
     submitInfo.pWaitSemaphores    = waitSemaphores;
     submitInfo.pWaitDstStageMask  = waitStages;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &m_commandBuffer.GetCommandBuffers()[imageIndex];
+    submitInfo.pCommandBuffers    = &m_graphicsCommandBuffer.GetCommandBuffers()[imageIndex];
 
     VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore[m_currentFrame] };
 

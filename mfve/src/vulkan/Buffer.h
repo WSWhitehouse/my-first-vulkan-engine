@@ -3,6 +3,7 @@
 
 // Vulkan
 #include "vulkan/CommandBuffer.h"
+#include "vulkan/CommandPool.h"
 #include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"
 #include "vulkan/Vk_Base.h"
@@ -56,42 +57,44 @@ namespace MFVE::Vulkan::Buffer
     vkBindBufferMemory(_logicalDevice.GetDevice(), _Buffer, _BufferMemory, 0);
   }
 
-  static inline void Copy(const LogicalDevice& _logicalDevice, const CommandBuffer& _commandBuffer,
+  static inline void Destroy(const LogicalDevice& _logicalDevice, VkBuffer& _Buffer,
+                             VkDeviceMemory& _BufferMemory, const VkAllocationCallbacks* _allocator)
+  {
+    vkDestroyBuffer(_logicalDevice.GetDevice(), _Buffer, _allocator);
+    vkFreeMemory(_logicalDevice.GetDevice(), _BufferMemory, _allocator);
+  }
+
+  static inline void Copy(const LogicalDevice& _logicalDevice, const CommandPool& _commandPool,
                           VkBuffer _srcBuffer, VkBuffer _dstBuffer, VkDeviceSize _size)
   {
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool        = _commandBuffer.GetCommandPool();
-    allocInfo.commandBufferCount = 1;
+    CommandBuffer commandBuffer;
+    commandBuffer.AllocateCommandBuffers(_logicalDevice, _commandPool, 1);
 
-    VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(_logicalDevice.GetDevice(), &allocInfo, &commandBuffer);
+    auto buffer = commandBuffer.GetCommandBuffers().at(0);
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 
-    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+    vkBeginCommandBuffer(buffer, &beginInfo);
 
     VkBufferCopy copyRegion{};
     copyRegion.srcOffset = 0;
     copyRegion.dstOffset = 0;
     copyRegion.size      = _size;
-    vkCmdCopyBuffer(commandBuffer, _srcBuffer, _dstBuffer, 1, &copyRegion);
+    vkCmdCopyBuffer(buffer, _srcBuffer, _dstBuffer, 1, &copyRegion);
 
-    vkEndCommandBuffer(commandBuffer);
+    vkEndCommandBuffer(buffer);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &commandBuffer;
+    submitInfo.pCommandBuffers    = &buffer;
 
-    vkQueueSubmit(_logicalDevice.GetGraphicsQueue().queue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(_logicalDevice.GetGraphicsQueue().queue);
+    vkQueueSubmit(_commandPool.GetQueueFamily().queue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(_commandPool.GetQueueFamily().queue);
 
-    vkFreeCommandBuffers(
-      _logicalDevice.GetDevice(), _commandBuffer.GetCommandPool(), 1, &commandBuffer);
+    commandBuffer.FreeCommandBuffers(_logicalDevice, _commandPool);
   }
 } // namepsace MFVE::Vulkan
 

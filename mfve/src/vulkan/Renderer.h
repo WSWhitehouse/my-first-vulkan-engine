@@ -6,6 +6,7 @@
 
 // Vulkan
 #include "vulkan/CommandBuffer.h"
+#include "vulkan/CommandPool.h"
 #include "vulkan/Framebuffer.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
@@ -42,17 +43,21 @@ namespace MFVE::Vulkan
     [[nodiscard]] const Swapchain& GetSwapchain() const { return m_swapchain; }
     [[nodiscard]] const Pipeline& GetPipeline() const { return m_pipeline; }
     [[nodiscard]] const Framebuffer& GetFramebuffer() const { return m_framebuffer; }
-    [[nodiscard]] const CommandBuffer& GetCommandBuffer() const { return m_commandBuffer; }
+    [[nodiscard]] const CommandBuffer& GetCommandBuffer() const { return m_graphicsCommandBuffer; }
 
    private:
     void CleanUpRenderer(const LogicalDevice& _logicalDevice,
                          const VkAllocationCallbacks* _allocator);
 
     // Vulkan
-    Swapchain m_swapchain         = {};
-    Pipeline m_pipeline           = {};
-    Framebuffer m_framebuffer     = {};
-    CommandBuffer m_commandBuffer = {};
+    Swapchain m_swapchain     = {};
+    Pipeline m_pipeline       = {};
+    Framebuffer m_framebuffer = {};
+
+    CommandPool m_graphicsCommandPool     = {};
+    CommandBuffer m_graphicsCommandBuffer = {};
+
+    void SetUpGraphicsCommandBuffer(const LogicalDevice& _logicalDevice);
 
     VertexBuffer m_vertexBuffer = {};
 

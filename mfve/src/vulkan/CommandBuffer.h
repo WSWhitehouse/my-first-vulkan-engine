@@ -7,11 +7,8 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
-  class Framebuffer;
+  class CommandPool;
   class LogicalDevice;
-  class Pipeline;
-  class Swapchain;
-  class VertexBuffer;
 
   class CommandBuffer
   {
@@ -19,27 +16,20 @@ namespace MFVE::Vulkan
     CommandBuffer()  = default;
     ~CommandBuffer() = default;
 
-    // Command Pool
-    VkResult CreateCommandPool(const LogicalDevice& _logicalDevice,
-                               const VkAllocationCallbacks* _allocator);
-    void DestroyCommandPool(const LogicalDevice& _logicalDevice,
-                            const VkAllocationCallbacks* _allocator);
-
     // Command Buffer
-    void AllocateCommandBuffers(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
-                                const VertexBuffer& _vertexBuffer, const Pipeline& _pipeline,
-                                const Framebuffer& _framebuffer);
-    void FreeCommandBuffers(const LogicalDevice& _logicalDevice);
+    void AllocateCommandBuffers(const LogicalDevice& _logicalDevice,
+                                const CommandPool& _commandPool, uint32_t _commandBufferCount,
+                                VkCommandBufferLevel _level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+    void FreeCommandBuffers(const LogicalDevice& _logicalDevice, const CommandPool& _commandPool);
 
     // Getters
-    [[nodiscard]] VkCommandPool GetCommandPool() const { return m_commandPool; }
+    [[nodiscard]] std::vector<VkCommandBuffer>& GetCommandBuffers() { return m_commandBuffers; }
     [[nodiscard]] const std::vector<VkCommandBuffer>& GetCommandBuffers() const
     {
       return m_commandBuffers;
     }
 
    private:
-    VkCommandPool m_commandPool                   = VK_NULL_HANDLE;
     std::vector<VkCommandBuffer> m_commandBuffers = {};
   };
 } // namepsace MFVE::Vulkan
