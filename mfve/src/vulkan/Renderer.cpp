@@ -23,8 +23,8 @@ namespace MFVE::Vulkan
     VkCheck(m_transferCommandPool.CreateCommandPool(
       _logicalDevice, _logicalDevice.GetTransferQueue(), _allocator));
 
-    m_vertexBuffer.CreateVertexBuffer(
-      _physicalDevice, _logicalDevice, m_transferCommandPool, _allocator);
+    CreateVertexBuffer(_physicalDevice, _logicalDevice, _allocator);
+    CreateIndexBuffer(_physicalDevice, _logicalDevice, _allocator);
 
     SetUpGraphicsCommandBuffer(_logicalDevice);
     CreateSyncObjects(_logicalDevice, _allocator);
@@ -36,7 +36,8 @@ namespace MFVE::Vulkan
     CleanUpRenderer(_logicalDevice, _allocator);
 
     DestroySyncObjects(_logicalDevice, _allocator);
-    m_vertexBuffer.DestroyVertexBuffer(_logicalDevice, _allocator);
+    m_vertexBuffer.DestroyBuffer(_logicalDevice, _allocator);
+    m_indexBuffer.DestroyBuffer(_logicalDevice, _allocator);
     m_graphicsCommandPool.DestroyCommandPool(_logicalDevice, _allocator);
     m_transferCommandPool.DestroyCommandPool(_logicalDevice, _allocator);
   }
@@ -101,16 +102,90 @@ namespace MFVE::Vulkan
       vkCmdBindPipeline(
         commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.GetPipeline());
 
-      VkBuffer vertexBuffers[] = { m_vertexBuffer.GetVertexBuffer() };
+      // Bind Vertex Buffer
+      VkBuffer vertexBuffers[] = { m_vertexBuffer.GetBuffer() };
       VkDeviceSize offsets[]   = { 0 };
       vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
-      vkCmdDraw(commandBuffers[i], static_cast<uint32_t>(vertices.size()), 1, 0, 0);
+      // Bind Index Buffer
+      vkCmdBindIndexBuffer(commandBuffers[i], m_indexBuffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
+
+      // Draw
+      vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
       vkCmdEndRenderPass(commandBuffers[i]);
 
       VkCheck(vkEndCommandBuffer(commandBuffers[i]));
     }
+  }
+
+  void Renderer::CreateVertexBuffer(const PhysicalDevice& _physicalDevice,
+                                    const LogicalDevice& _logicalDevice,
+                                    const VkAllocationCallbacks* _allocator)
+  {
+    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+
+    Buffer stagingBuffer;
+    stagingBuffer.CreateBuffer(_physicalDevice,
+                               _logicalDevice,
+                               bufferSize,
+                               VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                               _allocator);
+
+    // Fill Vertex Buffer
+    void* data;
+    vkMapMemory(
+      _logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
+    memcpy(data, vertices.data(), (size_t)bufferSize);
+    vkUnmapMemory(_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory());
+
+    m_vertexBuffer.CreateBuffer(_physicalDevice,
+                                _logicalDevice,
+                                bufferSize,
+                                VK_BUFFER_USAGE_TRANSFER_DST_BIT |
+                                  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                _allocator);
+
+    m_vertexBuffer.CopyBuffer(_logicalDevice, m_transferCommandPool, stagingBuffer, bufferSize);
+
+    stagingBuffer.DestroyBuffer(_logicalDevice, _allocator);
+  }
+
+  void Renderer::CreateIndexBuffer(const PhysicalDevice& _physicalDevice,
+                                   const LogicalDevice& _logicalDevice,
+                                   const VkAllocationCallbacks* _allocator)
+  {
+    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+
+    Buffer stagingBuffer;
+    stagingBuffer.CreateBuffer(_physicalDevice,
+                               _logicalDevice,
+                               bufferSize,
+                               VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                               VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                               _allocator);
+
+    // Fill Vertex Buffer
+    void* data;
+    vkMapMemory(
+      _logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
+    memcpy(data, indices.data(), (size_t)bufferSize);
+    vkUnmapMemory(_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory());
+
+    m_indexBuffer.CreateBuffer(_physicalDevice,
+                               _logicalDevice,
+                               bufferSize,
+                               VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                               _allocator);
+
+    m_indexBuffer.CopyBuffer(_logicalDevice, m_transferCommandPool, stagingBuffer, bufferSize);
+
+    stagingBuffer.DestroyBuffer(_logicalDevice, _allocator);
   }
 
   void Renderer::DrawFrame(const PhysicalDevice& _physicalDevice,

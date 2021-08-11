@@ -5,12 +5,13 @@
 #include <vector>
 
 // Vulkan
+#include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/CommandPool.h"
 #include "vulkan/Framebuffer.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
-#include "vulkan/VertexBuffer.h"
+#include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
@@ -61,7 +62,22 @@ namespace MFVE::Vulkan
 
     CommandPool m_transferCommandPool = {};
 
-    VertexBuffer m_vertexBuffer = {};
+    Buffer m_vertexBuffer = {};
+    void CreateVertexBuffer(const PhysicalDevice& _physicalDevice,
+                            const LogicalDevice& _logicalDevice,
+                            const VkAllocationCallbacks* _allocator);
+
+    Buffer m_indexBuffer = {};
+    void CreateIndexBuffer(const PhysicalDevice& _physicalDevice,
+                           const LogicalDevice& _logicalDevice,
+                           const VkAllocationCallbacks* _allocator);
+
+    const std::vector<Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
+                                           { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
+                                           { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
+                                           { { -0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f } } };
+
+    const std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
 
     // Sync Objects
     std::vector<VkSemaphore> m_imageAvailableSemaphore;
