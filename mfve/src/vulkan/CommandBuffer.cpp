@@ -2,6 +2,8 @@
 
 #include <mfve_pch.h>
 
+#include "vulkan/VertexBuffer.h"
+
 namespace MFVE::Vulkan
 {
   VkResult CommandBuffer::CreateCommandPool(const LogicalDevice& _logicalDevice,

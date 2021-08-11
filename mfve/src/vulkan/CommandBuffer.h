@@ -3,11 +3,12 @@
 
 // Vulkan
 #include "vulkan/Framebuffer.h"
-#include "vulkan/VertexBuffer.h"
 #include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan
 {
+  class VertexBuffer;
+
   class CommandBuffer
   {
    public:

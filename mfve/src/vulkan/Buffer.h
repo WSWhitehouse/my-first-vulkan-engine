@@ -2,6 +2,7 @@
 #define MY_FIRST_VULKAN_ENGINE_BUFFER_H
 
 // Vulkan
+#include "vulkan/CommandBuffer.h"
 #include "vulkan/LogicalDevice.h"
 #include "vulkan/PhysicalDevice.h"
 #include "vulkan/Vk_Base.h"
@@ -53,6 +54,44 @@ namespace MFVE::Vulkan::Buffer
 
     // Bind memory
     vkBindBufferMemory(_logicalDevice.GetDevice(), _Buffer, _BufferMemory, 0);
+  }
+
+  static inline void Copy(const LogicalDevice& _logicalDevice, const CommandBuffer& _commandBuffer,
+                          VkBuffer _srcBuffer, VkBuffer _dstBuffer, VkDeviceSize _size)
+  {
+    VkCommandBufferAllocateInfo allocInfo{};
+    allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    allocInfo.commandPool        = _commandBuffer.GetCommandPool();
+    allocInfo.commandBufferCount = 1;
+
+    VkCommandBuffer commandBuffer;
+    vkAllocateCommandBuffers(_logicalDevice.GetDevice(), &allocInfo, &commandBuffer);
+
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+
+    vkBeginCommandBuffer(commandBuffer, &beginInfo);
+
+    VkBufferCopy copyRegion{};
+    copyRegion.srcOffset = 0;
+    copyRegion.dstOffset = 0;
+    copyRegion.size      = _size;
+    vkCmdCopyBuffer(commandBuffer, _srcBuffer, _dstBuffer, 1, &copyRegion);
+
+    vkEndCommandBuffer(commandBuffer);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers    = &commandBuffer;
+
+    vkQueueSubmit(_logicalDevice.GetGraphicsQueue().queue, 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(_logicalDevice.GetGraphicsQueue().queue);
+
+    vkFreeCommandBuffers(
+      _logicalDevice.GetDevice(), _commandBuffer.GetCommandPool(), 1, &commandBuffer);
   }
 } // namepsace MFVE::Vulkan
 
