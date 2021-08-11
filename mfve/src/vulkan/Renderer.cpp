@@ -17,10 +17,15 @@ namespace MFVE::Vulkan
     VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
+
     VkCheck(m_graphicsCommandPool.CreateCommandPool(
       _logicalDevice, _logicalDevice.GetGraphicsQueue(), _allocator));
+    VkCheck(m_transferCommandPool.CreateCommandPool(
+      _logicalDevice, _logicalDevice.GetTransferQueue(), _allocator));
+
     m_vertexBuffer.CreateVertexBuffer(
-      _physicalDevice, _logicalDevice, m_graphicsCommandPool, _allocator);
+      _physicalDevice, _logicalDevice, m_transferCommandPool, _allocator);
+
     SetUpGraphicsCommandBuffer(_logicalDevice);
     CreateSyncObjects(_logicalDevice, _allocator);
   }
@@ -33,6 +38,7 @@ namespace MFVE::Vulkan
     DestroySyncObjects(_logicalDevice, _allocator);
     m_vertexBuffer.DestroyVertexBuffer(_logicalDevice, _allocator);
     m_graphicsCommandPool.DestroyCommandPool(_logicalDevice, _allocator);
+    m_transferCommandPool.DestroyCommandPool(_logicalDevice, _allocator);
   }
 
   void Renderer::RecreateRenderer(const PhysicalDevice& _physicalDevice,

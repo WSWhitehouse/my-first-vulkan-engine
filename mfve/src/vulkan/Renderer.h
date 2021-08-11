@@ -59,6 +59,8 @@ namespace MFVE::Vulkan
 
     void SetUpGraphicsCommandBuffer(const LogicalDevice& _logicalDevice);
 
+    CommandPool m_transferCommandPool = {};
+
     VertexBuffer m_vertexBuffer = {};
 
     // Sync Objects
