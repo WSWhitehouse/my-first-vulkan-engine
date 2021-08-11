@@ -16,7 +16,7 @@ namespace MFVE::Vulkan::Buffer
                             VkBuffer& _Buffer, VkDeviceMemory& _BufferMemory,
                             const VkAllocationCallbacks* _allocator)
   {
-    // Creating vertex buffer
+    // Creating buffer
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size  = _size;
@@ -40,7 +40,7 @@ namespace MFVE::Vulkan::Buffer
 
     VkCheck(vkCreateBuffer(_logicalDevice.GetDevice(), &bufferInfo, _allocator, &_Buffer));
 
-    // Allocating memory for vertex buffer
+    // Allocating memory for buffer
     VkMemoryRequirements memRequirements;
     vkGetBufferMemoryRequirements(_logicalDevice.GetDevice(), _Buffer, &memRequirements);
 
