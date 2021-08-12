@@ -2,25 +2,17 @@
 #define MY_FIRST_VULKAN_ENGINE_APPLICATION_H
 
 // MFVE
+#include "Definitions.h"
 #include "Profiler.h"
 #include "Properties.h"
 #include "Time.h"
 #include "Window.h"
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/PhysicalDevice.h"
 #include "vulkan/Renderer.h"
-#include "vulkan/Vk_Base.h"
 
 // Shaders
 #include "shaders/Shader.h"
-
-// Defines
-#define MFVE_ENGINE_NAME "my-first-vulkan-engine"
-#define MFVE_VER_MAJOR   0
-#define MFVE_VER_MINOR   1
-#define MFVE_VER_PATCH   0
 
 namespace MFVE
 {
@@ -46,8 +38,9 @@ namespace MFVE
     void SignalExit() { m_signalExit = true; }
 
     // Getters
-    [[nodiscard]] inline const AppProperties& GetAppProperties() const { return m_appProperties; }
-    [[nodiscard]] inline Window* GetWindow() const { return m_window; }
+    [[nodiscard]] const AppProperties& GetAppProperties() const { return m_appProperties; }
+    [[nodiscard]] const Vulkan::Renderer& GetRenderer() const { return m_renderer; }
+    [[nodiscard]] Window* GetWindow() const { return m_renderer.GetWindow(); }
 
    protected:
     // Application Functions
@@ -60,25 +53,6 @@ namespace MFVE
     bool m_signalExit             = false;
     AppProperties m_appProperties = {};
     Time m_appTimer               = {};
-
-    // Window
-    Window* m_window = nullptr;
-
-    // Extensions
-    void InitExtensions();
-
-    // Instance
-    VkInstance m_instance = VK_NULL_HANDLE;
-    void CreateInstance();
-
-    // Debug Messenger
-    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
-    void CreateDebugMessenger();
-    void DestroyDebugMessenger();
-
-    // Devices
-    Vulkan::PhysicalDevice m_physicalDevice = {};
-    Vulkan::LogicalDevice m_logicalDevice   = {};
 
     // Renderer
     Vulkan::Renderer m_renderer = {};

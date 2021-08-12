@@ -21,7 +21,7 @@ namespace MFVE
      virtual void WaitWhileMinimised() override;
 
     // Surface
-    virtual VkResult CreateSurface(VkInstance _instance,
+    virtual VkResult CreateSurface(const Vulkan::Instance& _instance,
                                    const VkAllocationCallbacks* _allocator) override;
 
     // Vulkan

@@ -4,11 +4,18 @@
 // Cpp
 #include <vector>
 
+// Core
+#include "core/Properties.h"
+#include "core/Window.h"
+
 // Vulkan
 #include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/CommandPool.h"
 #include "vulkan/Framebuffer.h"
+#include "vulkan/Instance.h"
+#include "vulkan/LogicalDevice.h"
+#include "vulkan/PhysicalDevice.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vertex.h"
@@ -16,10 +23,6 @@
 
 namespace MFVE::Vulkan
 {
-  // Forward Declarations
-  class LogicalDevice;
-  class PhysicalDevice;
-
   class Renderer
   {
    public:
@@ -27,50 +30,59 @@ namespace MFVE::Vulkan
     ~Renderer() = default;
 
     // Renderer
-    void CreateRenderer(const PhysicalDevice& _physicalDevice, const LogicalDevice& _logicalDevice,
-                        Window* _window, const VkAllocationCallbacks* _allocator);
-    void DestroyRenderer(const LogicalDevice& _logicalDevice,
-                         const VkAllocationCallbacks* _allocator);
+    void CreateRenderer(const AppProperties& _appProperties, Window* _window,
+                        const VkAllocationCallbacks* _allocator);
+    void DestroyRenderer(const VkAllocationCallbacks* _allocator);
 
-    void RecreateRenderer(const PhysicalDevice& _physicalDevice,
-                          const LogicalDevice& _logicalDevice, Window* _window,
-                          const VkAllocationCallbacks* _allocator);
+    void DeviceWaitIdle() { vkDeviceWaitIdle(m_logicalDevice.GetDevice()); }
+    bool SignalExit() { return m_window->WindowShouldClose(); }
 
     // Drawing
-    void DrawFrame(const PhysicalDevice& _physicalDevice, const LogicalDevice& _logicalDevice,
-                   Window* _window, const VkAllocationCallbacks* _allocator);
+    void PreRender() { m_window->UpdateEvents(); }
+    void DrawFrame(const VkAllocationCallbacks* _allocator);
+    void PostRender() {}
 
     // Getters
-    [[nodiscard]] const Swapchain& GetSwapchain() const { return m_swapchain; }
-    [[nodiscard]] const Pipeline& GetPipeline() const { return m_pipeline; }
-    [[nodiscard]] const Framebuffer& GetFramebuffer() const { return m_framebuffer; }
-    [[nodiscard]] const CommandBuffer& GetCommandBuffer() const { return m_graphicsCommandBuffer; }
+    [[nodiscard]] Window* GetWindow() const { return m_window; }
 
    private:
-    void CleanUpRenderer(const LogicalDevice& _logicalDevice,
-                         const VkAllocationCallbacks* _allocator);
+    void RecreateSwapchain(const VkAllocationCallbacks* _allocator);
+    void CleanUpSwapchain(const VkAllocationCallbacks* _allocator);
 
-    // Vulkan
+    // Window
+    Window* m_window = nullptr;
+
+    /* Vulkan */
+    // Extensions
+    std::vector<const char*> m_extensions = {};
+
+    // Instance
+    Instance m_instance = {};
+
+    // Debug Messenger
+    VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
+
+    // Devices
+    Vulkan::PhysicalDevice m_physicalDevice = {};
+    Vulkan::LogicalDevice m_logicalDevice   = {};
+
     Swapchain m_swapchain     = {};
     Pipeline m_pipeline       = {};
     Framebuffer m_framebuffer = {};
 
+    // Command Buffers
     CommandPool m_graphicsCommandPool     = {};
     CommandBuffer m_graphicsCommandBuffer = {};
-
-    void SetUpGraphicsCommandBuffer(const LogicalDevice& _logicalDevice);
+    void SetUpGraphicsCommandBuffer();
 
     CommandPool m_transferCommandPool = {};
 
+    // Buffers
     Buffer m_vertexBuffer = {};
-    void CreateVertexBuffer(const PhysicalDevice& _physicalDevice,
-                            const LogicalDevice& _logicalDevice,
-                            const VkAllocationCallbacks* _allocator);
+    void CreateVertexBuffer(const VkAllocationCallbacks* _allocator);
 
     Buffer m_indexBuffer = {};
-    void CreateIndexBuffer(const PhysicalDevice& _physicalDevice,
-                           const LogicalDevice& _logicalDevice,
-                           const VkAllocationCallbacks* _allocator);
+    void CreateIndexBuffer(const VkAllocationCallbacks* _allocator);
 
     const std::vector<Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
                                            { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
@@ -86,10 +98,8 @@ namespace MFVE::Vulkan
     std::vector<VkFence> m_inFlightFences;
     std::vector<VkFence> m_imagesInFlight;
 
-    void CreateSyncObjects(const LogicalDevice& _logicalDevice,
-                           const VkAllocationCallbacks* _allocator);
-    void DestroySyncObjects(const LogicalDevice& _logicalDevice,
-                            const VkAllocationCallbacks* _allocator);
+    void CreateSyncObjects(const VkAllocationCallbacks* _allocator);
+    void DestroySyncObjects(const VkAllocationCallbacks* _allocator);
 
     // Frames
     const int MAX_FRAMES_IN_FLIGHT = 2;

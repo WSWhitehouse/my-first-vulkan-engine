@@ -8,13 +8,6 @@
 // FileSystem
 #include "core/FileSystem.h"
 
-// Vulkan
-#include "vulkan/Extensions.h"
-#include "vulkan/QueueFamilyIndicies.h"
-#include "vulkan/ValidationLayers.h"
-
-using namespace MFVE::Vulkan;
-
 namespace MFVE
 {
   Application::Application(AppProperties _appProperties) :
@@ -24,42 +17,24 @@ namespace MFVE
 
   void Application::Init(int argc, char** argv)
   {
-    /* Window */
-    WindowProperties windowProps{};
-    m_window = new WindowGLFW(windowProps); // Creating a GLFW Window for now
-    if (!m_window->CreateWindow(GetAppProperties().name))
-    {
-      MFVE_LOG_FATAL("Failed to create Window!");
-    }
-
     /* File System */
     FileSystem::Init();
 
+    /* Window */
+    WindowProperties windowProps{};
+    auto _window = new WindowGLFW(windowProps); // Creating a GLFW Window for now
+
     /* Vulkan */
-    InitExtensions();
-    CreateInstance();
-    CreateDebugMessenger();
-    VkCheck(m_window->CreateSurface(m_instance, nullptr));
-    m_physicalDevice.PickSuitableDevice(m_instance, m_window->GetSurface());
-    m_logicalDevice.CreateDevice(m_physicalDevice, nullptr);
-    m_renderer.CreateRenderer(m_physicalDevice, m_logicalDevice, m_window, nullptr);
+    m_renderer.CreateRenderer(GetAppProperties(), _window, nullptr);
   }
 
   void Application::Terminate()
   {
     /* Vulkan */
-    m_renderer.DestroyRenderer(m_logicalDevice, nullptr);
-    m_logicalDevice.Destroy(nullptr);
-    m_window->DestroySurface(m_instance, nullptr);
-    DestroyDebugMessenger();
-    vkDestroyInstance(m_instance, nullptr);
+    m_renderer.DestroyRenderer(nullptr);
 
     /* File System */
     FileSystem::Terminate();
-
-    /* Window */
-    m_window->DestroyWindow();
-    delete m_window;
   }
 
   void Application::Run()
@@ -67,9 +42,9 @@ namespace MFVE
     // Initialise Application
     AppInit();
 
-    while (!m_window->WindowShouldClose() && !m_signalExit)
+    while (!m_renderer.SignalExit() && !m_signalExit)
     {
-      m_window->UpdateEvents();
+      m_renderer.PreRender();
 
       if (m_appTimer.Tick())
       {
@@ -79,97 +54,15 @@ namespace MFVE
 
       // Render Application
       AppRender();
-      m_renderer.DrawFrame(m_physicalDevice, m_logicalDevice, m_window, nullptr);
+      m_renderer.DrawFrame(nullptr);
+      m_renderer.PostRender();
     }
 
     // Wait for logical device to finish up
-    vkDeviceWaitIdle(m_logicalDevice.GetDevice());
+    m_renderer.DeviceWaitIdle();
 
     // Clean Up Application
     AppCleanUp();
-  }
-
-  void Application::InitExtensions()
-  {
-    // Window Extensions
-    Extensions::Extensions = m_window->GetRequiredWindowExtensions();
-
-    // Validation Layers Extensions
-    if (ValidationLayers::Enabled())
-    {
-      Extensions::Extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
-
-    if (!Extensions::CheckExtensionSupport())
-    {
-      MFVE_LOG_FATAL("Extensions unsupported!");
-    }
-  }
-
-  void Application::CreateInstance()
-  {
-    if (ValidationLayers::Enabled() && !ValidationLayers::CheckLayerSupport())
-    {
-      MFVE_LOG_FATAL("Validation Layers requested, but not available!");
-    }
-
-    VkApplicationInfo appInfo{};
-    appInfo.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName   = m_appProperties.name.c_str();
-    appInfo.applicationVersion = VK_MAKE_VERSION(GetAppProperties().versionMajor,
-                                                 GetAppProperties().versionMinor,
-                                                 GetAppProperties().versionPatch);
-    appInfo.pEngineName        = MFVE_ENGINE_NAME;
-    appInfo.engineVersion      = VK_MAKE_VERSION(MFVE_VER_MAJOR, MFVE_VER_MINOR, MFVE_VER_PATCH);
-    appInfo.apiVersion         = VK_API_VERSION_1_0;
-
-    VkInstanceCreateInfo createInfo{};
-    createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
-    createInfo.pApplicationInfo = &appInfo;
-
-    createInfo.enabledExtensionCount   = Extensions::Extensions.size();
-    createInfo.ppEnabledExtensionNames = Extensions::Extensions.data();
-
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (ValidationLayers::Enabled())
-    {
-      createInfo.enabledLayerCount   = ValidationLayers::Layers.size();
-      createInfo.ppEnabledLayerNames = ValidationLayers::Layers.data();
-
-      ValidationLayers::PopulateDebugMessengerCreateInfo(debugCreateInfo);
-      createInfo.pNext = &debugCreateInfo;
-    }
-    else
-    {
-      createInfo.enabledLayerCount = 0;
-      createInfo.pNext             = nullptr;
-    }
-
-    VkCheck(vkCreateInstance(&createInfo, nullptr, &m_instance));
-  }
-
-  void Application::CreateDebugMessenger()
-  {
-    if (!ValidationLayers::Enabled())
-    {
-      return;
-    }
-
-    VkDebugUtilsMessengerCreateInfoEXT createInfo;
-    ValidationLayers::PopulateDebugMessengerCreateInfo(createInfo);
-
-    VkCheck(ValidationLayers::CreateDebugUtilsMessengerEXT(
-      m_instance, &createInfo, nullptr, &m_debugMessenger));
-  }
-
-  void Application::DestroyDebugMessenger()
-  {
-    if (!ValidationLayers::Enabled())
-    {
-      return;
-    }
-
-    ValidationLayers::DestroyDebugUtilsMessengerEXT(m_instance, m_debugMessenger, nullptr);
   }
 
 } // namespace MFVE

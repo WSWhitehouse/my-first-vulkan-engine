@@ -3,78 +3,112 @@
 #include <mfve_pch.h>
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/PhysicalDevice.h"
+#include "vulkan/Extensions.h"
+#include "vulkan/ValidationLayers.h"
 
 namespace MFVE::Vulkan
 {
-  void Renderer::CreateRenderer(const PhysicalDevice& _physicalDevice,
-                                const LogicalDevice& _logicalDevice, Window* _window,
+  void Renderer::CreateRenderer(const AppProperties& _appProperties, Window* _window,
                                 const VkAllocationCallbacks* _allocator)
   {
-    VkCheck(m_swapchain.CreateSwapchain(_physicalDevice, _logicalDevice, _window, _allocator));
-    VkCheck(m_swapchain.CreateImageViews(_logicalDevice, _allocator));
-    VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
-    VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
-    VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
+    m_window = _window;
+    if (!m_window->CreateWindow(_appProperties.name))
+    {
+      MFVE_LOG_FATAL("Failed to create Window!");
+    }
+
+    // Window Extensions
+    m_extensions = m_window->GetRequiredWindowExtensions();
+
+    // Validation Layers Extensions
+    if (ValidationLayers::Enabled())
+    {
+      m_extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
+
+    if (!Extensions::CheckExtensionSupport(m_extensions))
+    {
+      MFVE_LOG_FATAL("Extensions unsupported!");
+    }
+
+    if (ValidationLayers::Enabled() && !ValidationLayers::CheckLayerSupport())
+    {
+      MFVE_LOG_FATAL("Validation Layers requested, but not available!");
+    }
+
+    m_instance.CreateInstance(_appProperties, m_extensions, _allocator);
+    VkCheck(ValidationLayers::CreateDebugMessenger(m_instance, m_debugMessenger, _allocator));
+    VkCheck(m_window->CreateSurface(m_instance, _allocator));
+    m_physicalDevice.PickSuitableDevice(m_instance, m_window->GetSurface());
+    m_logicalDevice.CreateDevice(m_physicalDevice, _allocator);
+
+    VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, _window, _allocator));
+    VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, _allocator));
+    VkCheck(m_pipeline.CreateRenderPasses(m_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_pipeline.CreatePipeline(m_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_framebuffer.CreateFramebuffers(m_logicalDevice, m_swapchain, m_pipeline, _allocator));
 
     VkCheck(m_graphicsCommandPool.CreateCommandPool(
-      _logicalDevice, _logicalDevice.GetGraphicsQueue(), _allocator));
+      m_logicalDevice, m_logicalDevice.GetGraphicsQueue(), _allocator));
     VkCheck(m_transferCommandPool.CreateCommandPool(
-      _logicalDevice, _logicalDevice.GetTransferQueue(), _allocator));
+      m_logicalDevice, m_logicalDevice.GetTransferQueue(), _allocator));
 
-    CreateVertexBuffer(_physicalDevice, _logicalDevice, _allocator);
-    CreateIndexBuffer(_physicalDevice, _logicalDevice, _allocator);
+    CreateVertexBuffer(_allocator);
+    CreateIndexBuffer(_allocator);
 
-    SetUpGraphicsCommandBuffer(_logicalDevice);
-    CreateSyncObjects(_logicalDevice, _allocator);
+    SetUpGraphicsCommandBuffer();
+    CreateSyncObjects(_allocator);
   }
 
-  void Renderer::DestroyRenderer(const LogicalDevice& _logicalDevice,
-                                 const VkAllocationCallbacks* _allocator)
+  void Renderer::DestroyRenderer(const VkAllocationCallbacks* _allocator)
   {
-    CleanUpRenderer(_logicalDevice, _allocator);
+    CleanUpSwapchain(_allocator);
 
-    DestroySyncObjects(_logicalDevice, _allocator);
-    m_vertexBuffer.DestroyBuffer(_logicalDevice, _allocator);
-    m_indexBuffer.DestroyBuffer(_logicalDevice, _allocator);
-    m_graphicsCommandPool.DestroyCommandPool(_logicalDevice, _allocator);
-    m_transferCommandPool.DestroyCommandPool(_logicalDevice, _allocator);
+    DestroySyncObjects(_allocator);
+    m_vertexBuffer.DestroyBuffer(m_logicalDevice, _allocator);
+    m_indexBuffer.DestroyBuffer(m_logicalDevice, _allocator);
+    m_graphicsCommandPool.DestroyCommandPool(m_logicalDevice, _allocator);
+    m_transferCommandPool.DestroyCommandPool(m_logicalDevice, _allocator);
+    m_logicalDevice.DestroyDevice(nullptr);
+    m_window->DestroySurface(m_instance, nullptr);
+    ValidationLayers::DestroyDebugMessenger(m_instance, m_debugMessenger, nullptr);
+    m_instance.DestroyInstance(_allocator);
+
+    // Window
+    m_window->DestroyWindow();
+    delete m_window;
   }
 
-  void Renderer::RecreateRenderer(const PhysicalDevice& _physicalDevice,
-                                  const LogicalDevice& _logicalDevice, Window* _window,
-                                  const VkAllocationCallbacks* _allocator)
+  void Renderer::RecreateSwapchain(const VkAllocationCallbacks* _allocator)
   {
-    _window->WaitWhileMinimised();
+    m_window->WaitWhileMinimised();
 
-    vkDeviceWaitIdle(_logicalDevice.GetDevice());
+    DeviceWaitIdle();
 
-    CleanUpRenderer(_logicalDevice, _allocator);
+    CleanUpSwapchain(_allocator);
 
-    VkCheck(m_swapchain.CreateSwapchain(_physicalDevice, _logicalDevice, _window, _allocator));
-    VkCheck(m_swapchain.CreateImageViews(_logicalDevice, _allocator));
-    VkCheck(m_pipeline.CreateRenderPasses(_logicalDevice, m_swapchain, _allocator));
-    VkCheck(m_pipeline.CreatePipeline(_logicalDevice, m_swapchain, _allocator));
-    VkCheck(m_framebuffer.CreateFramebuffers(_logicalDevice, m_swapchain, m_pipeline, _allocator));
-    SetUpGraphicsCommandBuffer(_logicalDevice);
+    VkCheck(m_swapchain.CreateSwapchain(m_physicalDevice, m_logicalDevice, m_window, _allocator));
+    VkCheck(m_swapchain.CreateImageViews(m_logicalDevice, _allocator));
+    VkCheck(m_pipeline.CreateRenderPasses(m_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_pipeline.CreatePipeline(m_logicalDevice, m_swapchain, _allocator));
+    VkCheck(m_framebuffer.CreateFramebuffers(m_logicalDevice, m_swapchain, m_pipeline, _allocator));
+    SetUpGraphicsCommandBuffer();
   }
 
-  void Renderer::CleanUpRenderer(const LogicalDevice& _logicalDevice,
-                                 const VkAllocationCallbacks* _allocator)
+  void Renderer::CleanUpSwapchain(const VkAllocationCallbacks* _allocator)
   {
-    m_graphicsCommandBuffer.FreeCommandBuffers(_logicalDevice, m_graphicsCommandPool);
-    m_framebuffer.DestroyFramebuffers(_logicalDevice, _allocator);
-    m_pipeline.DestroyPipeline(_logicalDevice, _allocator);
-    m_pipeline.DestroyRenderPasses(_logicalDevice, _allocator);
-    m_swapchain.DestroyImageViews(_logicalDevice, _allocator);
-    m_swapchain.DestroySwapchain(_logicalDevice, _allocator);
+    m_graphicsCommandBuffer.FreeCommandBuffers(m_logicalDevice, m_graphicsCommandPool);
+    m_framebuffer.DestroyFramebuffers(m_logicalDevice, _allocator);
+    m_pipeline.DestroyPipeline(m_logicalDevice, _allocator);
+    m_pipeline.DestroyRenderPasses(m_logicalDevice, _allocator);
+    m_swapchain.DestroyImageViews(m_logicalDevice, _allocator);
+    m_swapchain.DestroySwapchain(m_logicalDevice, _allocator);
   }
 
-  void Renderer::SetUpGraphicsCommandBuffer(const LogicalDevice& _logicalDevice)
+  void Renderer::SetUpGraphicsCommandBuffer()
   {
     m_graphicsCommandBuffer.AllocateCommandBuffers(
-      _logicalDevice, m_graphicsCommandPool, m_framebuffer.GetFramebuffers().size());
+      m_logicalDevice, m_graphicsCommandPool, m_framebuffer.GetFramebuffers().size());
 
     auto& commandBuffers = m_graphicsCommandBuffer.GetCommandBuffers();
 
@@ -119,15 +153,13 @@ namespace MFVE::Vulkan
     }
   }
 
-  void Renderer::CreateVertexBuffer(const PhysicalDevice& _physicalDevice,
-                                    const LogicalDevice& _logicalDevice,
-                                    const VkAllocationCallbacks* _allocator)
+  void Renderer::CreateVertexBuffer(const VkAllocationCallbacks* _allocator)
   {
     VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
 
     Buffer stagingBuffer;
-    stagingBuffer.CreateBuffer(_physicalDevice,
-                               _logicalDevice,
+    stagingBuffer.CreateBuffer(m_physicalDevice,
+                               m_logicalDevice,
                                bufferSize,
                                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -137,32 +169,30 @@ namespace MFVE::Vulkan
     // Fill Vertex Buffer
     void* data;
     vkMapMemory(
-      _logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
+      m_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
     memcpy(data, vertices.data(), (size_t)bufferSize);
-    vkUnmapMemory(_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory());
+    vkUnmapMemory(m_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory());
 
-    m_vertexBuffer.CreateBuffer(_physicalDevice,
-                                _logicalDevice,
+    m_vertexBuffer.CreateBuffer(m_physicalDevice,
+                                m_logicalDevice,
                                 bufferSize,
                                 VK_BUFFER_USAGE_TRANSFER_DST_BIT |
                                   VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                 _allocator);
 
-    m_vertexBuffer.CopyBuffer(_logicalDevice, m_transferCommandPool, stagingBuffer, bufferSize);
+    m_vertexBuffer.CopyBuffer(m_logicalDevice, m_transferCommandPool, stagingBuffer, bufferSize);
 
-    stagingBuffer.DestroyBuffer(_logicalDevice, _allocator);
+    stagingBuffer.DestroyBuffer(m_logicalDevice, _allocator);
   }
 
-  void Renderer::CreateIndexBuffer(const PhysicalDevice& _physicalDevice,
-                                   const LogicalDevice& _logicalDevice,
-                                   const VkAllocationCallbacks* _allocator)
+  void Renderer::CreateIndexBuffer(const VkAllocationCallbacks* _allocator)
   {
     VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
 
     Buffer stagingBuffer;
-    stagingBuffer.CreateBuffer(_physicalDevice,
-                               _logicalDevice,
+    stagingBuffer.CreateBuffer(m_physicalDevice,
+                               m_logicalDevice,
                                bufferSize,
                                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
@@ -172,32 +202,30 @@ namespace MFVE::Vulkan
     // Fill Vertex Buffer
     void* data;
     vkMapMemory(
-      _logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
+      m_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
     memcpy(data, indices.data(), (size_t)bufferSize);
-    vkUnmapMemory(_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory());
+    vkUnmapMemory(m_logicalDevice.GetDevice(), stagingBuffer.GetBufferMemory());
 
-    m_indexBuffer.CreateBuffer(_physicalDevice,
-                               _logicalDevice,
+    m_indexBuffer.CreateBuffer(m_physicalDevice,
+                               m_logicalDevice,
                                bufferSize,
                                VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                _allocator);
 
-    m_indexBuffer.CopyBuffer(_logicalDevice, m_transferCommandPool, stagingBuffer, bufferSize);
+    m_indexBuffer.CopyBuffer(m_logicalDevice, m_transferCommandPool, stagingBuffer, bufferSize);
 
-    stagingBuffer.DestroyBuffer(_logicalDevice, _allocator);
+    stagingBuffer.DestroyBuffer(m_logicalDevice, _allocator);
   }
 
-  void Renderer::DrawFrame(const PhysicalDevice& _physicalDevice,
-                           const LogicalDevice& _logicalDevice, Window* _window,
-                           const VkAllocationCallbacks* _allocator)
+  void Renderer::DrawFrame(const VkAllocationCallbacks* _allocator)
   {
     vkWaitForFences(
-      _logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
+      m_logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
 
     // Acquire image from swap chain
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(_logicalDevice.GetDevice(),
+    VkResult result = vkAcquireNextImageKHR(m_logicalDevice.GetDevice(),
                                             m_swapchain.GetSwapchain(),
                                             UINT64_MAX,
                                             m_imageAvailableSemaphore[m_currentFrame],
@@ -206,7 +234,7 @@ namespace MFVE::Vulkan
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR)
     {
-      RecreateRenderer(_physicalDevice, _logicalDevice, _window, _allocator);
+      RecreateSwapchain(_allocator);
       return;
     }
     else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
@@ -218,7 +246,7 @@ namespace MFVE::Vulkan
     if (m_imagesInFlight[imageIndex] != VK_NULL_HANDLE)
     {
       vkWaitForFences(
-        _logicalDevice.GetDevice(), 1, &m_imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+        m_logicalDevice.GetDevice(), 1, &m_imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
     }
 
     // Mark the image as now being in use by this frame
@@ -242,10 +270,10 @@ namespace MFVE::Vulkan
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = signalSemaphores;
 
-    vkResetFences(_logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame]);
+    vkResetFences(m_logicalDevice.GetDevice(), 1, &m_inFlightFences[m_currentFrame]);
 
     VkCheck(vkQueueSubmit(
-      _logicalDevice.GetGraphicsQueue().queue, 1, &submitInfo, m_inFlightFences[m_currentFrame]));
+      m_logicalDevice.GetGraphicsQueue().queue, 1, &submitInfo, m_inFlightFences[m_currentFrame]));
 
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
@@ -259,13 +287,13 @@ namespace MFVE::Vulkan
     presentInfo.pImageIndices  = &imageIndex;
     presentInfo.pResults       = nullptr;
 
-    result = vkQueuePresentKHR(_logicalDevice.GetPresentQueue().queue, &presentInfo);
+    result = vkQueuePresentKHR(m_logicalDevice.GetPresentQueue().queue, &presentInfo);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR ||
-        _window->HasWindowResized())
+        m_window->HasWindowResized())
     {
-      _window->ResetWindowResized();
-      RecreateRenderer(_physicalDevice, _logicalDevice, _window, _allocator);
+      m_window->ResetWindowResized();
+      RecreateSwapchain(_allocator);
     }
     else
     {
@@ -275,8 +303,7 @@ namespace MFVE::Vulkan
     m_currentFrame = (m_currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
   }
 
-  void Renderer::CreateSyncObjects(const LogicalDevice& _logicalDevice,
-                                   const VkAllocationCallbacks* _allocator)
+  void Renderer::CreateSyncObjects(const VkAllocationCallbacks* _allocator)
   {
     m_imageAvailableSemaphore.resize(MAX_FRAMES_IN_FLIGHT);
     m_renderFinishedSemaphore.resize(MAX_FRAMES_IN_FLIGHT);
@@ -293,24 +320,23 @@ namespace MFVE::Vulkan
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
       VkCheck(vkCreateSemaphore(
-        _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_imageAvailableSemaphore[i]));
+        m_logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_imageAvailableSemaphore[i]));
 
       VkCheck(vkCreateSemaphore(
-        _logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_renderFinishedSemaphore[i]));
+        m_logicalDevice.GetDevice(), &semaphoreInfo, _allocator, &m_renderFinishedSemaphore[i]));
 
       VkCheck(
-        vkCreateFence(_logicalDevice.GetDevice(), &fenceInfo, _allocator, &m_inFlightFences[i]));
+        vkCreateFence(m_logicalDevice.GetDevice(), &fenceInfo, _allocator, &m_inFlightFences[i]));
     }
   }
 
-  void Renderer::DestroySyncObjects(const LogicalDevice& _logicalDevice,
-                                    const VkAllocationCallbacks* _allocator)
+  void Renderer::DestroySyncObjects(const VkAllocationCallbacks* _allocator)
   {
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-      vkDestroySemaphore(_logicalDevice.GetDevice(), m_renderFinishedSemaphore[i], _allocator);
-      vkDestroySemaphore(_logicalDevice.GetDevice(), m_imageAvailableSemaphore[i], _allocator);
-      vkDestroyFence(_logicalDevice.GetDevice(), m_inFlightFences[i], _allocator);
+      vkDestroySemaphore(m_logicalDevice.GetDevice(), m_renderFinishedSemaphore[i], _allocator);
+      vkDestroySemaphore(m_logicalDevice.GetDevice(), m_imageAvailableSemaphore[i], _allocator);
+      vkDestroyFence(m_logicalDevice.GetDevice(), m_inFlightFences[i], _allocator);
     }
   }
 } // namespace MFVE::Vulkan

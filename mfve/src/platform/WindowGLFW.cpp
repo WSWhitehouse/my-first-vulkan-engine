@@ -50,9 +50,9 @@ namespace MFVE
     return extensions;
   }
 
-  VkResult WindowGLFW::CreateSurface(VkInstance _instance, const VkAllocationCallbacks* _allocator)
+  VkResult WindowGLFW::CreateSurface(const Vulkan::Instance& _instance, const VkAllocationCallbacks* _allocator)
   {
-    return glfwCreateWindowSurface(_instance, m_window, _allocator, &m_surface);
+    return glfwCreateWindowSurface(_instance.GetInstance(), m_window, _allocator, &m_surface);
   }
 
   void WindowGLFW::GetFrameBufferSize(int& _outWidth, int& _outHeight)

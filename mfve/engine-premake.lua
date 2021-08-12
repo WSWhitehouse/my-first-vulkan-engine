@@ -119,7 +119,7 @@ project "MFVE"
         }
 
     filter "configurations:Debug"
-        defines { "DEBUG", "MFVE_DEBUG", "MFVE_ENABLE_LOGGER" }
+        defines { "DEBUG", "MFVE_DEBUG", "MFVE_ENABLE_LOGGER", "MFVE_ENABLE_VK_VALIDATION" }
         runtime "Debug"
         symbols "On"
 

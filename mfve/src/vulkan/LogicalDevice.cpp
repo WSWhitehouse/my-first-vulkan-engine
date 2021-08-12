@@ -60,7 +60,7 @@ namespace MFVE::Vulkan
     m_transferQueue.CreateHandle(m_device, queueFamily.transferFamily.value(), 0);
   }
 
-  void LogicalDevice::Destroy(const VkAllocationCallbacks* _allocator)
+  void LogicalDevice::DestroyDevice(const VkAllocationCallbacks* _allocator)
   {
     vkDestroyDevice(m_device, _allocator);
   }

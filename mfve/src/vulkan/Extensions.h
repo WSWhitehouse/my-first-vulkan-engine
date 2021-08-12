@@ -5,8 +5,6 @@
 
 namespace MFVE::Vulkan::Extensions
 {
-  static std::vector<const char*> Extensions = {};
-
   /**
    * \brief Get all supported vulkan extensions
    * \return vector of VkExtensionProperties
@@ -31,10 +29,11 @@ namespace MFVE::Vulkan::Extensions
    * \return True if they are all supported, false otherwise.
    */
   static inline bool CheckExtensionSupport(
+    const std::vector<const char*>& _extensions,
     const std::vector<VkExtensionProperties>& _supportedExtensions = GetSupported())
   {
-    return std::all_of(Extensions.cbegin(),
-                       Extensions.cend(),
+    return std::all_of(_extensions.cbegin(),
+                       _extensions.cend(),
                        [&](const char* extension)
                        {
                          for (const auto& ext : _supportedExtensions)

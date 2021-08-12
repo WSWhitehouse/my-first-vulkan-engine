@@ -4,7 +4,8 @@
 #include <array>
 #include <vector>
 
-#include "Vk_Base.h"
+#include "vulkan/Instance.h"
+#include "vulkan/Vk_Base.h"
 
 namespace MFVE::Vulkan::ValidationLayers
 {
@@ -13,10 +14,10 @@ namespace MFVE::Vulkan::ValidationLayers
    */
   static inline bool Enabled()
   {
-#ifdef NDEBUG
-    return false;
-#else
+#ifdef MFVE_ENABLE_VK_VALIDATION
     return true;
+#else
+    return false;
 #endif
   }
 
@@ -107,15 +108,24 @@ namespace MFVE::Vulkan::ValidationLayers
     createInfo.pfnUserCallback = DebugCallback;
   }
 
-  static VkResult CreateDebugUtilsMessengerEXT(
-    VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-    const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
+  static VkResult CreateDebugMessenger(const Instance& _instance,
+                                       VkDebugUtilsMessengerEXT& _debugMessenger,
+                                       const VkAllocationCallbacks* _allocator)
   {
+    if (!ValidationLayers::Enabled())
+    {
+      return VK_SUCCESS;
+    }
+
+    VkDebugUtilsMessengerCreateInfoEXT createInfo;
+    ValidationLayers::PopulateDebugMessengerCreateInfo(createInfo);
+
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-      instance, "vkCreateDebugUtilsMessengerEXT");
+      _instance.GetInstance(), "vkCreateDebugUtilsMessengerEXT");
+
     if (func != nullptr)
     {
-      return func(instance, pCreateInfo, pAllocator, pDebugMessenger);
+      return func(_instance.GetInstance(), &createInfo, _allocator, &_debugMessenger);
     }
     else
     {
@@ -123,15 +133,20 @@ namespace MFVE::Vulkan::ValidationLayers
     }
   }
 
-  static void DestroyDebugUtilsMessengerEXT(VkInstance instance,
-                                            VkDebugUtilsMessengerEXT debugMessenger,
-                                            const VkAllocationCallbacks* pAllocator)
+  static void DestroyDebugMessenger(const Instance& _instance,
+                                    const VkDebugUtilsMessengerEXT& _debugMessenger,
+                                    const VkAllocationCallbacks* _allocator)
   {
+    if (!ValidationLayers::Enabled())
+    {
+      return;
+    }
+
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-      instance, "vkDestroyDebugUtilsMessengerEXT");
+      _instance.GetInstance(), "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr)
     {
-      func(instance, debugMessenger, pAllocator);
+      func(_instance.GetInstance(), _debugMessenger, _allocator);
     }
   }
 

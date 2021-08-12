@@ -2,6 +2,7 @@
 #define MY_FIRST_VULKAN_ENGINE_PHYSICAL_DEVICE_H
 
 // Vulkan
+#include "vulkan/Instance.h"
 #include "vulkan/QueueFamilyIndicies.h"
 #include "vulkan/Vk_Base.h"
 
@@ -13,18 +14,18 @@ namespace MFVE::Vulkan
     PhysicalDevice()  = default;
     ~PhysicalDevice() = default;
 
-    static inline std::vector<VkPhysicalDevice> FindAllPhysicalDevices(VkInstance _instance)
+    static inline std::vector<VkPhysicalDevice> FindAllPhysicalDevices(const Instance& _instance)
     {
       uint32_t deviceCount = 0;
-      vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
+      vkEnumeratePhysicalDevices(_instance.GetInstance(), &deviceCount, nullptr);
 
       std::vector<VkPhysicalDevice> devices(deviceCount);
-      vkEnumeratePhysicalDevices(_instance, &deviceCount, devices.data());
+      vkEnumeratePhysicalDevices(_instance.GetInstance(), &deviceCount, devices.data());
 
       return devices;
     }
 
-    void PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface);
+    void PickSuitableDevice(const Instance& _instance, VkSurfaceKHR _surface);
 
     uint32_t FindMemoryType(uint32_t _typeFilter, VkMemoryPropertyFlags _properties) const;
 

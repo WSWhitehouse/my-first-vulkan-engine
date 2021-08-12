@@ -21,7 +21,7 @@ namespace MFVE::Vulkan
 
     void CreateDevice(const PhysicalDevice& _physicalDevice,
                       const VkAllocationCallbacks* _allocator);
-    void Destroy(const VkAllocationCallbacks* _allocator);
+    void DestroyDevice(const VkAllocationCallbacks* _allocator);
 
     /* Getters */
     [[nodiscard]] VkDevice GetDevice() const { return m_device; }

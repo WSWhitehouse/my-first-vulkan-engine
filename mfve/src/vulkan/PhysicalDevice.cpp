@@ -7,7 +7,7 @@
 
 namespace MFVE::Vulkan
 {
-  void PhysicalDevice::PickSuitableDevice(VkInstance _instance, VkSurfaceKHR _surface)
+  void PhysicalDevice::PickSuitableDevice(const Instance& _instance, VkSurfaceKHR _surface)
   {
     const std::vector<VkPhysicalDevice> devices = FindAllPhysicalDevices(_instance);
 
