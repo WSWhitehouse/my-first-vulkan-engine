@@ -6,13 +6,11 @@
 #include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/CommandPool.h"
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/PhysicalDevice.h"
+#include "vulkan/Device.h"
 
 namespace MFVE::Vulkan
 {
-  void Buffer::CreateBuffer(const PhysicalDevice& _physicalDevice,
-                            const LogicalDevice& _logicalDevice, VkDeviceSize _bufferSize,
+  void Buffer::CreateBuffer(const Device& _device, VkDeviceSize _bufferSize,
                             VkBufferUsageFlags _usage, VkMemoryPropertyFlags _properties,
                             const VkAllocationCallbacks* _allocator)
   {
@@ -24,7 +22,7 @@ namespace MFVE::Vulkan
     bufferInfo.size  = m_bufferSize;
     bufferInfo.usage = _usage;
 
-    std::set<uint32_t> queueFamilyIndiciesSet = _logicalDevice.GetUniqueQueueFamilyIndicies();
+    std::set<uint32_t> queueFamilyIndiciesSet = _device.GetUniqueQueueFamilyIndicies();
     std::vector<uint32_t> indicies(queueFamilyIndiciesSet.begin(), queueFamilyIndiciesSet.end());
 
     if (queueFamilyIndiciesSet.size() > 1)
@@ -40,37 +38,36 @@ namespace MFVE::Vulkan
       bufferInfo.pQueueFamilyIndices   = nullptr;
     }
 
-    VkCheck(vkCreateBuffer(_logicalDevice.GetDevice(), &bufferInfo, _allocator, &m_buffer));
+    VkCheck(vkCreateBuffer(_device.GetDevice(), &bufferInfo, _allocator, &m_buffer));
 
     // Allocating memory for buffer
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(_logicalDevice.GetDevice(), m_buffer, &memRequirements);
+    vkGetBufferMemoryRequirements(_device.GetDevice(), m_buffer, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize  = memRequirements.size;
-    allocInfo.memoryTypeIndex = _physicalDevice.FindMemoryType(
-      memRequirements.memoryTypeBits,
-      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+    allocInfo.memoryTypeIndex = _device.FindMemoryType(memRequirements.memoryTypeBits,
+                                                       VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                                                         VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 
-    VkCheck(vkAllocateMemory(_logicalDevice.GetDevice(), &allocInfo, _allocator, &m_bufferMemory));
+    VkCheck(vkAllocateMemory(_device.GetDevice(), &allocInfo, _allocator, &m_bufferMemory));
 
     // Bind memory
-    vkBindBufferMemory(_logicalDevice.GetDevice(), m_buffer, m_bufferMemory, 0);
+    vkBindBufferMemory(_device.GetDevice(), m_buffer, m_bufferMemory, 0);
   }
 
-  void Buffer::DestroyBuffer(const LogicalDevice& _logicalDevice,
-                             const VkAllocationCallbacks* _allocator)
+  void Buffer::DestroyBuffer(const Device& _device, const VkAllocationCallbacks* _allocator)
   {
-    vkDestroyBuffer(_logicalDevice.GetDevice(), m_buffer, _allocator);
-    vkFreeMemory(_logicalDevice.GetDevice(), m_bufferMemory, _allocator);
+    vkDestroyBuffer(_device.GetDevice(), m_buffer, _allocator);
+    vkFreeMemory(_device.GetDevice(), m_bufferMemory, _allocator);
   }
 
-  void Buffer::CopyBuffer(const LogicalDevice& _logicalDevice, const CommandPool& _commandPool,
+  void Buffer::CopyBuffer(const Device& _device, const CommandPool& _commandPool,
                           const Buffer& _srcBuffer, VkDeviceSize _bufferSize)
   {
     CommandBuffer commandBuffer;
-    commandBuffer.AllocateCommandBuffers(_logicalDevice, _commandPool, 1);
+    commandBuffer.AllocateCommandBuffers(_device, _commandPool, 1);
 
     auto cmdbuffer = commandBuffer.GetCommandBuffers().at(0);
 
@@ -96,7 +93,7 @@ namespace MFVE::Vulkan
     vkQueueSubmit(_commandPool.GetQueueFamily().queue, 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(_commandPool.GetQueueFamily().queue);
 
-    commandBuffer.FreeCommandBuffers(_logicalDevice, _commandPool);
+    commandBuffer.FreeCommandBuffers(_device, _commandPool);
   }
 
 } // namespace MFVE::Vulkan

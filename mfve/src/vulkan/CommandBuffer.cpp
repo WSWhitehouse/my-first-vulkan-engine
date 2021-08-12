@@ -4,12 +4,11 @@
 
 // Vulkan
 #include "vulkan/CommandPool.h"
-#include "vulkan/LogicalDevice.h"
+#include "vulkan/Device.h"
 
 namespace MFVE::Vulkan
 {
-  void CommandBuffer::AllocateCommandBuffers(const LogicalDevice& _logicalDevice,
-                                             const CommandPool& _commandPool,
+  void CommandBuffer::AllocateCommandBuffers(const Device& _device, const CommandPool& _commandPool,
                                              uint32_t _commandBufferCount,
                                              VkCommandBufferLevel _level)
   {
@@ -21,14 +20,12 @@ namespace MFVE::Vulkan
     allocInfo.level              = _level;
     allocInfo.commandBufferCount = static_cast<uint32_t>(m_commandBuffers.size());
 
-    VkCheck(
-      vkAllocateCommandBuffers(_logicalDevice.GetDevice(), &allocInfo, m_commandBuffers.data()));
+    VkCheck(vkAllocateCommandBuffers(_device.GetDevice(), &allocInfo, m_commandBuffers.data()));
   }
 
-  void CommandBuffer::FreeCommandBuffers(const LogicalDevice& _logicalDevice,
-                                         const CommandPool& _commandPool)
+  void CommandBuffer::FreeCommandBuffers(const Device& _device, const CommandPool& _commandPool)
   {
-    vkFreeCommandBuffers(_logicalDevice.GetDevice(),
+    vkFreeCommandBuffers(_device.GetDevice(),
                          _commandPool.GetCommandPool(),
                          static_cast<uint32_t>(m_commandBuffers.size()),
                          m_commandBuffers.data());

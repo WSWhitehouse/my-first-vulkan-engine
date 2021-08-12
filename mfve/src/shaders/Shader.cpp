@@ -26,14 +26,14 @@ namespace MFVE
       std::vector<uint32_t> spirv = CompileFromSource();
       Cache::Write(cacheFilePath, spirv);
       Cache::Read(cacheFilePath, m_shaderData);
-      //m_shaderData = std::vector<char>(spirv.cbegin(), spirv.cend());
+      // m_shaderData = std::vector<char>(spirv.cbegin(), spirv.cend());
 
       MFVE_LOG_INFO("Compiled Shader: " + m_filePath.filename().string() +
                     " size: " + std::to_string(m_shaderData.size()));
     }
   }
 
-  VkResult Shader::CreateShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+  VkResult Shader::CreateShaderModule(const Vulkan::Device& _device,
                                       const VkAllocationCallbacks* _allocator)
   {
     VkShaderModuleCreateInfo createInfo{};
@@ -41,14 +41,13 @@ namespace MFVE
     createInfo.codeSize = m_shaderData.size();
     createInfo.pCode    = reinterpret_cast<const uint32_t*>(m_shaderData.data());
 
-    return vkCreateShaderModule(
-      _logicalDevice.GetDevice(), &createInfo, _allocator, &m_shaderModule);
+    return vkCreateShaderModule(_device.GetDevice(), &createInfo, _allocator, &m_shaderModule);
   }
 
-  void Shader::DestroyShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+  void Shader::DestroyShaderModule(const Vulkan::Device& _device,
                                    const VkAllocationCallbacks* _allocator)
   {
-    vkDestroyShaderModule(_logicalDevice.GetDevice(), m_shaderModule, _allocator);
+    vkDestroyShaderModule(_device.GetDevice(), m_shaderModule, _allocator);
   }
 
   std::string Shader::ReadSourceFile()

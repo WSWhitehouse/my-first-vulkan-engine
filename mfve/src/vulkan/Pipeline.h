@@ -10,7 +10,7 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
-  class LogicalDevice;
+  class Device;
   class Swapchain;
 
   class Pipeline
@@ -20,16 +20,14 @@ namespace MFVE::Vulkan
     ~Pipeline() = default;
 
     // Render Passes
-    VkResult CreateRenderPasses(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+    VkResult CreateRenderPasses(const Device& _device, const Swapchain& _swapchain,
                                 const VkAllocationCallbacks* _allocator);
-    void DestroyRenderPasses(const LogicalDevice& _logicalDevice,
-                             const VkAllocationCallbacks* _allocator);
+    void DestroyRenderPasses(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Graphics Pipeline
-    VkResult CreatePipeline(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+    VkResult CreatePipeline(const Device& _device, const Swapchain& _swapchain,
                             const VkAllocationCallbacks* _allocator);
-    void DestroyPipeline(const LogicalDevice& _logicalDevice,
-                         const VkAllocationCallbacks* _allocator);
+    void DestroyPipeline(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Getters
     [[nodiscard]] VkRenderPass GetRenderPass() const { return m_renderPass; }

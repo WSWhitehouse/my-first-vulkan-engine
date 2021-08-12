@@ -8,7 +8,7 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
-  class LogicalDevice;
+  class Device;
 
   class CommandPool
   {
@@ -17,10 +17,9 @@ namespace MFVE::Vulkan
     ~CommandPool() = default;
 
     // Command Pool
-    VkResult CreateCommandPool(const LogicalDevice& _logicalDevice, QueueFamily _queueFamily,
+    VkResult CreateCommandPool(const Device& _device, QueueFamily _queueFamily,
                                const VkAllocationCallbacks* _allocator);
-    void DestroyCommandPool(const LogicalDevice& _logicalDevice,
-                            const VkAllocationCallbacks* _allocator);
+    void DestroyCommandPool(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Getters
     [[nodiscard]] const QueueFamily& GetQueueFamily() const { return m_queueFamily; }

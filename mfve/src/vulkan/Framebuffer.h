@@ -7,7 +7,7 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
-  class LogicalDevice;
+  class Device;
   class Pipeline;
   class Swapchain;
 
@@ -18,10 +18,9 @@ namespace MFVE::Vulkan
     ~Framebuffer() = default;
 
     // Framebuffers
-    VkResult CreateFramebuffers(const LogicalDevice& _logicalDevice, const Swapchain& _swapchain,
+    VkResult CreateFramebuffers(const Device& _device, const Swapchain& _swapchain,
                                 const Pipeline& _pipeline, const VkAllocationCallbacks* _allocator);
-    void DestroyFramebuffers(const LogicalDevice& _logicalDevice,
-                             const VkAllocationCallbacks* _allocator);
+    void DestroyFramebuffers(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Getters
     [[nodiscard]] const std::vector<VkFramebuffer>& GetFramebuffers() const

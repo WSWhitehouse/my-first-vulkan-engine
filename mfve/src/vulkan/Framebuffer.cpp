@@ -3,14 +3,14 @@
 #include <mfve_pch.h>
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
+#include "vulkan/Device.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
 
 namespace MFVE::Vulkan
 {
-  VkResult Framebuffer::CreateFramebuffers(const LogicalDevice& _logicalDevice,
-                                           const Swapchain& _swapchain, const Pipeline& _pipeline,
+  VkResult Framebuffer::CreateFramebuffers(const Device& _device, const Swapchain& _swapchain,
+                                           const Pipeline& _pipeline,
                                            const VkAllocationCallbacks* _allocator)
   {
     const auto& imageViews = _swapchain.GetImageViews();
@@ -30,8 +30,8 @@ namespace MFVE::Vulkan
       framebufferInfo.height          = _swapchain.GetExtent().height;
       framebufferInfo.layers          = 1;
 
-      const VkResult result = vkCreateFramebuffer(
-        _logicalDevice.GetDevice(), &framebufferInfo, _allocator, &m_framebuffers[i]);
+      const VkResult result =
+        vkCreateFramebuffer(_device.GetDevice(), &framebufferInfo, _allocator, &m_framebuffers[i]);
 
       if (result != VK_SUCCESS)
       {
@@ -42,12 +42,12 @@ namespace MFVE::Vulkan
     return VK_SUCCESS;
   }
 
-  void Framebuffer::DestroyFramebuffers(const LogicalDevice& _logicalDevice,
+  void Framebuffer::DestroyFramebuffers(const Device& _device,
                                         const VkAllocationCallbacks* _allocator)
   {
     for (auto framebuffer : m_framebuffers)
     {
-      vkDestroyFramebuffer(_logicalDevice.GetDevice(), framebuffer, _allocator);
+      vkDestroyFramebuffer(_device.GetDevice(), framebuffer, _allocator);
     }
 
     m_framebuffers.clear();

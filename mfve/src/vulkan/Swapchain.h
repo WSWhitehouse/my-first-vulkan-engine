@@ -13,34 +13,21 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
-  class LogicalDevice;
-  class PhysicalDevice;
+  class Device;
+  struct SupportDetails;
 
   class Swapchain
   {
    public:
-    struct SupportDetails
-    {
-      VkSurfaceCapabilitiesKHR capabilities{};
-      std::vector<VkSurfaceFormatKHR> formats;
-      std::vector<VkPresentModeKHR> presentModes;
-
-      static SupportDetails QuerySupport(VkPhysicalDevice _device, VkSurfaceKHR _surface);
-    };
-
     Swapchain()  = default;
     ~Swapchain() = default;
 
-    VkResult CreateSwapchain(const PhysicalDevice& _physicalDevice,
-                             const LogicalDevice& _logicalDevice, Window* _window,
+    VkResult CreateSwapchain(const Device& _device, Window* _window,
                              const VkAllocationCallbacks* _allocator);
-    void DestroySwapchain(const LogicalDevice& _logicalDevice,
-                          const VkAllocationCallbacks* _allocator);
+    void DestroySwapchain(const Device& _device, const VkAllocationCallbacks* _allocator);
 
-    VkResult CreateImageViews(const LogicalDevice& _logicalDevice,
-                              const VkAllocationCallbacks* _allocator);
-    void DestroyImageViews(const LogicalDevice& _logicalDevice,
-                           const VkAllocationCallbacks* _allocator);
+    VkResult CreateImageViews(const Device& _device, const VkAllocationCallbacks* _allocator);
+    void DestroyImageViews(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     /* Getters */
     [[nodiscard]] VkSwapchainKHR GetSwapchain() const { return m_swapchain; }

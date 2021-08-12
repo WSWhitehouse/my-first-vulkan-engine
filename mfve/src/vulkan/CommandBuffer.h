@@ -8,7 +8,7 @@ namespace MFVE::Vulkan
 {
   // Forward Declarations
   class CommandPool;
-  class LogicalDevice;
+  class Device;
 
   class CommandBuffer
   {
@@ -17,10 +17,10 @@ namespace MFVE::Vulkan
     ~CommandBuffer() = default;
 
     // Command Buffer
-    void AllocateCommandBuffers(const LogicalDevice& _logicalDevice,
-                                const CommandPool& _commandPool, uint32_t _commandBufferCount,
+    void AllocateCommandBuffers(const Device& _device, const CommandPool& _commandPool,
+                                uint32_t _commandBufferCount,
                                 VkCommandBufferLevel _level = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-    void FreeCommandBuffers(const LogicalDevice& _logicalDevice, const CommandPool& _commandPool);
+    void FreeCommandBuffers(const Device& _device, const CommandPool& _commandPool);
 
     // Getters
     [[nodiscard]] std::vector<VkCommandBuffer>& GetCommandBuffers() { return m_commandBuffers; }

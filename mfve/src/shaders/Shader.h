@@ -2,7 +2,7 @@
 #define MY_FIRST_VULKAN_ENGINE_SHADER_H
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
+#include "vulkan/Device.h"
 #include "vulkan/Vk_Base.h"
 
 // Shaders
@@ -24,9 +24,9 @@ namespace MFVE
     void Load(const std::filesystem::path& _filePath, const ShaderKind& _shaderKind,
               const bool& _forceCompile = false);
 
-    VkResult CreateShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+    VkResult CreateShaderModule(const Vulkan::Device& _device,
                                 const VkAllocationCallbacks* _allocator);
-    void DestroyShaderModule(const Vulkan::LogicalDevice& _logicalDevice,
+    void DestroyShaderModule(const Vulkan::Device& _device,
                              const VkAllocationCallbacks* _allocator);
 
     /* Getters */

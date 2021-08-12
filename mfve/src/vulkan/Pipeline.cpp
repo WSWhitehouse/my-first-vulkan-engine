@@ -1,16 +1,15 @@
-#include "Pipeline.h"
+#include "vulkan/Pipeline.h"
 
 #include <mfve_pch.h>
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
+#include "vulkan/Device.h"
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vertex.h"
 
 namespace MFVE::Vulkan
 {
-  VkResult Pipeline::CreateRenderPasses(const LogicalDevice& _logicalDevice,
-                                        const Swapchain& _swapchain,
+  VkResult Pipeline::CreateRenderPasses(const Device& _device, const Swapchain& _swapchain,
                                         const VkAllocationCallbacks* _allocator)
   {
     VkAttachmentDescription colorAttachment{};
@@ -49,26 +48,23 @@ namespace MFVE::Vulkan
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies   = &dependency;
 
-    return vkCreateRenderPass(
-      _logicalDevice.GetDevice(), &renderPassInfo, _allocator, &m_renderPass);
+    return vkCreateRenderPass(_device.GetDevice(), &renderPassInfo, _allocator, &m_renderPass);
   }
 
-  void Pipeline::DestroyRenderPasses(const LogicalDevice& _logicalDevice,
-                                     const VkAllocationCallbacks* _allocator)
+  void Pipeline::DestroyRenderPasses(const Device& _device, const VkAllocationCallbacks* _allocator)
   {
-    vkDestroyRenderPass(_logicalDevice.GetDevice(), m_renderPass, _allocator);
+    vkDestroyRenderPass(_device.GetDevice(), m_renderPass, _allocator);
   }
 
-  VkResult Pipeline::CreatePipeline(const LogicalDevice& _logicalDevice,
-                                    const Swapchain& _swapchain,
+  VkResult Pipeline::CreatePipeline(const Device& _device, const Swapchain& _swapchain,
                                     const VkAllocationCallbacks* _allocator)
   {
     // Shaders
     m_fragShader.Load("shaders/fragshader.glsl", FRAGMENT_SHADER);
     m_vertShader.Load("shaders/vertshader.glsl", VERTEX_SHADER);
 
-    VkCheck(m_fragShader.CreateShaderModule(_logicalDevice, _allocator));
-    VkCheck(m_vertShader.CreateShaderModule(_logicalDevice, _allocator));
+    VkCheck(m_fragShader.CreateShaderModule(_device, _allocator));
+    VkCheck(m_vertShader.CreateShaderModule(_device, _allocator));
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType               = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -186,7 +182,7 @@ namespace MFVE::Vulkan
     pipelineLayoutInfo.pPushConstantRanges    = nullptr;
 
     auto pipelineLayoutResult = vkCreatePipelineLayout(
-      _logicalDevice.GetDevice(), &pipelineLayoutInfo, _allocator, &m_pipelineLayout);
+      _device.GetDevice(), &pipelineLayoutInfo, _allocator, &m_pipelineLayout);
 
     if (pipelineLayoutResult != VK_SUCCESS)
     {
@@ -212,7 +208,7 @@ namespace MFVE::Vulkan
     pipelineInfo.basePipelineIndex   = -1;
 
     auto pipelineResult = vkCreateGraphicsPipelines(
-      _logicalDevice.GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, _allocator, &m_pipeline);
+      _device.GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, _allocator, &m_pipeline);
 
     if (pipelineResult != VK_SUCCESS)
     {
@@ -220,16 +216,15 @@ namespace MFVE::Vulkan
     }
 
     // Destroy shaders
-    m_fragShader.DestroyShaderModule(_logicalDevice, _allocator);
-    m_vertShader.DestroyShaderModule(_logicalDevice, _allocator);
+    m_fragShader.DestroyShaderModule(_device, _allocator);
+    m_vertShader.DestroyShaderModule(_device, _allocator);
 
     return VK_SUCCESS;
   }
 
-  void Pipeline::DestroyPipeline(const LogicalDevice& _logicalDevice,
-                                 const VkAllocationCallbacks* _allocator)
+  void Pipeline::DestroyPipeline(const Device& _device, const VkAllocationCallbacks* _allocator)
   {
-    vkDestroyPipeline(_logicalDevice.GetDevice(), m_pipeline, _allocator);
-    vkDestroyPipelineLayout(_logicalDevice.GetDevice(), m_pipelineLayout, _allocator);
+    vkDestroyPipeline(_device.GetDevice(), m_pipeline, _allocator);
+    vkDestroyPipelineLayout(_device.GetDevice(), m_pipelineLayout, _allocator);
   }
 } // namespace MFVE

@@ -12,10 +12,9 @@
 #include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/CommandPool.h"
+#include "vulkan/Device.h"
 #include "vulkan/Framebuffer.h"
 #include "vulkan/Instance.h"
-#include "vulkan/LogicalDevice.h"
-#include "vulkan/PhysicalDevice.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vertex.h"
@@ -34,7 +33,7 @@ namespace MFVE::Vulkan
                         const VkAllocationCallbacks* _allocator);
     void DestroyRenderer(const VkAllocationCallbacks* _allocator);
 
-    void DeviceWaitIdle() { vkDeviceWaitIdle(m_logicalDevice.GetDevice()); }
+    void DeviceWaitIdle() { vkDeviceWaitIdle(m_device.GetDevice()); }
     bool SignalExit() { return m_window->WindowShouldClose(); }
 
     // Drawing
@@ -63,8 +62,7 @@ namespace MFVE::Vulkan
     VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
 
     // Devices
-    Vulkan::PhysicalDevice m_physicalDevice = {};
-    Vulkan::LogicalDevice m_logicalDevice   = {};
+    Vulkan::Device m_device = {};
 
     Swapchain m_swapchain     = {};
     Pipeline m_pipeline       = {};

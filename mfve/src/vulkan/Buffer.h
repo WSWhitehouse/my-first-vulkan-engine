@@ -8,8 +8,7 @@ namespace MFVE::Vulkan
 {
   // Forward Declarations
   class CommandPool;
-  class LogicalDevice;
-  class PhysicalDevice;
+  class Device;
 
   class Buffer
   {
@@ -17,14 +16,12 @@ namespace MFVE::Vulkan
     Buffer()  = default;
     ~Buffer() = default;
 
-    void CreateBuffer(const PhysicalDevice& _physicalDevice, const LogicalDevice& _logicalDevice,
-                      VkDeviceSize _bufferSize, VkBufferUsageFlags _usage,
+    void CreateBuffer(const Device& _device, VkDeviceSize _bufferSize, VkBufferUsageFlags _usage,
                       VkMemoryPropertyFlags _properties, const VkAllocationCallbacks* _allocator);
 
-    void DestroyBuffer(const LogicalDevice& _logicalDevice,
-                       const VkAllocationCallbacks* _allocator);
+    void DestroyBuffer(const Device& _device, const VkAllocationCallbacks* _allocator);
 
-    void CopyBuffer(const LogicalDevice& _logicalDevice, const CommandPool& _commandPool,
+    void CopyBuffer(const Device& _device, const CommandPool& _commandPool,
                     const Buffer& _srcBuffer, VkDeviceSize _bufferSize);
 
     // Getters

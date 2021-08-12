@@ -3,12 +3,11 @@
 #include <mfve_pch.h>
 
 // Vulkan
-#include "vulkan/LogicalDevice.h"
+#include "vulkan/Device.h"
 
 namespace MFVE::Vulkan
 {
-  VkResult CommandPool::CreateCommandPool(const LogicalDevice& _logicalDevice,
-                                          QueueFamily _queueFamily,
+  VkResult CommandPool::CreateCommandPool(const Device& _device, QueueFamily _queueFamily,
                                           const VkAllocationCallbacks* _allocator)
   {
     m_queueFamily = std::move(_queueFamily);
@@ -18,12 +17,12 @@ namespace MFVE::Vulkan
     poolInfo.queueFamilyIndex = m_queueFamily.familyIndex;
     poolInfo.flags            = 0;
 
-    return vkCreateCommandPool(_logicalDevice.GetDevice(), &poolInfo, _allocator, &m_commandPool);
+    return vkCreateCommandPool(_device.GetDevice(), &poolInfo, _allocator, &m_commandPool);
   }
 
-  void CommandPool::DestroyCommandPool(const LogicalDevice& _logicalDevice,
+  void CommandPool::DestroyCommandPool(const Device& _device,
                                        const VkAllocationCallbacks* _allocator)
   {
-    vkDestroyCommandPool(_logicalDevice.GetDevice(), m_commandPool, _allocator);
+    vkDestroyCommandPool(_device.GetDevice(), m_commandPool, _allocator);
   }
 } // namepsace MFVE::Vulkan
