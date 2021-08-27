@@ -132,3 +132,13 @@ project (AppName)
         defines { "NDEBUG", "MFVE_RELEASE" }
         runtime "Release"
         optimize "On"
+
+        -- Post build command to generate assets (currently only moving them to target dir)
+        postbuildcommands{
+            "{ECHO} Generating Assets...",
+
+            -- Copying assets directory to app target directory
+            "{COPYDIR} " .. _assetdir .. " " .. _apptargetdir,
+
+            "{ECHO} Finished Generating Assets"
+        }

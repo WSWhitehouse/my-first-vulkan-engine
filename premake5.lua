@@ -26,7 +26,6 @@ workspace "my-first-vulkan-engine"
 
     --# Dependencies #--
     include "vendor/vendor.lua"
-    include "utils/utils.lua"
 
     --# Projects #--
     include "mfve/engine-premake"

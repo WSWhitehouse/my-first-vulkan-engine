@@ -36,9 +36,35 @@ namespace MFVE
       MFVE_LOG_INFO("    Base Path:   " + GetBasePath().string());
     }
 
+    // Cache Path
+    {
+      m_cachePath = m_basePath / CACHE_FOLDER;
+      MFVE_LOG_INFO("    Cache Path:  " + GetCachePath().string());
+    }
+
     // Asset Path
     {
+#if MFVE_DEBUG
+      MFVE_LOG_INFO("    Using Debug Assets Path.");
+      fs::path tmpBase   = m_basePath;
+      fs::path tmpAssets = tmpBase / ASSETS_FOLDER;
+
+      // Recursively go through the parent path to find the assets folder
+      while (!fs::exists(tmpAssets))
+      {
+        if (!tmpBase.has_parent_path() || tmpBase.empty())
+        {
+          break;
+        }
+
+        tmpBase   = tmpBase.parent_path();
+        tmpAssets = tmpBase / ASSETS_FOLDER;
+      }
+
+      m_assetPath = tmpAssets;
+#else
       m_assetPath = m_basePath / ASSETS_FOLDER;
+#endif
 
       if (!fs::exists(GetAssetPath()))
       {
@@ -50,20 +76,26 @@ namespace MFVE
       MFVE_LOG_INFO("    Assets Path: " + GetAssetPath().string());
     }
 
-    // Cache Path
-    {
-      m_cachePath = m_basePath / CACHE_FOLDER;
-      MFVE_LOG_INFO("    Cache Path:  " + GetCachePath().string());
-    }
-
     MFVE_LOG_INFO("Finished Initialising File System");
     MFVE_LOG_INFO("------------------------------");
   }
 
   void FileSystem::Terminate()
   {
+    namespace fs = std::filesystem;
+
     MFVE_LOG_INFO("------------------------------");
     MFVE_LOG_INFO("Terminating File System");
+
+    // TODO on debug delete cache
+
+#if MFVE_DEBUG
+    if (fs::exists(GetCachePath()))
+    {
+      MFVE_LOG_INFO("    Removing Cache");
+      fs::remove_all(GetCachePath());
+    }
+#endif
 
     MFVE_LOG_INFO("Finished Terminating File System");
     MFVE_LOG_INFO("------------------------------");
