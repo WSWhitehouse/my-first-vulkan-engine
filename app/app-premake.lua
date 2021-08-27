@@ -137,6 +137,10 @@ project (AppName)
         postbuildcommands{
             "{ECHO} Generating Assets...",
 
+            -- Removing pre-existing assets & cache folder
+            "{RMDIR} " .. _apptargetdir .. "/assets",
+            "{RMDIR} " .. _apptargetdir .. "/cache",
+
             -- Copying assets directory to app target directory
             "{COPYDIR} " .. _assetdir .. " " .. _apptargetdir,
 
