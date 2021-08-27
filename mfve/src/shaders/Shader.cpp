@@ -89,8 +89,6 @@ namespace MFVE
 
     std::string shaderSrc = ReadSourceFile();
 
-    MFVE_LOG_DEBUG("\n" + shaderSrc);
-
     shaderc::SpvCompilationResult module =
       compiler.CompileGlslToSpv(shaderSrc,
                                 ShaderUtils::ShaderKindToShaderC(m_shaderKind),
