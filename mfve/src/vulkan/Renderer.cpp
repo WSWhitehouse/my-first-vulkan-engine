@@ -44,6 +44,7 @@ namespace MFVE::Vulkan
     VkCheck(m_swapchain.CreateSwapchain(m_device, _window, _allocator));
     VkCheck(m_swapchain.CreateImageViews(m_device, _allocator));
     VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
+    VkCheck(m_pipeline.CreateDescriptorSetLayout(m_device, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
 
@@ -54,6 +55,7 @@ namespace MFVE::Vulkan
 
     CreateVertexBuffer(_allocator);
     CreateIndexBuffer(_allocator);
+    CreateUniformBuffers(_allocator);
 
     SetUpGraphicsCommandBuffer();
     CreateSyncObjects(_allocator);
@@ -64,6 +66,7 @@ namespace MFVE::Vulkan
     CleanUpSwapchain(_allocator);
 
     DestroySyncObjects(_allocator);
+    m_pipeline.DestroyDescriptorSetLayout(m_device, _allocator);
     m_vertexBuffer.DestroyBuffer(m_device, _allocator);
     m_indexBuffer.DestroyBuffer(m_device, _allocator);
     m_graphicsCommandPool.DestroyCommandPool(m_device, _allocator);
@@ -210,6 +213,8 @@ namespace MFVE::Vulkan
 
     stagingBuffer.DestroyBuffer(m_device, _allocator);
   }
+
+  void Renderer::CreateUniformBuffers(const VkAllocationCallbacks* _allocator) {}
 
   void Renderer::DrawFrame(const VkAllocationCallbacks* _allocator)
   {

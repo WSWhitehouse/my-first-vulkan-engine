@@ -7,6 +7,9 @@
 // Vulkan
 #include <vulkan/vulkan.h>
 
+// GLM
+#include <glm/glm.hpp>
+
 namespace MFVE::Vulkan
 {
   /**

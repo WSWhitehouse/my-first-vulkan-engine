@@ -82,6 +82,9 @@ namespace MFVE::Vulkan
     Buffer m_indexBuffer = {};
     void CreateIndexBuffer(const VkAllocationCallbacks* _allocator);
 
+    std::vector<Buffer> m_uniformBuffers = {};
+    void CreateUniformBuffers(const VkAllocationCallbacks* _allocator);
+
     const std::vector<Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
                                            { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
                                            { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },

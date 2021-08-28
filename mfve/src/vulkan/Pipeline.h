@@ -24,6 +24,11 @@ namespace MFVE::Vulkan
                                 const VkAllocationCallbacks* _allocator);
     void DestroyRenderPasses(const Device& _device, const VkAllocationCallbacks* _allocator);
 
+    // Descriptor Set Layout
+    VkResult CreateDescriptorSetLayout(const Device& _device, const Swapchain& _swapchain,
+                                       const VkAllocationCallbacks* _allocator);
+    void DestroyDescriptorSetLayout(const Device& _device, const VkAllocationCallbacks* _allocator);
+
     // Graphics Pipeline
     VkResult CreatePipeline(const Device& _device, const Swapchain& _swapchain,
                             const VkAllocationCallbacks* _allocator);
@@ -40,6 +45,9 @@ namespace MFVE::Vulkan
 
     // Render Passes
     VkRenderPass m_renderPass = VK_NULL_HANDLE;
+
+    // Descriptor Set Layout
+    VkDescriptorSetLayout m_descriptorSetLayout = VK_NULL_HANDLE;
 
     // Graphics Pipeline
     VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
