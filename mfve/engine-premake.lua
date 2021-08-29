@@ -6,7 +6,7 @@ project "MFVE"
     kind "StaticLib"
     language "C++"
     cppdialect "C++17"
-    staticruntime "off"
+    --staticruntime "on"
 
     targetdir(_apptargetdir)
     objdir(_appobjdir)
@@ -90,7 +90,7 @@ project "MFVE"
 
     filter "system:windows"
         systemversion "latest"
-        defines { "_CRT_SECURE_NO_WARNINGS" }
+        defines { "_CRT_SECURE_NO_WARNINGS", "_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH" }
 
         links {
             --# OS Links #--
@@ -119,11 +119,11 @@ project "MFVE"
         }
 
     filter "configurations:Debug"
-        defines { "DEBUG", "MFVE_DEBUG", "MFVE_ENABLE_LOGGER", "MFVE_ENABLE_VK_VALIDATION" }
+        defines { "MFVE_DEBUG", "MFVE_ENABLE_LOGGER", "MFVE_ENABLE_VK_VALIDATION" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
-        defines { "NDEBUG", "MFVE_RELEASE" }
+        defines { "MFVE_RELEASE" }
         runtime "Release"
         optimize "On"

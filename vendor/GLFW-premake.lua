@@ -5,7 +5,7 @@ project "GLFW"
     kind "StaticLib"
     language "C"
     systemversion "latest"
-    staticruntime "On"
+    --staticruntime "On"
 
     targetdir (_apptargetdir)
     objdir    (_appobjdir)
@@ -62,7 +62,8 @@ project "GLFW"
         defines
         {
             "_GLFW_WIN32",
-            "_CRT_SECURE_NO_WARNINGS"
+            "_CRT_SECURE_NO_WARNINGS",
+            "_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH" 
         }
 
     filter "configurations:Debug"

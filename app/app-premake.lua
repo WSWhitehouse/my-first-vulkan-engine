@@ -6,7 +6,7 @@ project (AppName)
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++17"
-    staticruntime "on"
+    --staticruntime "on"
 
     targetdir (_apptargetdir)
     objdir    (_appobjdir)
@@ -34,7 +34,11 @@ project (AppName)
         "%{IncludeDir.glm}/glm/**.inl",
 
         --# Cpp Log #--
-        "%{IncludeDir.CppLog}/CppLog/**.h"
+        "%{IncludeDir.CppLog}/CppLog/**.h",
+
+        --# whereami #--
+        "%{IncludeDir.whereami}/**.h",
+        "%{IncludeDir.whereami}/**.c"
     }
 
     includedirs
@@ -48,6 +52,10 @@ project (AppName)
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.glm}",
         "%{IncludeDir.CppLog}",
+        "%{IncludeDir.whereami}",
+
+        --# Vulkan SDK #--
+        "%{VULKAN_SDK}/include/"
     }
 
     libdirs
@@ -94,7 +102,7 @@ project (AppName)
 
     filter "system:windows"
         systemversion "latest"
-        defines { "_CRT_SECURE_NO_WARNINGS" }
+        defines { "_CRT_SECURE_NO_WARNINGS", "_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH"  }
 
         links
         {
@@ -114,7 +122,6 @@ project (AppName)
 
             --# SPIR-V & ShaderC #--
             "shaderc_combined.lib",
-            --"shaderc_shared.lib",
             "spirv-cross-core.lib",
             "spirv-cross-glsl.lib",
 
@@ -124,12 +131,12 @@ project (AppName)
         }
 
     filter "configurations:Debug"
-        defines { "DEBUG", "MFVE_DEBUG", "MFVE_ENABLE_LOGGER" }
+        defines { "MFVE_DEBUG", "MFVE_ENABLE_LOGGER" }
         runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
-        defines { "NDEBUG", "MFVE_RELEASE" }
+        defines { "MFVE_RELEASE" }
         runtime "Release"
         optimize "On"
 

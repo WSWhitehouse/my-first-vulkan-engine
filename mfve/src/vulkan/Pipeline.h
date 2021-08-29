@@ -44,9 +44,6 @@ namespace MFVE::Vulkan
     [[nodiscard]] VkPipeline GetPipeline() const { return m_pipeline; }
 
    private:
-    Shader m_fragShader = {};
-    Shader m_vertShader = {};
-
     // Render Passes
     VkRenderPass m_renderPass = VK_NULL_HANDLE;
 

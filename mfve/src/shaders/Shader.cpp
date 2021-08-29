@@ -9,8 +9,8 @@ namespace MFVE
                     const bool& _forceCompile)
   {
     // Set up file paths
-    m_filePath         = _filePath;
-    m_shaderKind       = _shaderKind;
+    m_filePath = _filePath;
+    m_shaderKind = _shaderKind;
     auto cacheFilePath = SHADER_CACHE_FOLDER + m_filePath.filename().string() + SPIRV_EXTENSION;
 
     // Remove any previous data
@@ -29,7 +29,7 @@ namespace MFVE
       // m_shaderData = std::vector<char>(spirv.cbegin(), spirv.cend());
 
       MFVE_LOG_INFO("Compiled Shader: " + m_filePath.filename().string() +
-                    " size: " + std::to_string(m_shaderData.size()));
+        " size: " + std::to_string(m_shaderData.size()));
     }
   }
 
@@ -37,9 +37,9 @@ namespace MFVE
                                       const VkAllocationCallbacks* _allocator)
   {
     VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = m_shaderData.size();
-    createInfo.pCode    = reinterpret_cast<const uint32_t*>(m_shaderData.data());
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(m_shaderData.data());
 
     return vkCreateShaderModule(_device.GetDevice(), &createInfo, _allocator, &m_shaderModule);
   }
@@ -89,11 +89,11 @@ namespace MFVE
 
     std::string shaderSrc = ReadSourceFile();
 
-    shaderc::SpvCompilationResult module =
-      compiler.CompileGlslToSpv(shaderSrc,
-                                ShaderUtils::ShaderKindToShaderC(m_shaderKind),
-                                FileSystem::GetAssetPathFromRelativePath(m_filePath).c_str(),
-                                options);
+    const auto module = compiler.CompileGlslToSpv(shaderSrc.c_str(),
+                                                  shaderSrc.size(),
+                                                  ShaderUtils::ShaderKindToShaderC(m_shaderKind),
+                                                  m_filePath.string().data(),
+                                                  options);
 
     if (module.GetCompilationStatus() != shaderc_compilation_status_success)
     {
