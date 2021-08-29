@@ -68,15 +68,15 @@ namespace MFVE::Vulkan
   {
     CleanUpSwapchain(_allocator);
 
-    DestroySyncObjects(_allocator);
     m_pipeline.DestroyDescriptorSetLayout(m_device, _allocator);
     m_vertexBuffer.DestroyBuffer(m_device, _allocator);
     m_indexBuffer.DestroyBuffer(m_device, _allocator);
+    DestroySyncObjects(_allocator);
     m_graphicsCommandPool.DestroyCommandPool(m_device, _allocator);
     m_transferCommandPool.DestroyCommandPool(m_device, _allocator);
     m_device.DestroyDevice(nullptr);
-    m_window->DestroySurface(m_instance, nullptr);
     ValidationLayers::DestroyDebugMessenger(m_instance, m_debugMessenger, nullptr);
+    m_window->DestroySurface(m_instance, nullptr);
     m_instance.DestroyInstance(_allocator);
 
     // Window
@@ -103,12 +103,14 @@ namespace MFVE::Vulkan
     CreateDescriptorSets();
 
     SetUpGraphicsCommandBuffer();
+
+    m_imagesInFlight.resize(m_swapchain.GetImages().size(), VK_NULL_HANDLE);
   }
 
   void Renderer::CleanUpSwapchain(const VkAllocationCallbacks* _allocator)
   {
-    m_graphicsCommandBuffer.FreeCommandBuffers(m_device, m_graphicsCommandPool);
     m_framebuffer.DestroyFramebuffers(m_device, _allocator);
+    m_graphicsCommandBuffer.FreeCommandBuffers(m_device, m_graphicsCommandPool);
     m_pipeline.DestroyPipeline(m_device, _allocator);
     m_pipeline.DestroyRenderPasses(m_device, _allocator);
     m_swapchain.DestroyImageViews(m_device, _allocator);

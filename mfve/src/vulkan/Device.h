@@ -31,8 +31,8 @@ namespace MFVE::Vulkan
     uint32_t FindMemoryType(uint32_t _typeFilter, VkMemoryPropertyFlags _properties) const;
 
     /* Getters */
-    [[nodiscard]] const SupportDetails& GetSupportDetails() const { return m_supportDetails; }
     [[nodiscard]] VkDevice GetDevice() const { return m_device; }
+    [[nodiscard]] VkPhysicalDevice GetPhysicalDevice() const { return m_physicalDevice; }
     [[nodiscard]] const QueueFamily& GetGraphicsQueue() const { return m_graphicsQueue; }
     [[nodiscard]] const QueueFamily& GetPresentQueue() const { return m_presentQueue; }
     [[nodiscard]] const QueueFamily& GetTransferQueue() const { return m_transferQueue; }
@@ -47,7 +47,6 @@ namespace MFVE::Vulkan
    private:
     // Physical Device
     VkPhysicalDevice m_physicalDevice                 = VK_NULL_HANDLE;
-    SupportDetails m_supportDetails                   = {};
     const std::vector<const char*> m_deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
     bool IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface,

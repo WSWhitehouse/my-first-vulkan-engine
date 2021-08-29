@@ -117,9 +117,8 @@ namespace MFVE::Vulkan
     bool swapChainAdequate;
     if (extensionsSupported)
     {
-      m_supportDetails  = SupportDetails::QuerySupport(_device, _surface);
-      swapChainAdequate = !m_supportDetails.formats.empty() &&
-                          !m_supportDetails.presentModes.empty();
+      const auto supportDetails = SupportDetails::QuerySupport(_device, _surface);
+      swapChainAdequate = !supportDetails.formats.empty() && !supportDetails.presentModes.empty();
     }
 
     return _queueFamilyIndicies.IsComplete() && extensionsSupported && swapChainAdequate;

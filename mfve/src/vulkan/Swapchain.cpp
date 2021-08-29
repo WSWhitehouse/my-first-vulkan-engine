@@ -11,7 +11,8 @@ namespace MFVE::Vulkan
   VkResult Swapchain::CreateSwapchain(const Device& _device, Window* _window,
                                       const VkAllocationCallbacks* _allocator)
   {
-    const auto& supportDetails = _device.GetSupportDetails();
+    const auto supportDetails =
+      SupportDetails::QuerySupport(_device.GetPhysicalDevice(), _window->GetSurface());
 
     ChooseSurfaceFormat(supportDetails);
     ChoosePresentMode(supportDetails);
