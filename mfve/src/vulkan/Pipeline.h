@@ -36,6 +36,10 @@ namespace MFVE::Vulkan
 
     // Getters
     [[nodiscard]] VkRenderPass GetRenderPass() const { return m_renderPass; }
+    [[nodiscard]] VkDescriptorSetLayout GetDescriptorSetLayout() const
+    {
+      return m_descriptorSetLayout;
+    }
     [[nodiscard]] VkPipelineLayout GetPipelineLayout() const { return m_pipelineLayout; }
     [[nodiscard]] VkPipeline GetPipeline() const { return m_pipeline; }
 

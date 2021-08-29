@@ -17,9 +17,9 @@
 #include "vulkan/Instance.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
+#include "vulkan/UniformBufferObject.h"
 #include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
-#include "vulkan/UniformBufferObject.h"
 
 namespace MFVE::Vulkan
 {
@@ -83,8 +83,15 @@ namespace MFVE::Vulkan
     Buffer m_indexBuffer = {};
     void CreateIndexBuffer(const VkAllocationCallbacks* _allocator);
 
+    // Uniform Buffers
     std::vector<Buffer> m_uniformBuffers = {};
+    VkDescriptorPool m_descriptorPool    = {};
+    std::vector<VkDescriptorSet> m_descriptorSets;
+
     void CreateUniformBuffers(const VkAllocationCallbacks* _allocator);
+    void CreateDescriptorPool(const VkAllocationCallbacks* _allocator);
+    void CreateDescriptorSets();
+
     void UpdateUniformBuffer(uint32_t _currentImage);
 
     const std::vector<Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },

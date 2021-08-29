@@ -55,7 +55,10 @@ namespace MFVE::Vulkan
 
     CreateVertexBuffer(_allocator);
     CreateIndexBuffer(_allocator);
+
     CreateUniformBuffers(_allocator);
+    CreateDescriptorPool(_allocator);
+    CreateDescriptorSets();
 
     SetUpGraphicsCommandBuffer();
     CreateSyncObjects(_allocator);
@@ -94,7 +97,11 @@ namespace MFVE::Vulkan
     VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
+
     CreateUniformBuffers(_allocator);
+    CreateDescriptorPool(_allocator);
+    CreateDescriptorSets();
+
     SetUpGraphicsCommandBuffer();
   }
 
@@ -111,6 +118,8 @@ namespace MFVE::Vulkan
     {
       buffer.DestroyBuffer(m_device, _allocator);
     }
+
+    vkDestroyDescriptorPool(m_device.GetDevice(), m_descriptorPool, _allocator);
   }
 
   void Renderer::SetUpGraphicsCommandBuffer()
@@ -234,6 +243,57 @@ namespace MFVE::Vulkan
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
                             VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                           _allocator);
+    }
+  }
+
+  void Renderer::CreateDescriptorPool(const VkAllocationCallbacks* _allocator)
+  {
+    VkDescriptorPoolSize poolSize{};
+    poolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.descriptorCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
+
+    VkDescriptorPoolCreateInfo poolInfo{};
+    poolInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.poolSizeCount = 1;
+    poolInfo.pPoolSizes    = &poolSize;
+    poolInfo.maxSets       = static_cast<uint32_t>(m_swapchain.GetImages().size());
+
+    VkCheck(vkCreateDescriptorPool(m_device.GetDevice(), &poolInfo, _allocator, &m_descriptorPool));
+  }
+
+  void Renderer::CreateDescriptorSets()
+  {
+    std::vector<VkDescriptorSetLayout> layouts(m_swapchain.GetImages().size(),
+                                               m_pipeline.GetDescriptorSetLayout());
+
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool     = m_descriptorPool;
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
+    allocInfo.pSetLayouts        = layouts.data();
+
+    m_descriptorSets.resize(m_swapchain.GetImages().size());
+    VkCheck(vkAllocateDescriptorSets(m_device.GetDevice(), &allocInfo, m_descriptorSets.data()));
+
+    for (size_t i = 0; i < m_swapchain.GetImages().size(); i++)
+    {
+      VkDescriptorBufferInfo bufferInfo{};
+      bufferInfo.buffer = m_uniformBuffers[i].GetBuffer();
+      bufferInfo.offset = 0;
+      bufferInfo.range  = sizeof(UniformBufferObject);
+
+      VkWriteDescriptorSet descriptorWrite{};
+      descriptorWrite.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      descriptorWrite.dstSet           = m_descriptorSets[i];
+      descriptorWrite.dstBinding       = 0;
+      descriptorWrite.dstArrayElement  = 0;
+      descriptorWrite.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      descriptorWrite.descriptorCount  = 1;
+      descriptorWrite.pBufferInfo      = &bufferInfo;
+      descriptorWrite.pImageInfo       = nullptr;
+      descriptorWrite.pTexelBufferView = nullptr;
+
+      vkUpdateDescriptorSets(m_device.GetDevice(), 1 , &descriptorWrite, 0, nullptr);
     }
   }
 
