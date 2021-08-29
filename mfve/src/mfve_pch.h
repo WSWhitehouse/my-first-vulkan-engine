@@ -20,6 +20,8 @@
 #include <optional>
 #include <stdexcept>
 #include <utility>
+#include <chrono>
+
 
 // C++ Math
 #include <cmath>

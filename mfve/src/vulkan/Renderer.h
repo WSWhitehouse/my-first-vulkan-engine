@@ -19,6 +19,7 @@
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
+#include "vulkan/UniformBufferObject.h"
 
 namespace MFVE::Vulkan
 {
@@ -84,6 +85,7 @@ namespace MFVE::Vulkan
 
     std::vector<Buffer> m_uniformBuffers = {};
     void CreateUniformBuffers(const VkAllocationCallbacks* _allocator);
+    void UpdateUniformBuffer(uint32_t _currentImage);
 
     const std::vector<Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
                                            { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },

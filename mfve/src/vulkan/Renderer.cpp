@@ -94,6 +94,7 @@ namespace MFVE::Vulkan
     VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
+    CreateUniformBuffers(_allocator);
     SetUpGraphicsCommandBuffer();
   }
 
@@ -105,6 +106,11 @@ namespace MFVE::Vulkan
     m_pipeline.DestroyRenderPasses(m_device, _allocator);
     m_swapchain.DestroyImageViews(m_device, _allocator);
     m_swapchain.DestroySwapchain(m_device, _allocator);
+
+    for (auto& buffer : m_uniformBuffers)
+    {
+      buffer.DestroyBuffer(m_device, _allocator);
+    }
   }
 
   void Renderer::SetUpGraphicsCommandBuffer()
@@ -214,7 +220,55 @@ namespace MFVE::Vulkan
     stagingBuffer.DestroyBuffer(m_device, _allocator);
   }
 
-  void Renderer::CreateUniformBuffers(const VkAllocationCallbacks* _allocator) {}
+  void Renderer::CreateUniformBuffers(const VkAllocationCallbacks* _allocator)
+  {
+    VkDeviceSize bufferSize = sizeof(UniformBufferObject);
+
+    m_uniformBuffers.resize(m_swapchain.GetImages().size());
+
+    for (auto& buffer : m_uniformBuffers)
+    {
+      buffer.CreateBuffer(m_device,
+                          bufferSize,
+                          VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+                          VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
+                            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                          _allocator);
+    }
+  }
+
+  void Renderer::UpdateUniformBuffer(uint32_t _currentImage)
+  {
+    static auto startTime = std::chrono::high_resolution_clock::now();
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    float time =
+      std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+
+    UniformBufferObject ubo{};
+    ubo.model =
+      glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.view = glm::lookAt(
+      glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.proj =
+      glm::perspective(glm::radians(45.0f),
+                       m_swapchain.GetExtent().width / (float)m_swapchain.GetExtent().height,
+                       0.1f,
+                       10.0f);
+
+    // GLM was originally designed for OpenGL, where the Y coordinate of the clip coordinates is
+    // inverted. The easiest way to compensate for that is to flip the sign on the scaling factor of
+    // the Y axis in the projection matrix. If you don't do this, then the image will be rendered
+    // upside down.
+    ubo.proj[1][1] *= -1;
+
+    auto& buffer = m_uniformBuffers[_currentImage];
+
+    void* data;
+    vkMapMemory(m_device.GetDevice(), buffer.GetBufferMemory(), 0, sizeof(ubo), 0, &data);
+    memcpy(data, &ubo, sizeof(ubo));
+    vkUnmapMemory(m_device.GetDevice(), buffer.GetBufferMemory());
+  }
 
   void Renderer::DrawFrame(const VkAllocationCallbacks* _allocator)
   {
@@ -239,6 +293,8 @@ namespace MFVE::Vulkan
     {
       VkCheck(result);
     }
+
+    UpdateUniformBuffer(imageIndex);
 
     // Check if a previous frame is using this image (i.e. there is its fence to wait on)
     if (m_imagesInFlight[imageIndex] != VK_NULL_HANDLE)
