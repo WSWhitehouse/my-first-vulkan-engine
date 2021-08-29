@@ -22,7 +22,9 @@ namespace MFVE
 
     /* Window */
     WindowProperties windowProps{};
-    auto _window = new WindowGLFW(windowProps); // Creating a GLFW Window for now
+
+    // Creating a GLFW Window for now - in future automatically decide which window is best on each platform
+    auto _window = new WindowGLFW(windowProps); 
 
     /* Vulkan */
     m_renderer.CreateRenderer(GetAppProperties(), _window, nullptr);
