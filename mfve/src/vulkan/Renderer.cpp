@@ -161,6 +161,16 @@ namespace MFVE::Vulkan
       // Bind Index Buffer
       vkCmdBindIndexBuffer(commandBuffers[i], m_indexBuffer.GetBuffer(), 0, VK_INDEX_TYPE_UINT16);
 
+      // Bind Descriptor Sets
+      vkCmdBindDescriptorSets(commandBuffers[i],
+                              VK_PIPELINE_BIND_POINT_GRAPHICS,
+                              m_pipeline.GetPipelineLayout(),
+                              0,
+                              1,
+                              &m_descriptorSets[i],
+                              0,
+                              nullptr);
+
       // Draw
       vkCmdDrawIndexed(commandBuffers[i], static_cast<uint32_t>(indices.size()), 1, 0, 0, 0);
 
@@ -293,7 +303,7 @@ namespace MFVE::Vulkan
       descriptorWrite.pImageInfo       = nullptr;
       descriptorWrite.pTexelBufferView = nullptr;
 
-      vkUpdateDescriptorSets(m_device.GetDevice(), 1 , &descriptorWrite, 0, nullptr);
+      vkUpdateDescriptorSets(m_device.GetDevice(), 1, &descriptorWrite, 0, nullptr);
     }
   }
 
