@@ -27,6 +27,7 @@ jobs:
         sudo apt update
         sudo apt-get install xorg-dev
         sudo apt-get install make
+        sudo apt-get install vulkan-tools
         sudo apt-get install spirv-tools 
 
     - name: Setup Premake
