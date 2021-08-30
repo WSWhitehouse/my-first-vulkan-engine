@@ -102,7 +102,6 @@ project (AppName)
 
     filter "system:windows"
         systemversion "latest"
-        defines { "_CRT_SECURE_NO_WARNINGS", "_ALLOW_ITERATOR_DEBUG_LEVEL_MISMATCH"  }
 
         links
         {
@@ -131,16 +130,16 @@ project (AppName)
         }
 
     filter "configurations:Debug"
-        defines { "MFVE_DEBUG", "MFVE_ENABLE_LOGGER" }
         runtime "Debug"
         symbols "On"
 
-    filter "configurations:Release"
-        defines { "MFVE_RELEASE" }
+    filter "configurations:Release" 
         runtime "Release"
         optimize "On"
 
-        -- Post build command to generate assets (currently only moving them to target dir)
+
+ -- Post build command to generate assets (currently only moving them to target dir)
+    filter { "configurations:Release", "system:not windows" }
         postbuildcommands{
             "{ECHO} Generating Assets...",
 
@@ -150,6 +149,21 @@ project (AppName)
 
             -- Copying assets directory to app target directory
             "{COPYDIR} " .. _assetdir .. " " .. _apptargetdir,
+
+            "{ECHO} Finished Generating Assets"
+        }
+
+    filter { "configurations:Release", "system:windows" }
+        postbuildcommands{
+            "{ECHO} Generating Assets...",
+
+            -- Removing pre-existing assets & cache folder
+            "{RMDIR} " .. _apptargetdir .. "/assets",
+            "{RMDIR} " .. _apptargetdir .. "/cache",
+
+            -- Copying assets directory to app target directory
+            "{MKDIR} " .. _apptargetdir .. "/assets",
+            "{COPYDIR} " .. _assetdir .. " " .. _apptargetdir .. "/assets",
 
             "{ECHO} Finished Generating Assets"
         }
