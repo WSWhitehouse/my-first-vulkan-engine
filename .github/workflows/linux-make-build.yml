@@ -16,18 +16,18 @@ jobs:
       with:
         submodules: recursive
         
+    - name: Setup Vulkan SDK
+      uses: humbletim/setup-vulkan-sdk@v1.0.2
+
+    - name: Install Premake
+      uses: abel0b/setup-premake@v1
+
     - name: Install Dependencies 
       run: |
         sudo apt update
         sudo apt-get install xorg-dev
         sudo apt-get install make
         sudo apt-get install shaderc
-      
-    - name: Setup Vulkan SDK
-      uses: humbletim/setup-vulkan-sdk@v1.0.2
-
-    - name: Install Premake
-      uses: abel0b/setup-premake@v1
       
     - name: Setup Premake
       run: premake5 gmake2
