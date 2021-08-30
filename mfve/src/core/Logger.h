@@ -39,7 +39,7 @@ namespace MFVE
   #define MFVE_LOG_DEBUG(msg)
   #define MFVE_LOG_WARNING(msg)
   #define MFVE_LOG_ERROR(msg)
-  #define MFVE_LOG_FATAL(msg)
+  #define MFVE_LOG_FATAL(msg) throw std::runtime_error(msg)
   #define MFVE_LOG_INVALID(msg)
   
 #endif
