@@ -67,9 +67,15 @@ project "GLFW"
         }
 
     filter "configurations:Debug"
-        runtime "Debug"
         symbols "on"
 
     filter "configurations:Release"
         runtime "Release"
         optimize "on"
+
+-- Must change runtime to Release for Windows.
+    filter { "configurations:Debug", "system:windows" }
+        runtime "Release"
+
+    filter { "configurations:Debug", "system:not windows" }
+        runtime "Debug"

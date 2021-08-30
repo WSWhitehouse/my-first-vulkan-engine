@@ -130,15 +130,20 @@ project (AppName)
         }
 
     filter "configurations:Debug"
-        runtime "Debug"
         symbols "On"
 
     filter "configurations:Release" 
         runtime "Release"
         optimize "On"
 
+-- Must change runtime to Release for Windows.
+    filter { "configurations:Debug", "system:windows" }
+        runtime "Release"
 
- -- Post build command to generate assets (currently only moving them to target dir)
+    filter { "configurations:Debug", "system:not windows" }
+        runtime "Debug"
+
+-- Post build command to generate assets (currently only moving them to target dir)
     filter { "configurations:Release", "system:not windows" }
         postbuildcommands{
             "{ECHO} Generating Assets...",

@@ -120,10 +120,16 @@ project "MFVE"
 
     filter "configurations:Debug"
         defines { "MFVE_DEBUG", "MFVE_ENABLE_LOGGER", "MFVE_ENABLE_VK_VALIDATION" }
-        runtime "Debug"
         symbols "On"
 
     filter "configurations:Release"
-        defines { "MFVE_RELEASE", "MFVE_ENABLE_LOGGER", "MFVE_ENABLE_VK_VALIDATION" }
+        defines { "MFVE_RELEASE" }
         runtime "Release"
         optimize "On"
+
+-- Must change runtime to Release for Windows.
+    filter { "configurations:Debug", "system:windows" }
+        runtime "Release"
+
+    filter { "configurations:Debug", "system:not windows" }
+        runtime "Debug"
