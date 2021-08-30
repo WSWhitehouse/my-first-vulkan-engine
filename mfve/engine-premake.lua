@@ -124,6 +124,6 @@ project "MFVE"
         symbols "On"
 
     filter "configurations:Release"
-        defines { "MFVE_RELEASE" }
+        defines { "MFVE_RELEASE", "MFVE_ENABLE_LOGGER", "MFVE_ENABLE_VK_VALIDATION" }
         runtime "Release"
         optimize "On"
