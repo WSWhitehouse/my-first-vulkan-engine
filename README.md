@@ -58,8 +58,7 @@ In order to change and customise it, you can edit some values from within the pr
 2. Run the premake5 command for the IDE / Build System, for example `premake5 vs2019` which will generate Visual Studio 2019 project files. You only need to re-run premake when adding/removing files to the project.
 
 ### Building
-1. Build the `Generate-Assets` project. This will move the assets to the target directory.
-2. Build the application project, which is named the same as the `AppName` field in the premake files (see [Customising Your Application](#customising-your-application) above). 
+Build the application project, which is named the same as the `AppName` field in the premake files (see [Customising Your Application](#customising-your-application) above). This will automatically build the engine and its dependencies. Building in the `Release` configuration will process the assets folder and copy it into the target directory along with the application executable; the `Debug` configuration uses the assets folder in the root of the project and doesn't copy it to the target directory. So when distributing your application make sure you use the release configuration that includes the assets.
 
 ---
 
