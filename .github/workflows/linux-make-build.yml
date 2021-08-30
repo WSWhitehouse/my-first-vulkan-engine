@@ -28,8 +28,7 @@ jobs:
         sudo apt-get install xorg-dev
         sudo apt-get install make
         sudo apt-get install spirv-tools 
-        sudo apt-get install shaderc
-      
+
     - name: Setup Premake
       run: premake5 gmake2
 
