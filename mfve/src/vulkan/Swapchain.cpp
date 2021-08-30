@@ -27,35 +27,35 @@ namespace MFVE::Vulkan
     }
 
     VkSwapchainCreateInfoKHR createInfo{};
-    createInfo.sType            = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface          = _window->GetSurface();
-    createInfo.minImageCount    = imageCount;
-    createInfo.imageFormat      = m_surfaceFormat.format;
-    createInfo.imageColorSpace  = m_surfaceFormat.colorSpace;
-    createInfo.imageExtent      = m_extent;
+    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    createInfo.surface = _window->GetSurface();
+    createInfo.minImageCount = imageCount;
+    createInfo.imageFormat = m_surfaceFormat.format;
+    createInfo.imageColorSpace = m_surfaceFormat.colorSpace;
+    createInfo.imageExtent = m_extent;
     createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     std::set<uint32_t> queueFamilyIndiciesSet = _device.GetUniqueQueueFamilyIndicies();
     std::vector<uint32_t> indicies(queueFamilyIndiciesSet.begin(), queueFamilyIndiciesSet.end());
 
     if (queueFamilyIndiciesSet.size() > 1)
     {
-      createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
-      createInfo.queueFamilyIndexCount = indicies.size();
-      createInfo.pQueueFamilyIndices   = indicies.data();
+      createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+      createInfo.queueFamilyIndexCount = static_cast<uint32_t>(indicies.size());
+      createInfo.pQueueFamilyIndices = indicies.data();
     }
     else
     {
-      createInfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;
+      createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
       createInfo.queueFamilyIndexCount = 0;
-      createInfo.pQueueFamilyIndices   = nullptr;
+      createInfo.pQueueFamilyIndices = nullptr;
     }
 
-    createInfo.preTransform   = supportDetails.capabilities.currentTransform;
+    createInfo.preTransform = supportDetails.capabilities.currentTransform;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    createInfo.presentMode    = m_presentMode;
-    createInfo.clipped        = VK_TRUE;
+    createInfo.presentMode = m_presentMode;
+    createInfo.clipped = VK_TRUE;
 
     return vkCreateSwapchainKHR(_device.GetDevice(), &createInfo, _allocator, &m_swapchain);
   }
@@ -73,28 +73,31 @@ namespace MFVE::Vulkan
     vkGetSwapchainImagesKHR(_device.GetDevice(), m_swapchain, &imageCount, nullptr);
     m_swapchainImages.resize(imageCount);
     vkGetSwapchainImagesKHR(
-      _device.GetDevice(), m_swapchain, &imageCount, m_swapchainImages.data());
+      _device.GetDevice(),
+      m_swapchain,
+      &imageCount,
+      m_swapchainImages.data());
 
     m_swapchainImageViews.resize(m_swapchainImages.size());
 
     for (size_t i = 0; i < m_swapchainImages.size(); i++)
     {
       VkImageViewCreateInfo createInfo{};
-      createInfo.sType    = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-      createInfo.image    = m_swapchainImages[i];
+      createInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+      createInfo.image = m_swapchainImages[i];
       createInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
-      createInfo.format   = GetSurfaceFormat().format;
+      createInfo.format = GetSurfaceFormat().format;
 
       createInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
       createInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
       createInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
       createInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
 
-      createInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-      createInfo.subresourceRange.baseMipLevel   = 0;
-      createInfo.subresourceRange.levelCount     = 1;
+      createInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+      createInfo.subresourceRange.baseMipLevel = 0;
+      createInfo.subresourceRange.levelCount = 1;
       createInfo.subresourceRange.baseArrayLayer = 0;
-      createInfo.subresourceRange.layerCount     = 1;
+      createInfo.subresourceRange.layerCount = 1;
 
       auto result =
         vkCreateImageView(_device.GetDevice(), &createInfo, _allocator, &m_swapchainImageViews[i]);
@@ -161,7 +164,9 @@ namespace MFVE::Vulkan
       VkExtent2D actualExtent = { static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
 
       actualExtent.width = std::clamp(
-        actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+        actualExtent.width,
+        capabilities.minImageExtent.width,
+        capabilities.maxImageExtent.width);
       actualExtent.height = std::clamp(actualExtent.height,
                                        capabilities.minImageExtent.height,
                                        capabilities.maxImageExtent.height);
@@ -169,5 +174,4 @@ namespace MFVE::Vulkan
       m_extent = actualExtent;
     }
   }
-
 } // namespace MFVE::Vulkan

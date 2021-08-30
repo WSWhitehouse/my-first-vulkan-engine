@@ -60,16 +60,16 @@ namespace MFVE::Vulkan
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    createInfo.queueCreateInfoCount = queueCreateInfos.size();
+    createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
     createInfo.pQueueCreateInfos    = queueCreateInfos.data();
     createInfo.pEnabledFeatures     = &deviceFeatures;
 
-    createInfo.enabledExtensionCount   = m_deviceExtensions.size();
+    createInfo.enabledExtensionCount   = static_cast<uint32_t>(m_deviceExtensions.size());
     createInfo.ppEnabledExtensionNames = m_deviceExtensions.data();
 
     if (ValidationLayers::Enabled())
     {
-      createInfo.enabledLayerCount   = ValidationLayers::Layers.size();
+      createInfo.enabledLayerCount   = static_cast<uint32_t>(ValidationLayers::Layers.size());
       createInfo.ppEnabledLayerNames = ValidationLayers::Layers.data();
     }
     else

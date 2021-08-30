@@ -127,37 +127,41 @@ namespace MFVE::Vulkan
   void Renderer::SetUpGraphicsCommandBuffer()
   {
     m_graphicsCommandBuffer.AllocateCommandBuffers(
-      m_device, m_graphicsCommandPool, m_framebuffer.GetFramebuffers().size());
+      m_device,
+      m_graphicsCommandPool,
+      static_cast<uint32_t>(m_framebuffer.GetFramebuffers().size()));
 
-    auto& commandBuffers = m_graphicsCommandBuffer.GetCommandBuffers();
+    const auto& commandBuffers = m_graphicsCommandBuffer.GetCommandBuffers();
 
     for (size_t i = 0; i < commandBuffers.size(); i++)
     {
       VkCommandBufferBeginInfo beginInfo{};
-      beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-      beginInfo.flags            = 0;
+      beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+      beginInfo.flags = 0;
       beginInfo.pInheritanceInfo = nullptr;
 
       VkCheck(vkBeginCommandBuffer(commandBuffers[i], &beginInfo));
 
       VkRenderPassBeginInfo renderPassInfo{};
-      renderPassInfo.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      renderPassInfo.renderPass        = m_pipeline.GetRenderPass();
-      renderPassInfo.framebuffer       = m_framebuffer.GetFramebuffers()[i];
+      renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+      renderPassInfo.renderPass = m_pipeline.GetRenderPass();
+      renderPassInfo.framebuffer = m_framebuffer.GetFramebuffers()[i];
       renderPassInfo.renderArea.offset = { 0, 0 };
       renderPassInfo.renderArea.extent = m_swapchain.GetExtent();
-      VkClearValue clearColor          = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
-      renderPassInfo.clearValueCount   = 1;
-      renderPassInfo.pClearValues      = &clearColor;
+      VkClearValue clearColor = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
+      renderPassInfo.clearValueCount = 1;
+      renderPassInfo.pClearValues = &clearColor;
 
       vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
       vkCmdBindPipeline(
-        commandBuffers[i], VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.GetPipeline());
+        commandBuffers[i],
+        VK_PIPELINE_BIND_POINT_GRAPHICS,
+        m_pipeline.GetPipeline());
 
       // Bind Vertex Buffer
       VkBuffer vertexBuffers[] = { m_vertexBuffer.GetBuffer() };
-      VkDeviceSize offsets[]   = { 0 };
+      VkDeviceSize offsets[] = { 0 };
       vkCmdBindVertexBuffers(commandBuffers[i], 0, 1, vertexBuffers, offsets);
 
       // Bind Index Buffer
@@ -191,7 +195,7 @@ namespace MFVE::Vulkan
                                bufferSize,
                                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                               VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                _allocator);
 
     // Fill Vertex Buffer
@@ -203,7 +207,7 @@ namespace MFVE::Vulkan
     m_vertexBuffer.CreateBuffer(m_device,
                                 bufferSize,
                                 VK_BUFFER_USAGE_TRANSFER_DST_BIT |
-                                  VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                 _allocator);
 
@@ -221,7 +225,7 @@ namespace MFVE::Vulkan
                                bufferSize,
                                VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
                                VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                                 VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                               VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                _allocator);
 
     // Fill Vertex Buffer
@@ -253,7 +257,7 @@ namespace MFVE::Vulkan
                           bufferSize,
                           VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                           VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT |
-                            VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                          VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                           _allocator);
     }
   }
@@ -261,14 +265,14 @@ namespace MFVE::Vulkan
   void Renderer::CreateDescriptorPool(const VkAllocationCallbacks* _allocator)
   {
     VkDescriptorPoolSize poolSize{};
-    poolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSize.descriptorCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
 
     VkDescriptorPoolCreateInfo poolInfo{};
-    poolInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+    poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     poolInfo.poolSizeCount = 1;
-    poolInfo.pPoolSizes    = &poolSize;
-    poolInfo.maxSets       = static_cast<uint32_t>(m_swapchain.GetImages().size());
+    poolInfo.pPoolSizes = &poolSize;
+    poolInfo.maxSets = static_cast<uint32_t>(m_swapchain.GetImages().size());
 
     VkCheck(vkCreateDescriptorPool(m_device.GetDevice(), &poolInfo, _allocator, &m_descriptorPool));
   }
@@ -279,10 +283,10 @@ namespace MFVE::Vulkan
                                                m_pipeline.GetDescriptorSetLayout());
 
     VkDescriptorSetAllocateInfo allocInfo{};
-    allocInfo.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool     = m_descriptorPool;
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = m_descriptorPool;
     allocInfo.descriptorSetCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
-    allocInfo.pSetLayouts        = layouts.data();
+    allocInfo.pSetLayouts = layouts.data();
 
     m_descriptorSets.resize(m_swapchain.GetImages().size());
     VkCheck(vkAllocateDescriptorSets(m_device.GetDevice(), &allocInfo, m_descriptorSets.data()));
@@ -292,17 +296,17 @@ namespace MFVE::Vulkan
       VkDescriptorBufferInfo bufferInfo{};
       bufferInfo.buffer = m_uniformBuffers[i].GetBuffer();
       bufferInfo.offset = 0;
-      bufferInfo.range  = sizeof(UniformBufferObject);
+      bufferInfo.range = sizeof(UniformBufferObject);
 
       VkWriteDescriptorSet descriptorWrite{};
-      descriptorWrite.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      descriptorWrite.dstSet           = m_descriptorSets[i];
-      descriptorWrite.dstBinding       = 0;
-      descriptorWrite.dstArrayElement  = 0;
-      descriptorWrite.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-      descriptorWrite.descriptorCount  = 1;
-      descriptorWrite.pBufferInfo      = &bufferInfo;
-      descriptorWrite.pImageInfo       = nullptr;
+      descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      descriptorWrite.dstSet = m_descriptorSets[i];
+      descriptorWrite.dstBinding = 0;
+      descriptorWrite.dstArrayElement = 0;
+      descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      descriptorWrite.descriptorCount = 1;
+      descriptorWrite.pBufferInfo = &bufferInfo;
+      descriptorWrite.pImageInfo = nullptr;
       descriptorWrite.pTexelBufferView = nullptr;
 
       vkUpdateDescriptorSets(m_device.GetDevice(), 1, &descriptorWrite, 0, nullptr);
@@ -321,7 +325,9 @@ namespace MFVE::Vulkan
     ubo.model =
       glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.view = glm::lookAt(
-      glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+      glm::vec3(2.0f, 2.0f, 2.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      glm::vec3(0.0f, 0.0f, 1.0f));
     ubo.proj =
       glm::perspective(glm::radians(45.0f),
                        m_swapchain.GetExtent().width / (float)m_swapchain.GetExtent().height,
@@ -345,7 +351,11 @@ namespace MFVE::Vulkan
   void Renderer::DrawFrame(const VkAllocationCallbacks* _allocator)
   {
     vkWaitForFences(
-      m_device.GetDevice(), 1, &m_inFlightFences[m_currentFrame], VK_TRUE, UINT64_MAX);
+      m_device.GetDevice(),
+      1,
+      &m_inFlightFences[m_currentFrame],
+      VK_TRUE,
+      UINT64_MAX);
 
     // Acquire image from swap chain
     uint32_t imageIndex;
@@ -381,36 +391,39 @@ namespace MFVE::Vulkan
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[]      = { m_imageAvailableSemaphore[m_currentFrame] };
+    VkSemaphore waitSemaphores[] = { m_imageAvailableSemaphore[m_currentFrame] };
     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
     submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores    = waitSemaphores;
-    submitInfo.pWaitDstStageMask  = waitStages;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &m_graphicsCommandBuffer.GetCommandBuffers()[imageIndex];
+    submitInfo.pCommandBuffers = &m_graphicsCommandBuffer.GetCommandBuffers()[imageIndex];
 
     VkSemaphore signalSemaphores[] = { m_renderFinishedSemaphore[m_currentFrame] };
 
     submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores    = signalSemaphores;
+    submitInfo.pSignalSemaphores = signalSemaphores;
 
     vkResetFences(m_device.GetDevice(), 1, &m_inFlightFences[m_currentFrame]);
 
     VkCheck(vkQueueSubmit(
-      m_device.GetGraphicsQueue().queue, 1, &submitInfo, m_inFlightFences[m_currentFrame]));
+      m_device.GetGraphicsQueue().queue,
+      1,
+      &submitInfo,
+      m_inFlightFences[m_currentFrame]));
 
     VkPresentInfoKHR presentInfo{};
-    presentInfo.sType              = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores    = signalSemaphores;
+    presentInfo.pWaitSemaphores = signalSemaphores;
 
     VkSwapchainKHR swapChains[] = { m_swapchain.GetSwapchain() };
 
     presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains    = swapChains;
-    presentInfo.pImageIndices  = &imageIndex;
-    presentInfo.pResults       = nullptr;
+    presentInfo.pSwapchains = swapChains;
+    presentInfo.pImageIndices = &imageIndex;
+    presentInfo.pResults = nullptr;
 
     result = vkQueuePresentKHR(m_device.GetPresentQueue().queue, &presentInfo);
 
@@ -445,10 +458,16 @@ namespace MFVE::Vulkan
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
       VkCheck(vkCreateSemaphore(
-        m_device.GetDevice(), &semaphoreInfo, _allocator, &m_imageAvailableSemaphore[i]));
+        m_device.GetDevice(),
+        &semaphoreInfo,
+        _allocator,
+        &m_imageAvailableSemaphore[i]));
 
       VkCheck(vkCreateSemaphore(
-        m_device.GetDevice(), &semaphoreInfo, _allocator, &m_renderFinishedSemaphore[i]));
+        m_device.GetDevice(),
+        &semaphoreInfo,
+        _allocator,
+        &m_renderFinishedSemaphore[i]));
 
       VkCheck(vkCreateFence(m_device.GetDevice(), &fenceInfo, _allocator, &m_inFlightFences[i]));
     }

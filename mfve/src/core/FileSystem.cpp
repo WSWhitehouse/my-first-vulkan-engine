@@ -23,7 +23,7 @@ namespace MFVE
       std::string path;
       path.resize(length);
 
-      wai_getExecutablePath(path.data(), path.capacity(), nullptr);
+      wai_getExecutablePath(path.data(), static_cast<int>(path.capacity()), nullptr);
 
       if (path.empty())
       {

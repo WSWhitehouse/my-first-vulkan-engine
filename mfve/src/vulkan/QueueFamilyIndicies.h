@@ -36,9 +36,9 @@ namespace MFVE::Vulkan
       std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
       vkGetPhysicalDeviceQueueFamilyProperties(_device, &queueFamilyCount, queueFamilies.data());
 
-      for (int i = 0; i < queueFamilyCount; ++i)
+      for (unsigned int i = 0; i < queueFamilyCount; ++i)
       {
-        auto queueFamily = queueFamilies.at(i);
+       const auto& queueFamily = queueFamilies.at(i);
 
         if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT)
         {

@@ -28,7 +28,7 @@ namespace MFVE::Vulkan
     if (queueFamilyIndiciesSet.size() > 1)
     {
       bufferInfo.sharingMode           = VK_SHARING_MODE_CONCURRENT;
-      bufferInfo.queueFamilyIndexCount = indicies.size();
+      bufferInfo.queueFamilyIndexCount = static_cast<uint32_t>(indicies.size());
       bufferInfo.pQueueFamilyIndices   = indicies.data();
     }
     else

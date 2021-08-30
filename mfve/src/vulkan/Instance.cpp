@@ -27,13 +27,13 @@ namespace MFVE::Vulkan
     createInfo.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    createInfo.enabledExtensionCount   = _extensions.size();
+    createInfo.enabledExtensionCount   = static_cast<uint32_t>(_extensions.size());
     createInfo.ppEnabledExtensionNames = _extensions.data();
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     if (ValidationLayers::Enabled())
     {
-      createInfo.enabledLayerCount   = ValidationLayers::Layers.size();
+      createInfo.enabledLayerCount   = static_cast<uint32_t>(ValidationLayers::Layers.size());
       createInfo.ppEnabledLayerNames = ValidationLayers::Layers.data();
 
       ValidationLayers::PopulateDebugMessengerCreateInfo(debugCreateInfo);
