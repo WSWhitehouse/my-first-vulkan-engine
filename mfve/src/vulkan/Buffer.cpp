@@ -3,7 +3,6 @@
 #include <mfve_pch.h>
 
 // Vulkan
-#include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/CommandPool.h"
 #include "vulkan/Device.h"
