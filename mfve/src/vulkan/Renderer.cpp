@@ -6,6 +6,10 @@
 #include "vulkan/Extensions.h"
 #include "vulkan/ValidationLayers.h"
 
+// stb
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 namespace MFVE::Vulkan
 {
   void Renderer::CreateRenderer(const AppProperties& _appProperties, Window* _window,

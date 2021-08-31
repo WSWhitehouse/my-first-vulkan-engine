@@ -36,7 +36,11 @@ project "MFVE"
 
         --# whereami #--
         "%{IncludeDir.whereami}/**.h",
-        "%{IncludeDir.whereami}/**.c"
+        "%{IncludeDir.whereami}/**.c",
+
+        --# stb #--
+        "%{IncludeDir.stb}/**.h",
+        "%{IncludeDir.stb}/**.c",
     }
 
     includedirs {
@@ -47,6 +51,7 @@ project "MFVE"
         "%{IncludeDir.glm}",
         "%{IncludeDir.CppLog}",
         "%{IncludeDir.whereami}",
+        "%{IncludeDir.stb}",
 
         --# Vulkan SDK #--
         "%{VULKAN_SDK}/include/"
