@@ -1,4 +1,4 @@
-#include "vulkan/Renderer.h"
+#include "core/Renderer.h"
 
 #include <mfve_pch.h>
 
@@ -10,8 +10,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-namespace MFVE::Vulkan
+namespace MFVE
 {
+  using namespace MFVE::Vulkan;
+
   void Renderer::CreateRenderer(const AppProperties& _appProperties, Window* _window,
                                 const VkAllocationCallbacks* _allocator)
   {

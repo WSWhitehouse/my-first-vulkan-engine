@@ -8,8 +8,8 @@
 #include "Time.h"
 #include "Window.h"
 
-// Vulkan
-#include "vulkan/Renderer.h"
+// Renderer
+#include "core/Renderer.h"
 
 // Shaders
 #include "shaders/Shader.h"
@@ -39,7 +39,7 @@ namespace MFVE
 
     // Getters
     [[nodiscard]] const AppProperties& GetAppProperties() const { return m_appProperties; }
-    [[nodiscard]] const Vulkan::Renderer& GetRenderer() const { return m_renderer; }
+    [[nodiscard]] const Renderer& GetRenderer() const { return m_renderer; }
     [[nodiscard]] Window* GetWindow() const { return m_renderer.GetWindow(); }
 
    protected:
@@ -55,7 +55,7 @@ namespace MFVE
     Time m_appTimer               = {};
 
     // Renderer
-    Vulkan::Renderer m_renderer = {};
+    Renderer m_renderer = {};
   };
 } // namespace MFVE
 

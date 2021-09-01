@@ -21,7 +21,7 @@
 #include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
 
-namespace MFVE::Vulkan
+namespace MFVE
 {
   class Renderer
   {
@@ -57,7 +57,7 @@ namespace MFVE::Vulkan
     std::vector<const char*> m_extensions = {};
 
     // Instance
-    Instance m_instance = {};
+    Vulkan::Instance m_instance = {};
 
     // Debug Messenger
     VkDebugUtilsMessengerEXT m_debugMessenger = VK_NULL_HANDLE;
@@ -65,26 +65,26 @@ namespace MFVE::Vulkan
     // Devices
     Vulkan::Device m_device = {};
 
-    Swapchain m_swapchain     = {};
-    Pipeline m_pipeline       = {};
-    Framebuffer m_framebuffer = {};
+    Vulkan::Swapchain m_swapchain     = {};
+    Vulkan::Pipeline m_pipeline       = {};
+    Vulkan::Framebuffer m_framebuffer = {};
 
     // Command Buffers
-    CommandPool m_graphicsCommandPool     = {};
-    CommandBuffer m_graphicsCommandBuffer = {};
+    Vulkan::CommandPool m_graphicsCommandPool     = {};
+    Vulkan::CommandBuffer m_graphicsCommandBuffer = {};
     void SetUpGraphicsCommandBuffer();
 
-    CommandPool m_transferCommandPool = {};
+    Vulkan::CommandPool m_transferCommandPool = {};
 
     // Buffers
-    Buffer m_vertexBuffer = {};
+    Vulkan::Buffer m_vertexBuffer = {};
     void CreateVertexBuffer(const VkAllocationCallbacks* _allocator);
 
-    Buffer m_indexBuffer = {};
+    Vulkan::Buffer m_indexBuffer = {};
     void CreateIndexBuffer(const VkAllocationCallbacks* _allocator);
 
     // Uniform Buffers
-    std::vector<Buffer> m_uniformBuffers = {};
+    std::vector<Vulkan::Buffer> m_uniformBuffers = {};
     VkDescriptorPool m_descriptorPool    = {};
     std::vector<VkDescriptorSet> m_descriptorSets;
 
@@ -94,7 +94,7 @@ namespace MFVE::Vulkan
 
     void UpdateUniformBuffer(uint32_t _currentImage);
 
-    const std::vector<Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
+    const std::vector<Vulkan::Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
                                            { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
                                            { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
                                            { { -0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f } } };
