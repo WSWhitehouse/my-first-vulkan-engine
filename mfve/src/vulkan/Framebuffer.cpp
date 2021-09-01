@@ -13,13 +13,13 @@ namespace MFVE::Vulkan
                                            const Pipeline& _pipeline,
                                            const VkAllocationCallbacks* _allocator)
   {
-    const auto& imageViews = _swapchain.GetImageViews();
+    const auto& images = _swapchain.GetImages();
 
-    m_framebuffers.resize(imageViews.size());
+    m_framebuffers.resize(images.size());
 
-    for (size_t i = 0; i < imageViews.size(); i++)
+    for (size_t i = 0; i < images.size(); i++)
     {
-      VkImageView attachments[] = { imageViews[i] };
+      VkImageView attachments[] = { images[i].GetImageView() };
 
       VkFramebufferCreateInfo framebufferInfo{};
       framebufferInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

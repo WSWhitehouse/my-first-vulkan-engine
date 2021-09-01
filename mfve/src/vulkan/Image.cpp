@@ -66,6 +66,37 @@ namespace MFVE::Vulkan
     vkFreeMemory(_device.GetDevice(), m_imageMemory, _allocator);
   }
 
+  void Image::SetImageHandle(VkImage _image) { m_image = _image; }
+  void Image::ReleaseImageHandle() { m_image = VK_NULL_HANDLE; }
+
+  void Image::CreateImageView(const Device& _device, const VkFormat& _format,
+                              const VkAllocationCallbacks* _allocator)
+  {
+    VkImageViewCreateInfo viewInfo{};
+    viewInfo.sType    = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    viewInfo.image    = m_image;
+    viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+    viewInfo.format   = _format;
+
+    viewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
+    viewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
+    viewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;
+    viewInfo.components.a = VK_COMPONENT_SWIZZLE_IDENTITY;
+
+    viewInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    viewInfo.subresourceRange.baseMipLevel   = 0;
+    viewInfo.subresourceRange.levelCount     = 1;
+    viewInfo.subresourceRange.baseArrayLayer = 0;
+    viewInfo.subresourceRange.layerCount     = 1;
+
+    VkCheck(vkCreateImageView(_device.GetDevice(), &viewInfo, _allocator, &m_imageView));
+  }
+
+  void Image::DestroyImageView(const Device& _device, const VkAllocationCallbacks* _allocator)
+  {
+    vkDestroyImageView(_device.GetDevice(), m_imageView, _allocator);
+  }
+
   void Image::CopyFromBuffer(const Device& _device, const CommandPool& _transferCommandPool,
                              const Buffer& _srcBuffer, const uint32_t& _width,
                              const uint32_t& _height)

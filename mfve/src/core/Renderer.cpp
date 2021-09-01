@@ -47,8 +47,7 @@ namespace MFVE
     VkCheck(m_window->CreateSurface(m_instance, _allocator));
     m_device.CreateDevice(m_instance, m_window, _allocator);
 
-    VkCheck(m_swapchain.CreateSwapchain(m_device, _window, _allocator));
-    VkCheck(m_swapchain.CreateImageViews(m_device, _allocator));
+    m_swapchain.CreateSwapchain(m_device, _window, _allocator);
     VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreateDescriptorSetLayout(m_device, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, _allocator));
@@ -102,8 +101,7 @@ namespace MFVE
 
     CleanUpSwapchain(_allocator);
 
-    VkCheck(m_swapchain.CreateSwapchain(m_device, m_window, _allocator));
-    VkCheck(m_swapchain.CreateImageViews(m_device, _allocator));
+    m_swapchain.CreateSwapchain(m_device, m_window, _allocator);
     VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
     VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
@@ -123,7 +121,6 @@ namespace MFVE
     m_graphicsCommandBuffer.FreeCommandBuffers(m_device, m_graphicsCommandPool);
     m_pipeline.DestroyPipeline(m_device, _allocator);
     m_pipeline.DestroyRenderPasses(m_device, _allocator);
-    m_swapchain.DestroyImageViews(m_device, _allocator);
     m_swapchain.DestroySwapchain(m_device, _allocator);
 
     for (auto& buffer : m_uniformBuffers)

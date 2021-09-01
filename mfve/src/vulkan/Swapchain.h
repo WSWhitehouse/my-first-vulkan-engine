@@ -5,7 +5,8 @@
 #include <vector>
 
 // Vulkan
-#include "Vk_Base.h"
+#include "vulkan/Image.h"
+#include "vulkan/Vk_Base.h"
 
 // Core
 #include "core/Window.h"
@@ -22,23 +23,16 @@ namespace MFVE::Vulkan
     Swapchain()  = default;
     ~Swapchain() = default;
 
-    VkResult CreateSwapchain(const Device& _device, Window* _window,
+    void CreateSwapchain(const Device& _device, Window* _window,
                              const VkAllocationCallbacks* _allocator);
     void DestroySwapchain(const Device& _device, const VkAllocationCallbacks* _allocator);
-
-    VkResult CreateImageViews(const Device& _device, const VkAllocationCallbacks* _allocator);
-    void DestroyImageViews(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     /* Getters */
     [[nodiscard]] VkSwapchainKHR GetSwapchain() const { return m_swapchain; }
     [[nodiscard]] const VkSurfaceFormatKHR& GetSurfaceFormat() const { return m_surfaceFormat; }
     [[nodiscard]] const VkPresentModeKHR& GetPresentMode() const { return m_presentMode; }
     [[nodiscard]] const VkExtent2D& GetExtent() const { return m_extent; }
-    [[nodiscard]] const std::vector<VkImage>& GetImages() const { return m_swapchainImages; }
-    [[nodiscard]] const std::vector<VkImageView>& GetImageViews() const
-    {
-      return m_swapchainImageViews;
-    }
+    [[nodiscard]] const std::vector<Image>& GetImages() const { return m_swapchainImages; }
 
    private:
     // Swapchain
@@ -53,8 +47,7 @@ namespace MFVE::Vulkan
     void ChooseExtent(const SupportDetails& _supportDetails, Window* _window);
 
     // Swapchain Images
-    std::vector<VkImage> m_swapchainImages;
-    std::vector<VkImageView> m_swapchainImageViews;
+    std::vector<Image> m_swapchainImages;
   };
 
 } // namespace MFVE::Vulkan

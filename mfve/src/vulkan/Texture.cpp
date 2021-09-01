@@ -70,11 +70,14 @@ namespace MFVE::Vulkan
 
     stagingBuffer.DestroyBuffer(_device, _allocator);
 
+    m_textureImage.CreateImageView(_device, VK_FORMAT_R8G8B8A8_SRGB, _allocator);
+
     return true;
   }
 
   void Texture::DestroyTexture(const Device& _device, const VkAllocationCallbacks* _allocator)
   {
+    m_textureImage.DestroyImageView(_device, _allocator);
     m_textureImage.DestroyImage(_device, _allocator);
   }
 } // namespace MFVE::Vulkan

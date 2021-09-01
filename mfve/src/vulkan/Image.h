@@ -17,6 +17,7 @@ namespace MFVE::Vulkan
     Image()  = default;
     ~Image() = default;
 
+    // Image
     void CreateImage(const Device& _device, const uint32_t& _width, const uint32_t& _height,
                      const VkFormat& _format, const VkImageTiling& _tiling,
                      const VkImageUsageFlags& _usage, const VkMemoryPropertyFlags& _properties,
@@ -24,11 +25,28 @@ namespace MFVE::Vulkan
 
     void DestroyImage(const Device& _device, const VkAllocationCallbacks* _allocator);
 
+    /**
+     * \brief Sets image handle. Does NOT create image.
+     */
+    void SetImageHandle(VkImage _image);
+
+    /**
+     * \brief Releases image handle. Does NOT destroy image.
+     */
+    void ReleaseImageHandle();
+
+    // Image View
+    void CreateImageView(const Device& _device, const VkFormat& _format,
+                         const VkAllocationCallbacks* _allocator);
+    void DestroyImageView(const Device& _device, const VkAllocationCallbacks* _allocator);
+
+    // Util
     void CopyFromBuffer(const Device& _device, const CommandPool& _transferCommandPool,
                         const Buffer& _srcBuffer, const uint32_t& _width, const uint32_t& _height);
 
     // Getters
     [[nodiscard]] VkImage GetImage() const { return m_image; }
+    [[nodiscard]] VkImageView GetImageView() const { return m_imageView; }
     [[nodiscard]] VkDeviceMemory GetImageMemory() const { return m_imageMemory; }
     [[nodiscard]] const VkImageLayout& GetImageLayout() const { return m_imageLayout; }
 
@@ -38,6 +56,7 @@ namespace MFVE::Vulkan
 
    private:
     VkImage m_image              = VK_NULL_HANDLE;
+    VkImageView m_imageView      = VK_NULL_HANDLE;
     VkDeviceMemory m_imageMemory = VK_NULL_HANDLE;
     VkImageLayout m_imageLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
   };
