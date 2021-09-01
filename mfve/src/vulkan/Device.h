@@ -33,6 +33,10 @@ namespace MFVE::Vulkan
     /* Getters */
     [[nodiscard]] VkDevice GetDevice() const { return m_device; }
     [[nodiscard]] VkPhysicalDevice GetPhysicalDevice() const { return m_physicalDevice; }
+    [[nodiscard]] const VkPhysicalDeviceProperties& GetPhysicalDeviceProperties() const
+    {
+      return m_physicalDeviceProperties;
+    }
     [[nodiscard]] const QueueFamily& GetGraphicsQueue() const { return m_graphicsQueue; }
     [[nodiscard]] const QueueFamily& GetPresentQueue() const { return m_presentQueue; }
     [[nodiscard]] const QueueFamily& GetTransferQueue() const { return m_transferQueue; }
@@ -46,12 +50,13 @@ namespace MFVE::Vulkan
 
    private:
     // Physical Device
-    VkPhysicalDevice m_physicalDevice                 = VK_NULL_HANDLE;
-    const std::vector<const char*> m_deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+    VkPhysicalDevice m_physicalDevice                     = VK_NULL_HANDLE;
+    VkPhysicalDeviceProperties m_physicalDeviceProperties = {};
+    const std::vector<const char*> m_deviceExtensions     = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
-    bool IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface,
+    bool IsDeviceSuitable(VkPhysicalDevice _physicalDevice, VkSurfaceKHR _surface,
                           QueueFamilyIndicies& _queueFamilyIndicies);
-    bool CheckDeviceExtensionSupport(VkPhysicalDevice _device);
+    bool CheckDeviceExtensionSupport(VkPhysicalDevice _physicalDevice);
 
     static inline std::vector<VkPhysicalDevice> FindAllPhysicalDevices(const Instance& _instance)
     {

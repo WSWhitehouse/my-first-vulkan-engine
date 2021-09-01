@@ -27,10 +27,12 @@ namespace MFVE::Vulkan
     void DestroyTexture(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Getters
-    [[nodiscard]] const Image& GetTextureImage() const { return m_textureImage; }
+    [[nodiscard]] const Image& GetImage() const { return m_image; }
+    [[nodiscard]] VkSampler GetSampler() const { return m_sampler; }
 
    private:
-    Image m_textureImage = {};
+    Image m_image       = {};
+    VkSampler m_sampler = VK_NULL_HANDLE;
   };
 } // namespace MFVE::Vulkan
 

@@ -37,6 +37,8 @@ namespace MFVE::Vulkan
       MFVE_LOG_FATAL("Failed to find a suitable GPU!");
     }
 
+    vkGetPhysicalDeviceProperties(m_physicalDevice, &m_physicalDeviceProperties);
+
     // Create Logical Device
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 
@@ -57,6 +59,7 @@ namespace MFVE::Vulkan
     }
 
     VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.samplerAnisotropy = VK_TRUE;
 
     VkDeviceCreateInfo createInfo{};
     createInfo.sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -108,30 +111,34 @@ namespace MFVE::Vulkan
     return 0;
   }
 
-  bool Device::IsDeviceSuitable(VkPhysicalDevice _device, VkSurfaceKHR _surface,
+  bool Device::IsDeviceSuitable(VkPhysicalDevice _physicalDevice, VkSurfaceKHR _surface,
                                 QueueFamilyIndicies& _queueFamilyIndicies)
   {
-    _queueFamilyIndicies.FindQueueFamilies(_device, _surface);
-    bool extensionsSupported = CheckDeviceExtensionSupport(_device);
+    _queueFamilyIndicies.FindQueueFamilies(_physicalDevice, _surface);
+    bool extensionsSupported = CheckDeviceExtensionSupport(_physicalDevice);
 
     bool swapChainAdequate;
     if (extensionsSupported)
     {
-      const auto supportDetails = SupportDetails::QuerySupport(_device, _surface);
+      const auto supportDetails = SupportDetails::QuerySupport(_physicalDevice, _surface);
       swapChainAdequate = !supportDetails.formats.empty() && !supportDetails.presentModes.empty();
     }
 
-    return _queueFamilyIndicies.IsComplete() && extensionsSupported && swapChainAdequate;
+    VkPhysicalDeviceFeatures supportedFeatures;
+    vkGetPhysicalDeviceFeatures(_physicalDevice, &supportedFeatures);
+
+    return _queueFamilyIndicies.IsComplete() && extensionsSupported && swapChainAdequate &&
+           supportedFeatures.samplerAnisotropy;
   }
 
-  bool Device::CheckDeviceExtensionSupport(VkPhysicalDevice _device)
+  bool Device::CheckDeviceExtensionSupport(VkPhysicalDevice _physicalDevice)
   {
     uint32_t extensionCount;
-    vkEnumerateDeviceExtensionProperties(_device, nullptr, &extensionCount, nullptr);
+    vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
 
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(
-      _device, nullptr, &extensionCount, availableExtensions.data());
+      _physicalDevice, nullptr, &extensionCount, availableExtensions.data());
 
     return std::all_of(m_deviceExtensions.cbegin(),
                        m_deviceExtensions.cend(),
