@@ -4,11 +4,14 @@
 // Vulkan
 #include "vulkan/Vk_Base.h"
 
-struct UniformBufferObject
+namespace MFVE::Vulkan
 {
-  alignas(16) glm::mat4 model;
-  alignas(16) glm::mat4 view;
-  alignas(16) glm::mat4 proj;
-};
+  struct UniformBufferObject
+  {
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
+  };
+} // namespace MFVE::Vulkan
 
 #endif // MY_FIRST_VULKAN_ENGINE_UNIFORM_BUFFER_OBJECT_H
