@@ -21,8 +21,11 @@ namespace MFVE::Vulkan
 
     void DestroyBuffer(const Device& _device, const VkAllocationCallbacks* _allocator);
 
-    void CopyBuffer(const Device& _device, const CommandPool& _commandPool,
-                    const Buffer& _srcBuffer, VkDeviceSize _bufferSize);
+    void FillBuffer(const Device& _device, const void* _data, const VkDeviceSize& _size,
+                    const VkDeviceSize& _offset, const VkMemoryMapFlags& _flags);
+
+    void CopyFromBuffer(const Device& _device, const CommandPool& _transferCommandPool,
+                        const Buffer& _srcBuffer, VkDeviceSize _bufferSize);
 
     // Getters
     [[nodiscard]] const VkDeviceSize& GetBufferSize() const { return m_bufferSize; }

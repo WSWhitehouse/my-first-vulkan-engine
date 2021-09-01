@@ -21,6 +21,10 @@ namespace MFVE::Vulkan
                                const VkAllocationCallbacks* _allocator);
     void DestroyCommandPool(const Device& _device, const VkAllocationCallbacks* _allocator);
 
+    // Single Time Commands
+    VkCommandBuffer BeginSingleTimeCommands(const Device& _device) const;
+    void EndSingleTimeCommands(const Device& _device, VkCommandBuffer _commandBuffer) const;
+
     // Getters
     [[nodiscard]] const QueueFamily& GetQueueFamily() const { return m_queueFamily; }
     [[nodiscard]] VkCommandPool GetCommandPool() const { return m_commandPool; }

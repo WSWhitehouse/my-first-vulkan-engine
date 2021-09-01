@@ -62,37 +62,27 @@ namespace MFVE::Vulkan
     vkFreeMemory(_device.GetDevice(), m_bufferMemory, _allocator);
   }
 
-  void Buffer::CopyBuffer(const Device& _device, const CommandPool& _commandPool,
-                          const Buffer& _srcBuffer, VkDeviceSize _bufferSize)
+  void Buffer::FillBuffer(const Device& _device, const void* _data, const VkDeviceSize& _size,
+                          const VkDeviceSize& _offset, const VkMemoryMapFlags& _flags)
   {
-    CommandBuffer commandBuffer;
-    commandBuffer.AllocateCommandBuffers(_device, _commandPool, 1);
+    void* memory;
+    vkMapMemory(_device.GetDevice(), m_bufferMemory, _offset, _size, _flags, &memory);
+    memcpy(memory, _data, (size_t)_size);
+    vkUnmapMemory(_device.GetDevice(), m_bufferMemory);
+  }
 
-    auto cmdbuffer = commandBuffer.GetCommandBuffers().at(0);
-
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-    beginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-
-    vkBeginCommandBuffer(cmdbuffer, &beginInfo);
+  void Buffer::CopyFromBuffer(const Device& _device, const CommandPool& _transferCommandPool,
+                              const Buffer& _srcBuffer, VkDeviceSize _bufferSize)
+  {
+    VkCommandBuffer commandBuffer = _transferCommandPool.BeginSingleTimeCommands(_device);
 
     VkBufferCopy copyRegion{};
     copyRegion.srcOffset = 0;
     copyRegion.dstOffset = 0;
     copyRegion.size      = _bufferSize;
-    vkCmdCopyBuffer(cmdbuffer, _srcBuffer.GetBuffer(), m_buffer, 1, &copyRegion);
+    vkCmdCopyBuffer(commandBuffer, _srcBuffer.GetBuffer(), m_buffer, 1, &copyRegion);
 
-    vkEndCommandBuffer(cmdbuffer);
-
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &cmdbuffer;
-
-    vkQueueSubmit(_commandPool.GetQueueFamily().queue, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(_commandPool.GetQueueFamily().queue);
-
-    commandBuffer.FreeCommandBuffers(_device, _commandPool);
+    _transferCommandPool.EndSingleTimeCommands(_device, commandBuffer);
   }
 
 } // namespace MFVE::Vulkan

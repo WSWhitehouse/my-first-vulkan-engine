@@ -14,9 +14,11 @@
 #include "vulkan/CommandPool.h"
 #include "vulkan/Device.h"
 #include "vulkan/Framebuffer.h"
+#include "vulkan/Image.h"
 #include "vulkan/Instance.h"
 #include "vulkan/Pipeline.h"
 #include "vulkan/Swapchain.h"
+#include "vulkan/Texture.h"
 #include "vulkan/UniformBufferObject.h"
 #include "vulkan/Vertex.h"
 #include "vulkan/Vk_Base.h"
@@ -85,7 +87,7 @@ namespace MFVE
 
     // Uniform Buffers
     std::vector<Vulkan::Buffer> m_uniformBuffers = {};
-    VkDescriptorPool m_descriptorPool    = {};
+    VkDescriptorPool m_descriptorPool            = {};
     std::vector<VkDescriptorSet> m_descriptorSets;
 
     void CreateUniformBuffers(const VkAllocationCallbacks* _allocator);
@@ -95,9 +97,9 @@ namespace MFVE
     void UpdateUniformBuffer(uint32_t _currentImage);
 
     const std::vector<Vulkan::Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
-                                           { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
-                                           { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
-                                           { { -0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f } } };
+                                                   { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
+                                                   { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
+                                                   { { -0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f } } };
 
     const std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
 
@@ -114,6 +116,10 @@ namespace MFVE
     // Frames
     const int MAX_FRAMES_IN_FLIGHT = 2;
     size_t m_currentFrame          = 0;
+
+    // Test
+    Vulkan::Texture m_testTexture = {};
+    void CreateTestTexture();
   };
 } // namepsace MFVE::Vulkan
 

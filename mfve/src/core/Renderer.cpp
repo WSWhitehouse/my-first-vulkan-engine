@@ -59,6 +59,8 @@ namespace MFVE
     VkCheck(
       m_transferCommandPool.CreateCommandPool(m_device, m_device.GetTransferQueue(), _allocator));
 
+    CreateTestTexture();
+
     CreateVertexBuffer(_allocator);
     CreateIndexBuffer(_allocator);
 
@@ -73,6 +75,8 @@ namespace MFVE
   void Renderer::DestroyRenderer(const VkAllocationCallbacks* _allocator)
   {
     CleanUpSwapchain(_allocator);
+
+    m_testTexture.DestroyTexture(m_device, _allocator);
 
     m_pipeline.DestroyDescriptorSetLayout(m_device, _allocator);
     m_vertexBuffer.DestroyBuffer(m_device, _allocator);
@@ -202,11 +206,7 @@ namespace MFVE
                                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                _allocator);
 
-    // Fill Vertex Buffer
-    void* data;
-    vkMapMemory(m_device.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
-    memcpy(data, vertices.data(), (size_t)bufferSize);
-    vkUnmapMemory(m_device.GetDevice(), stagingBuffer.GetBufferMemory());
+    stagingBuffer.FillBuffer(m_device, vertices.data(), bufferSize, 0, 0);
 
     m_vertexBuffer.CreateBuffer(m_device,
                                 bufferSize,
@@ -215,7 +215,7 @@ namespace MFVE
                                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                 _allocator);
 
-    m_vertexBuffer.CopyBuffer(m_device, m_transferCommandPool, stagingBuffer, bufferSize);
+    m_vertexBuffer.CopyFromBuffer(m_device, m_transferCommandPool, stagingBuffer, bufferSize);
 
     stagingBuffer.DestroyBuffer(m_device, _allocator);
   }
@@ -232,11 +232,7 @@ namespace MFVE
                                  VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
                                _allocator);
 
-    // Fill Vertex Buffer
-    void* data;
-    vkMapMemory(m_device.GetDevice(), stagingBuffer.GetBufferMemory(), 0, bufferSize, 0, &data);
-    memcpy(data, indices.data(), (size_t)bufferSize);
-    vkUnmapMemory(m_device.GetDevice(), stagingBuffer.GetBufferMemory());
+    stagingBuffer.FillBuffer(m_device, indices.data(), bufferSize, 0, 0);
 
     m_indexBuffer.CreateBuffer(m_device,
                                bufferSize,
@@ -244,7 +240,7 @@ namespace MFVE
                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                _allocator);
 
-    m_indexBuffer.CopyBuffer(m_device, m_transferCommandPool, stagingBuffer, bufferSize);
+    m_indexBuffer.CopyFromBuffer(m_device, m_transferCommandPool, stagingBuffer, bufferSize);
 
     stagingBuffer.DestroyBuffer(m_device, _allocator);
   }
@@ -470,5 +466,11 @@ namespace MFVE
       vkDestroySemaphore(m_device.GetDevice(), m_imageAvailableSemaphore[i], _allocator);
       vkDestroyFence(m_device.GetDevice(), m_inFlightFences[i], _allocator);
     }
+  }
+
+  void Renderer::CreateTestTexture()
+  {
+    m_testTexture.LoadTexture(
+      "textures/test-texture.jpg", m_device, m_graphicsCommandPool, m_transferCommandPool, nullptr);
   }
 } // namespace MFVE::Vulkan
