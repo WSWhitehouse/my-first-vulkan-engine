@@ -49,8 +49,19 @@ namespace MFVE
 
     m_swapchain.CreateSwapchain(m_device, _window, _allocator);
     VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
-    VkCheck(m_pipeline.CreateDescriptorSetLayout(m_device, m_swapchain, _allocator));
-    VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, _allocator));
+
+    VkDescriptorSetLayoutBinding uboLayoutBinding{};
+    uboLayoutBinding.binding            = 0;
+    uboLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboLayoutBinding.descriptorCount    = 1;
+    uboLayoutBinding.stageFlags         = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.pImmutableSamplers = nullptr;
+
+    std::vector<VkDescriptorSetLayoutBinding> layoutBindings{ uboLayoutBinding };
+
+    m_descriptor.CreateDescriptorSetLayout(m_device, layoutBindings, _allocator);
+
+    VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, { m_descriptor }, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
 
     VkCheck(
@@ -65,7 +76,7 @@ namespace MFVE
 
     CreateUniformBuffers(_allocator);
     CreateDescriptorPool(_allocator);
-    CreateDescriptorSets();
+    CreateDescriptorSets(_allocator);
 
     SetUpGraphicsCommandBuffer();
     CreateSyncObjects(_allocator);
@@ -77,15 +88,15 @@ namespace MFVE
 
     m_testTexture.DestroyTexture(m_device, _allocator);
 
-    m_pipeline.DestroyDescriptorSetLayout(m_device, _allocator);
+    m_descriptor.DestroyDescriptorSetLayout(m_device, _allocator);
     m_vertexBuffer.DestroyBuffer(m_device, _allocator);
     m_indexBuffer.DestroyBuffer(m_device, _allocator);
     DestroySyncObjects(_allocator);
     m_graphicsCommandPool.DestroyCommandPool(m_device, _allocator);
     m_transferCommandPool.DestroyCommandPool(m_device, _allocator);
-    m_device.DestroyDevice(nullptr);
-    ValidationLayers::DestroyDebugMessenger(m_instance, m_debugMessenger, nullptr);
-    m_window->DestroySurface(m_instance, nullptr);
+    m_device.DestroyDevice(_allocator);
+    ValidationLayers::DestroyDebugMessenger(m_instance, m_debugMessenger, _allocator);
+    m_window->DestroySurface(m_instance, _allocator);
     m_instance.DestroyInstance(_allocator);
 
     // Window
@@ -103,12 +114,12 @@ namespace MFVE
 
     m_swapchain.CreateSwapchain(m_device, m_window, _allocator);
     VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
-    VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, _allocator));
+    VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, { m_descriptor }, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
 
     CreateUniformBuffers(_allocator);
     CreateDescriptorPool(_allocator);
-    CreateDescriptorSets();
+    CreateDescriptorSets(_allocator);
 
     SetUpGraphicsCommandBuffer();
 
@@ -128,7 +139,7 @@ namespace MFVE
       buffer.DestroyBuffer(m_device, _allocator);
     }
 
-    vkDestroyDescriptorPool(m_device.GetDevice(), m_descriptorPool, _allocator);
+    m_descriptor.DestroyDescriptorPool(m_device, _allocator);
   }
 
   void Renderer::SetUpGraphicsCommandBuffer()
@@ -178,7 +189,7 @@ namespace MFVE
                               m_pipeline.GetPipelineLayout(),
                               0,
                               1,
-                              &m_descriptorSets[i],
+                              &m_descriptor.GetDescriptorSets()[i],
                               0,
                               nullptr);
 
@@ -261,52 +272,41 @@ namespace MFVE
 
   void Renderer::CreateDescriptorPool(const VkAllocationCallbacks* _allocator)
   {
-    VkDescriptorPoolSize poolSize{};
-    poolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    poolSize.descriptorCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
+    VkDescriptorPoolSize uboPoolSize{};
+    uboPoolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    uboPoolSize.descriptorCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
 
-    VkDescriptorPoolCreateInfo poolInfo{};
-    poolInfo.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = 1;
-    poolInfo.pPoolSizes    = &poolSize;
-    poolInfo.maxSets       = static_cast<uint32_t>(m_swapchain.GetImages().size());
+    std::vector<VkDescriptorPoolSize> poolSizes{ uboPoolSize };
 
-    VkCheck(vkCreateDescriptorPool(m_device.GetDevice(), &poolInfo, _allocator, &m_descriptorPool));
+    m_descriptor.CreateDescriptorPool(
+      m_device, poolSizes, static_cast<uint32_t>(m_swapchain.GetImages().size()), _allocator);
   }
 
-  void Renderer::CreateDescriptorSets()
+  void Renderer::CreateDescriptorSets(const VkAllocationCallbacks* _allocator)
   {
-    std::vector<VkDescriptorSetLayout> layouts(m_swapchain.GetImages().size(),
-                                               m_pipeline.GetDescriptorSetLayout());
-
-    VkDescriptorSetAllocateInfo allocInfo{};
-    allocInfo.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool     = m_descriptorPool;
-    allocInfo.descriptorSetCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
-    allocInfo.pSetLayouts        = layouts.data();
-
-    m_descriptorSets.resize(m_swapchain.GetImages().size());
-    VkCheck(vkAllocateDescriptorSets(m_device.GetDevice(), &allocInfo, m_descriptorSets.data()));
+    m_descriptor.AllocateDescriptorSets(
+      m_device, static_cast<uint32_t>(m_swapchain.GetImages().size()), _allocator);
 
     for (size_t i = 0; i < m_swapchain.GetImages().size(); i++)
     {
-      VkDescriptorBufferInfo bufferInfo{};
-      bufferInfo.buffer = m_uniformBuffers[i].GetBuffer();
-      bufferInfo.offset = 0;
-      bufferInfo.range  = sizeof(UniformBufferObject);
+      VkDescriptorBufferInfo uboBufferInfo{};
+      uboBufferInfo.buffer = m_uniformBuffers[i].GetBuffer();
+      uboBufferInfo.offset = 0;
+      uboBufferInfo.range  = sizeof(UniformBufferObject);
 
-      VkWriteDescriptorSet descriptorWrite{};
-      descriptorWrite.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-      descriptorWrite.dstSet           = m_descriptorSets[i];
-      descriptorWrite.dstBinding       = 0;
-      descriptorWrite.dstArrayElement  = 0;
-      descriptorWrite.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-      descriptorWrite.descriptorCount  = 1;
-      descriptorWrite.pBufferInfo      = &bufferInfo;
-      descriptorWrite.pImageInfo       = nullptr;
-      descriptorWrite.pTexelBufferView = nullptr;
+      VkWriteDescriptorSet uboDescriptorWrite{};
+      uboDescriptorWrite.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      uboDescriptorWrite.dstSet           = m_descriptor.GetDescriptorSets()[i];
+      uboDescriptorWrite.dstBinding       = 0;
+      uboDescriptorWrite.dstArrayElement  = 0;
+      uboDescriptorWrite.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+      uboDescriptorWrite.descriptorCount  = 1;
+      uboDescriptorWrite.pBufferInfo      = &uboBufferInfo;
+      uboDescriptorWrite.pImageInfo       = nullptr;
+      uboDescriptorWrite.pTexelBufferView = nullptr;
 
-      vkUpdateDescriptorSets(m_device.GetDevice(), 1, &descriptorWrite, 0, nullptr);
+      m_descriptor.UpdateDescriptorSets(
+        m_device, static_cast<uint32_t>(m_swapchain.GetImages().size()), { uboDescriptorWrite });
     }
   }
 

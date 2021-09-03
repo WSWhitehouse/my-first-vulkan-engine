@@ -10,6 +10,7 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
+  class Descriptor;
   class Device;
   class Swapchain;
 
@@ -24,31 +25,19 @@ namespace MFVE::Vulkan
                                 const VkAllocationCallbacks* _allocator);
     void DestroyRenderPasses(const Device& _device, const VkAllocationCallbacks* _allocator);
 
-    // Descriptor Set Layout
-    VkResult CreateDescriptorSetLayout(const Device& _device, const Swapchain& _swapchain,
-                                       const VkAllocationCallbacks* _allocator);
-    void DestroyDescriptorSetLayout(const Device& _device, const VkAllocationCallbacks* _allocator);
-
     // Graphics Pipeline
     VkResult CreatePipeline(const Device& _device, const Swapchain& _swapchain,
-                            const VkAllocationCallbacks* _allocator);
+                            const std::vector<Descriptor>& _descriptors, const VkAllocationCallbacks* _allocator);
     void DestroyPipeline(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Getters
     [[nodiscard]] VkRenderPass GetRenderPass() const { return m_renderPass; }
-    [[nodiscard]] VkDescriptorSetLayout GetDescriptorSetLayout() const
-    {
-      return m_descriptorSetLayout;
-    }
     [[nodiscard]] VkPipelineLayout GetPipelineLayout() const { return m_pipelineLayout; }
     [[nodiscard]] VkPipeline GetPipeline() const { return m_pipeline; }
 
    private:
     // Render Passes
     VkRenderPass m_renderPass = VK_NULL_HANDLE;
-
-    // Descriptor Set Layout
-    VkDescriptorSetLayout m_descriptorSetLayout = VK_NULL_HANDLE;
 
     // Graphics Pipeline
     VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;

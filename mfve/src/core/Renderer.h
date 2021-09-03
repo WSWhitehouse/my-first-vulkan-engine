@@ -12,6 +12,7 @@
 #include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/CommandPool.h"
+#include "vulkan/Descriptor.h"
 #include "vulkan/Device.h"
 #include "vulkan/Framebuffer.h"
 #include "vulkan/Image.h"
@@ -87,14 +88,13 @@ namespace MFVE
 
     // Uniform Buffers
     std::vector<Vulkan::Buffer> m_uniformBuffers = {};
-    VkDescriptorPool m_descriptorPool            = {};
-    std::vector<VkDescriptorSet> m_descriptorSets;
-
     void CreateUniformBuffers(const VkAllocationCallbacks* _allocator);
-    void CreateDescriptorPool(const VkAllocationCallbacks* _allocator);
-    void CreateDescriptorSets();
-
     void UpdateUniformBuffer(uint32_t _currentImage);
+
+    // Descriptor
+    Vulkan::Descriptor m_descriptor = {};
+    void CreateDescriptorPool(const VkAllocationCallbacks* _allocator);
+    void CreateDescriptorSets(const VkAllocationCallbacks* _allocator);
 
     const std::vector<Vulkan::Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
                                                    { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
@@ -121,6 +121,6 @@ namespace MFVE
     Vulkan::Texture m_testTexture = {};
     void CreateTestTexture();
   };
-} // namepsace MFVE::Vulkan
+} // namespace MFVE::Vulkan
 
 #endif // MY_FIRST_VULKAN_ENGINE_RENDERER_H
