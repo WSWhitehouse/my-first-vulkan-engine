@@ -138,6 +138,12 @@ project (AppName)
     filter { "configurations:Debug", "system:not windows" }
         runtime "Debug"
 
+ -- Post build command on Debug config to remove cache directory, sometimes it might not be deleted if an error occurs
+    filter "configurations:Debug"
+        postbuildcommands{
+            "{RMDIR} " .. _apptargetdir .. "/cache",
+        }
+
 -- Post build command to generate assets (currently only moving them to target dir)
     filter { "configurations:Release", "system:not windows" }
         postbuildcommands{

@@ -111,4 +111,14 @@ namespace MFVE::Vulkan
     m_image.DestroyImageView(_device, _allocator);
     m_image.DestroyImage(_device, _allocator);
   }
+
+  VkDescriptorImageInfo Texture::GetDescriptorImageInfo() const
+  {
+    VkDescriptorImageInfo info{};
+    info.imageLayout = m_image.GetImageLayout();
+    info.imageView   = m_image.GetImageView();
+    info.sampler     = m_sampler;
+
+    return info;
+  }
 } // namespace MFVE::Vulkan

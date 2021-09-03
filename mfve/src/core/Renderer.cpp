@@ -52,12 +52,20 @@ namespace MFVE
 
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding            = 0;
-    uboLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     uboLayoutBinding.descriptorCount    = 1;
+    uboLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     uboLayoutBinding.stageFlags         = VK_SHADER_STAGE_VERTEX_BIT;
     uboLayoutBinding.pImmutableSamplers = nullptr;
 
-    std::vector<VkDescriptorSetLayoutBinding> layoutBindings{ uboLayoutBinding };
+    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
+    samplerLayoutBinding.binding            = 1;
+    samplerLayoutBinding.descriptorCount    = 1;
+    samplerLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerLayoutBinding.stageFlags         = VK_SHADER_STAGE_FRAGMENT_BIT;
+    samplerLayoutBinding.pImmutableSamplers = nullptr;
+
+    std::vector<VkDescriptorSetLayoutBinding> layoutBindings{ uboLayoutBinding,
+                                                              samplerLayoutBinding };
 
     m_descriptor.CreateDescriptorSetLayout(m_device, layoutBindings, _allocator);
 
@@ -272,11 +280,17 @@ namespace MFVE
 
   void Renderer::CreateDescriptorPool(const VkAllocationCallbacks* _allocator)
   {
+    const auto descriptorCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
+
     VkDescriptorPoolSize uboPoolSize{};
     uboPoolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboPoolSize.descriptorCount = static_cast<uint32_t>(m_swapchain.GetImages().size());
+    uboPoolSize.descriptorCount = descriptorCount;
 
-    std::vector<VkDescriptorPoolSize> poolSizes{ uboPoolSize };
+    VkDescriptorPoolSize samplerPoolSize{};
+    samplerPoolSize.type            = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+    samplerPoolSize.descriptorCount = descriptorCount;
+
+    std::vector<VkDescriptorPoolSize> poolSizes{ uboPoolSize, samplerPoolSize };
 
     m_descriptor.CreateDescriptorPool(
       m_device, poolSizes, static_cast<uint32_t>(m_swapchain.GetImages().size()), _allocator);
@@ -286,6 +300,8 @@ namespace MFVE
   {
     m_descriptor.AllocateDescriptorSets(
       m_device, static_cast<uint32_t>(m_swapchain.GetImages().size()), _allocator);
+
+    const auto imageInfo = m_testTexture.GetDescriptorImageInfo();
 
     for (size_t i = 0; i < m_swapchain.GetImages().size(); i++)
     {
@@ -305,8 +321,16 @@ namespace MFVE
       uboDescriptorWrite.pImageInfo       = nullptr;
       uboDescriptorWrite.pTexelBufferView = nullptr;
 
-      m_descriptor.UpdateDescriptorSets(
-        m_device, static_cast<uint32_t>(m_swapchain.GetImages().size()), { uboDescriptorWrite });
+      VkWriteDescriptorSet textureDescriptorWrite{};
+      textureDescriptorWrite.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+      textureDescriptorWrite.dstSet          = m_descriptor.GetDescriptorSets()[i];
+      textureDescriptorWrite.dstBinding      = 1;
+      textureDescriptorWrite.dstArrayElement = 0;
+      textureDescriptorWrite.descriptorType  = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+      textureDescriptorWrite.descriptorCount = 1;
+      textureDescriptorWrite.pImageInfo      = &imageInfo;
+
+      m_descriptor.UpdateDescriptorSets(m_device, { uboDescriptorWrite, textureDescriptorWrite });
     }
   }
 

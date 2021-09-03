@@ -61,7 +61,7 @@ namespace MFVE::Vulkan
     VkCheck(vkAllocateDescriptorSets(_device.GetDevice(), &allocInfo, m_descriptorSets.data()));
   }
 
-  void Descriptor::UpdateDescriptorSets(const Device& _device, const uint32_t& _size,
+  void Descriptor::UpdateDescriptorSets(const Device& _device,
                                         const std::vector<VkWriteDescriptorSet>& _descriptorWrites)
   {
     vkUpdateDescriptorSets(_device.GetDevice(),
@@ -69,26 +69,5 @@ namespace MFVE::Vulkan
                            _descriptorWrites.data(),
                            0,
                            nullptr);
-
-    // for (size_t i = 0; i < _size; i++)
-    // {
-    //   VkDescriptorBufferInfo bufferInfo{};
-    //   bufferInfo.buffer = m_uniformBuffers[i].GetBuffer();
-    //   bufferInfo.offset = 0;
-    //   bufferInfo.range  = sizeof(UniformBufferObject);
-    //
-    //   VkWriteDescriptorSet descriptorWrite{};
-    //   descriptorWrite.sType            = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    //   descriptorWrite.dstSet           = m_descriptorSets[i];
-    //   descriptorWrite.dstBinding       = 0;
-    //   descriptorWrite.dstArrayElement  = 0;
-    //   descriptorWrite.descriptorType   = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    //   descriptorWrite.descriptorCount  = 1;
-    //   descriptorWrite.pBufferInfo      = &bufferInfo;
-    //   descriptorWrite.pImageInfo       = nullptr;
-    //   descriptorWrite.pTexelBufferView = nullptr;
-    //
-    //   vkUpdateDescriptorSets(_device.GetDevice(), 1, &descriptorWrite, 0, nullptr);
-    // }
   }
 } // MFVE::Vulkan

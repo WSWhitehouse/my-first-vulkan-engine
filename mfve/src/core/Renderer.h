@@ -96,10 +96,12 @@ namespace MFVE
     void CreateDescriptorPool(const VkAllocationCallbacks* _allocator);
     void CreateDescriptorSets(const VkAllocationCallbacks* _allocator);
 
-    const std::vector<Vulkan::Vertex> vertices = { { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f } },
-                                                   { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f } },
-                                                   { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f } },
-                                                   { { -0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f } } };
+    const std::vector<Vulkan::Vertex> vertices = {
+      { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
+      { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } },
+      { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } },
+      { { -0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } }
+    };
 
     const std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
 

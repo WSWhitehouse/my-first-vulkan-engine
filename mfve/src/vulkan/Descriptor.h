@@ -30,7 +30,7 @@ namespace MFVE::Vulkan
 
     void AllocateDescriptorSets(const Device& _device, const uint32_t& _size,
                                 const VkAllocationCallbacks* _allocator);
-    void UpdateDescriptorSets(const Device& _device, const uint32_t& _size,
+    void UpdateDescriptorSets(const Device& _device,
                               const std::vector<VkWriteDescriptorSet>& _descriptorWrites);
 
     // Getters
