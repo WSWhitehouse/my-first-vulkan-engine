@@ -5,59 +5,14 @@
 // Vulkan
 #include "vulkan/Descriptor.h"
 #include "vulkan/Device.h"
+#include "vulkan/RenderPass.h"
 #include "vulkan/Swapchain.h"
 #include "vulkan/Vertex.h"
 
 namespace MFVE::Vulkan
 {
-  VkResult Pipeline::CreateRenderPasses(const Device& _device, const Swapchain& _swapchain,
-                                        const VkAllocationCallbacks* _allocator)
-  {
-    VkAttachmentDescription colorAttachment{};
-    colorAttachment.format         = _swapchain.GetSurfaceFormat().format;
-    colorAttachment.samples        = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    colorAttachment.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
-    colorAttachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    colorAttachment.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
-    colorAttachment.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-
-    VkAttachmentReference colorAttachmentRef{};
-    colorAttachmentRef.attachment = 0;
-    colorAttachmentRef.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-    VkSubpassDescription subpass{};
-    subpass.pipelineBindPoint    = VK_PIPELINE_BIND_POINT_GRAPHICS;
-    subpass.colorAttachmentCount = 1;
-    subpass.pColorAttachments    = &colorAttachmentRef;
-
-    VkSubpassDependency dependency{};
-    dependency.srcSubpass    = VK_SUBPASS_EXTERNAL;
-    dependency.dstSubpass    = 0;
-    dependency.srcStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.srcAccessMask = 0;
-    dependency.dstStageMask  = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-    dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-    VkRenderPassCreateInfo renderPassInfo{};
-    renderPassInfo.sType           = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-    renderPassInfo.attachmentCount = 1;
-    renderPassInfo.pAttachments    = &colorAttachment;
-    renderPassInfo.subpassCount    = 1;
-    renderPassInfo.pSubpasses      = &subpass;
-    renderPassInfo.dependencyCount = 1;
-    renderPassInfo.pDependencies   = &dependency;
-
-    return vkCreateRenderPass(_device.GetDevice(), &renderPassInfo, _allocator, &m_renderPass);
-  }
-
-  void Pipeline::DestroyRenderPasses(const Device& _device, const VkAllocationCallbacks* _allocator)
-  {
-    vkDestroyRenderPass(_device.GetDevice(), m_renderPass, _allocator);
-  }
-
   VkResult Pipeline::CreatePipeline(const Device& _device, const Swapchain& _swapchain,
+                                    const RenderPass& _renderPass,
                                     const std::vector<Descriptor>& _descriptors,
                                     const VkAllocationCallbacks* _allocator)
   {
@@ -213,7 +168,7 @@ namespace MFVE::Vulkan
     pipelineInfo.pColorBlendState    = &colorBlending;
     pipelineInfo.pDynamicState       = nullptr;
     pipelineInfo.layout              = m_pipelineLayout;
-    pipelineInfo.renderPass          = m_renderPass;
+    pipelineInfo.renderPass          = _renderPass.GetRenderPass();
     pipelineInfo.subpass             = 0;
     pipelineInfo.basePipelineHandle  = VK_NULL_HANDLE;
     pipelineInfo.basePipelineIndex   = -1;

@@ -48,7 +48,7 @@ namespace MFVE
     m_device.CreateDevice(m_instance, m_window, _allocator);
 
     m_swapchain.CreateSwapchain(m_device, _window, _allocator);
-    VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
+    m_renderPass.CreateRenderPass(m_device, m_swapchain, m_depthBuffer, _allocator);
 
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding            = 0;
@@ -69,13 +69,16 @@ namespace MFVE
 
     m_descriptor.CreateDescriptorSetLayout(m_device, layoutBindings, _allocator);
 
-    VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, { m_descriptor }, _allocator));
+    VkCheck(
+      m_pipeline.CreatePipeline(m_device, m_swapchain, m_renderPass, { m_descriptor }, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
 
     VkCheck(
       m_graphicsCommandPool.CreateCommandPool(m_device, m_device.GetGraphicsQueue(), _allocator));
     VkCheck(
       m_transferCommandPool.CreateCommandPool(m_device, m_device.GetTransferQueue(), _allocator));
+
+    m_depthBuffer.CreateDepthBuffer(m_device, m_swapchain, m_graphicsCommandPool, _allocator);
 
     CreateTestTexture();
 
@@ -121,8 +124,9 @@ namespace MFVE
     CleanUpSwapchain(_allocator);
 
     m_swapchain.CreateSwapchain(m_device, m_window, _allocator);
-    VkCheck(m_pipeline.CreateRenderPasses(m_device, m_swapchain, _allocator));
-    VkCheck(m_pipeline.CreatePipeline(m_device, m_swapchain, { m_descriptor }, _allocator));
+    m_renderPass.CreateRenderPass(m_device, m_swapchain, m_depthBuffer, _allocator);
+    VkCheck(
+      m_pipeline.CreatePipeline(m_device, m_swapchain, m_renderPass, { m_descriptor }, _allocator));
     VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
 
     CreateUniformBuffers(_allocator);
@@ -139,7 +143,7 @@ namespace MFVE
     m_framebuffer.DestroyFramebuffers(m_device, _allocator);
     m_graphicsCommandBuffer.FreeCommandBuffers(m_device, m_graphicsCommandPool);
     m_pipeline.DestroyPipeline(m_device, _allocator);
-    m_pipeline.DestroyRenderPasses(m_device, _allocator);
+    m_renderPass.DestroyRenderPass(m_device, _allocator);
     m_swapchain.DestroySwapchain(m_device, _allocator);
 
     for (auto& buffer : m_uniformBuffers)
@@ -170,7 +174,7 @@ namespace MFVE
 
       VkRenderPassBeginInfo renderPassInfo{};
       renderPassInfo.sType             = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-      renderPassInfo.renderPass        = m_pipeline.GetRenderPass();
+      renderPassInfo.renderPass        = m_renderPass.GetRenderPass();
       renderPassInfo.framebuffer       = m_framebuffer.GetFramebuffers()[i];
       renderPassInfo.renderArea.offset = { 0, 0 };
       renderPassInfo.renderArea.extent = m_swapchain.GetExtent();

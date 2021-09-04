@@ -12,6 +12,7 @@ namespace MFVE::Vulkan
   // Forward Declarations
   class Descriptor;
   class Device;
+  class RenderPass;
   class Swapchain;
 
   class Pipeline
@@ -20,25 +21,18 @@ namespace MFVE::Vulkan
     Pipeline()  = default;
     ~Pipeline() = default;
 
-    // Render Passes
-    VkResult CreateRenderPasses(const Device& _device, const Swapchain& _swapchain,
-                                const VkAllocationCallbacks* _allocator);
-    void DestroyRenderPasses(const Device& _device, const VkAllocationCallbacks* _allocator);
-
     // Graphics Pipeline
     VkResult CreatePipeline(const Device& _device, const Swapchain& _swapchain,
-                            const std::vector<Descriptor>& _descriptors, const VkAllocationCallbacks* _allocator);
+                            const RenderPass& _renderPass,
+                            const std::vector<Descriptor>& _descriptors,
+                            const VkAllocationCallbacks* _allocator);
     void DestroyPipeline(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Getters
-    [[nodiscard]] VkRenderPass GetRenderPass() const { return m_renderPass; }
     [[nodiscard]] VkPipelineLayout GetPipelineLayout() const { return m_pipelineLayout; }
     [[nodiscard]] VkPipeline GetPipeline() const { return m_pipeline; }
 
    private:
-    // Render Passes
-    VkRenderPass m_renderPass = VK_NULL_HANDLE;
-
     // Graphics Pipeline
     VkPipelineLayout m_pipelineLayout = VK_NULL_HANDLE;
     VkPipeline m_pipeline             = VK_NULL_HANDLE;

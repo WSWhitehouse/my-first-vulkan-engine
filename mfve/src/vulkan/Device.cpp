@@ -108,7 +108,29 @@ namespace MFVE::Vulkan
     }
 
     MFVE_LOG_FATAL("Failed to find suitable memory type on Physical Device!");
-    return 0;
+  }
+
+  VkFormat Device::FindSupportedFormat(const std::vector<VkFormat>& candidates,
+                                       const VkImageTiling& tiling,
+                                       const VkFormatFeatureFlags& features) const
+  {
+    for (const auto& format : candidates)
+    {
+      VkFormatProperties props;
+      vkGetPhysicalDeviceFormatProperties(m_physicalDevice, format, &props);
+
+      if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features)
+      {
+        return format;
+      }
+      else if (tiling == VK_IMAGE_TILING_OPTIMAL &&
+               (props.optimalTilingFeatures & features) == features)
+      {
+        return format;
+      }
+
+      MFVE_LOG_FATAL("Failed to find supported formats");
+    }
   }
 
   bool Device::IsDeviceSuitable(VkPhysicalDevice _physicalDevice, VkSurfaceKHR _surface,

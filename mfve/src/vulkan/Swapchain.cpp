@@ -73,7 +73,7 @@ namespace MFVE::Vulkan
       auto& swapchainImage = m_swapchainImages[i];
 
       swapchainImage.SetImageHandle(images[i]);
-      swapchainImage.CreateImageView(_device, format, _allocator);
+      swapchainImage.CreateImageView(_device, format, VK_IMAGE_ASPECT_COLOR_BIT, _allocator);
     }
   }
 

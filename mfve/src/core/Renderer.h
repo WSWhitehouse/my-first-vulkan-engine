@@ -12,12 +12,14 @@
 #include "vulkan/Buffer.h"
 #include "vulkan/CommandBuffer.h"
 #include "vulkan/CommandPool.h"
+#include "vulkan/DepthBuffer.h"
 #include "vulkan/Descriptor.h"
 #include "vulkan/Device.h"
 #include "vulkan/Framebuffer.h"
 #include "vulkan/Image.h"
 #include "vulkan/Instance.h"
 #include "vulkan/Pipeline.h"
+#include "vulkan/RenderPass.h"
 #include "vulkan/Swapchain.h"
 #include "vulkan/Texture.h"
 #include "vulkan/UniformBufferObject.h"
@@ -70,6 +72,8 @@ namespace MFVE
 
     Vulkan::Swapchain m_swapchain     = {};
     Vulkan::Pipeline m_pipeline       = {};
+    Vulkan::DepthBuffer m_depthBuffer = {};
+    Vulkan::RenderPass m_renderPass   = {};
     Vulkan::Framebuffer m_framebuffer = {};
 
     // Command Buffers
@@ -97,13 +101,18 @@ namespace MFVE
     void CreateDescriptorSets(const VkAllocationCallbacks* _allocator);
 
     const std::vector<Vulkan::Vertex> vertices = {
-      { { -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f } },
-      { { 0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f } },
-      { { 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f } },
-      { { -0.5f, 0.5f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f } }
+      { { -0.5f, -0.5f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
+      { { 0.5f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },
+      { { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
+      { { -0.5f, 0.5f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } },
+
+      { { -0.5f, -0.5f, -0.5f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f } },
+      { { 0.5f, -0.5f, -0.5f }, { 0.0f, 1.0f, 0.0f }, { 1.0f, 0.0f } },
+      { { 0.5f, 0.5f, -0.5f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } },
+      { { -0.5f, 0.5f, -0.5f }, { 1.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }
     };
 
-    const std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
+    const std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4 };
 
     // Sync Objects
     std::vector<VkSemaphore> m_imageAvailableSemaphore;

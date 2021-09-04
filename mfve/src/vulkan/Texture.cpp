@@ -74,7 +74,8 @@ namespace MFVE::Vulkan
     stagingBuffer.DestroyBuffer(_device, _allocator);
 
     // Create Image view
-    m_image.CreateImageView(_device, VK_FORMAT_R8G8B8A8_SRGB, _allocator);
+    m_image.CreateImageView(
+      _device, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, _allocator);
 
     // Create Sampler
     VkSamplerCreateInfo samplerInfo{};

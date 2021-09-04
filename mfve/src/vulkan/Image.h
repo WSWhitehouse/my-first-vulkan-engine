@@ -37,6 +37,7 @@ namespace MFVE::Vulkan
 
     // Image View
     void CreateImageView(const Device& _device, const VkFormat& _format,
+                         const VkImageAspectFlags& _aspectFlags,
                          const VkAllocationCallbacks* _allocator);
     void DestroyImageView(const Device& _device, const VkAllocationCallbacks* _allocator);
 

@@ -29,6 +29,9 @@ namespace MFVE::Vulkan
     void DestroyDevice(const VkAllocationCallbacks* _allocator);
 
     uint32_t FindMemoryType(uint32_t _typeFilter, VkMemoryPropertyFlags _properties) const;
+    VkFormat FindSupportedFormat(const std::vector<VkFormat>& candidates,
+                                 const VkImageTiling& tiling,
+                                 const VkFormatFeatureFlags& features) const;
 
     /* Getters */
     [[nodiscard]] VkDevice GetDevice() const { return m_device; }
