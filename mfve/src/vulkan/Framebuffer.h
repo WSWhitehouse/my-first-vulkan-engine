@@ -9,6 +9,7 @@ namespace MFVE::Vulkan
   // Forward Declarations
   class Device;
   class Pipeline;
+  class RenderPass;
   class Swapchain;
 
   class Framebuffer
@@ -19,7 +20,8 @@ namespace MFVE::Vulkan
 
     // Framebuffers
     VkResult CreateFramebuffers(const Device& _device, const Swapchain& _swapchain,
-                                const Pipeline& _pipeline, const VkAllocationCallbacks* _allocator);
+                                const RenderPass& _renderPass,
+                                const VkAllocationCallbacks* _allocator);
     void DestroyFramebuffers(const Device& _device, const VkAllocationCallbacks* _allocator);
 
     // Getters

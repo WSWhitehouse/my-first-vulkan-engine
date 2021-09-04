@@ -130,6 +130,7 @@ namespace MFVE::Vulkan
       }
 
       MFVE_LOG_FATAL("Failed to find supported formats");
+      return VK_FORMAT_UNDEFINED;
     }
   }
 

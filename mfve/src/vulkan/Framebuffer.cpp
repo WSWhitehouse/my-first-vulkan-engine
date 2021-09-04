@@ -5,12 +5,13 @@
 // Vulkan
 #include "vulkan/Device.h"
 #include "vulkan/Pipeline.h"
+#include "vulkan/RenderPass.h"
 #include "vulkan/Swapchain.h"
 
 namespace MFVE::Vulkan
 {
   VkResult Framebuffer::CreateFramebuffers(const Device& _device, const Swapchain& _swapchain,
-                                           const Pipeline& _pipeline,
+                                           const RenderPass& _renderPass,
                                            const VkAllocationCallbacks* _allocator)
   {
     const auto& images = _swapchain.GetImages();
@@ -23,7 +24,7 @@ namespace MFVE::Vulkan
 
       VkFramebufferCreateInfo framebufferInfo{};
       framebufferInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-      framebufferInfo.renderPass      = _pipeline.GetRenderPass();
+      framebufferInfo.renderPass      = _renderPass.GetRenderPass();
       framebufferInfo.attachmentCount = 1;
       framebufferInfo.pAttachments    = attachments;
       framebufferInfo.width           = _swapchain.GetExtent().width;

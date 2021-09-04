@@ -18,7 +18,7 @@ namespace MFVE::Vulkan
     DepthBuffer()  = default;
     ~DepthBuffer() = default;
 
-    bool CreateDepthBuffer(const Device& _device, const Swapchain& _swapchain,
+    void CreateDepthBuffer(const Device& _device, const Swapchain& _swapchain,
                            const CommandPool& m_graphicsCommandPool,
                            const VkAllocationCallbacks* _allocator);
     void DestroyDepthBuffer(const Device& _device, const VkAllocationCallbacks* _allocator);

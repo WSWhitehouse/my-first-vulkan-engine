@@ -9,7 +9,7 @@
 
 namespace MFVE::Vulkan
 {
-  bool DepthBuffer::CreateDepthBuffer(const Device& _device, const Swapchain& _swapchain,
+  void DepthBuffer::CreateDepthBuffer(const Device& _device, const Swapchain& _swapchain,
                                       const CommandPool& m_graphicsCommandPool,
                                       const VkAllocationCallbacks* _allocator)
   {
@@ -31,10 +31,8 @@ namespace MFVE::Vulkan
 
     m_image.CreateImageView(_device, m_format, VK_IMAGE_ASPECT_DEPTH_BIT, _allocator);
 
-    m_image.SetImageLayout(_device,
-                           m_graphicsCommandPool,
-                           m_format,
-                           VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+    m_image.SetImageLayout(
+      _device, m_graphicsCommandPool, m_format, VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
   }
 
   void DepthBuffer::DestroyDepthBuffer(const Device& _device,

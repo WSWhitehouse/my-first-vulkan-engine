@@ -71,7 +71,6 @@ namespace MFVE
 
     VkCheck(
       m_pipeline.CreatePipeline(m_device, m_swapchain, m_renderPass, { m_descriptor }, _allocator));
-    VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
 
     VkCheck(
       m_graphicsCommandPool.CreateCommandPool(m_device, m_device.GetGraphicsQueue(), _allocator));
@@ -79,6 +78,7 @@ namespace MFVE
       m_transferCommandPool.CreateCommandPool(m_device, m_device.GetTransferQueue(), _allocator));
 
     m_depthBuffer.CreateDepthBuffer(m_device, m_swapchain, m_graphicsCommandPool, _allocator);
+    VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_renderPass, _allocator));
 
     CreateTestTexture();
 
@@ -127,7 +127,7 @@ namespace MFVE
     m_renderPass.CreateRenderPass(m_device, m_swapchain, m_depthBuffer, _allocator);
     VkCheck(
       m_pipeline.CreatePipeline(m_device, m_swapchain, m_renderPass, { m_descriptor }, _allocator));
-    VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_pipeline, _allocator));
+    VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_renderPass, _allocator));
 
     CreateUniformBuffers(_allocator);
     CreateDescriptorPool(_allocator);
@@ -140,6 +140,7 @@ namespace MFVE
 
   void Renderer::CleanUpSwapchain(const VkAllocationCallbacks* _allocator)
   {
+    m_depthBuffer.DestroyDepthBuffer(m_device, _allocator);
     m_framebuffer.DestroyFramebuffers(m_device, _allocator);
     m_graphicsCommandBuffer.FreeCommandBuffers(m_device, m_graphicsCommandPool);
     m_pipeline.DestroyPipeline(m_device, _allocator);
