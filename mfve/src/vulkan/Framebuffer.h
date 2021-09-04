@@ -7,6 +7,7 @@
 namespace MFVE::Vulkan
 {
   // Forward Declarations
+  class DepthBuffer;
   class Device;
   class Pipeline;
   class RenderPass;
@@ -20,7 +21,7 @@ namespace MFVE::Vulkan
 
     // Framebuffers
     VkResult CreateFramebuffers(const Device& _device, const Swapchain& _swapchain,
-                                const RenderPass& _renderPass,
+                                const RenderPass& _renderPass, const DepthBuffer& _depthBuffer,
                                 const VkAllocationCallbacks* _allocator);
     void DestroyFramebuffers(const Device& _device, const VkAllocationCallbacks* _allocator);
 

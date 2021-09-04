@@ -78,7 +78,8 @@ namespace MFVE
       m_transferCommandPool.CreateCommandPool(m_device, m_device.GetTransferQueue(), _allocator));
 
     m_depthBuffer.CreateDepthBuffer(m_device, m_swapchain, m_graphicsCommandPool, _allocator);
-    VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_renderPass, _allocator));
+    VkCheck(m_framebuffer.CreateFramebuffers(
+      m_device, m_swapchain, m_renderPass, m_depthBuffer, _allocator));
 
     CreateTestTexture();
 
@@ -127,7 +128,9 @@ namespace MFVE
     m_renderPass.CreateRenderPass(m_device, m_swapchain, m_depthBuffer, _allocator);
     VkCheck(
       m_pipeline.CreatePipeline(m_device, m_swapchain, m_renderPass, { m_descriptor }, _allocator));
-    VkCheck(m_framebuffer.CreateFramebuffers(m_device, m_swapchain, m_renderPass, _allocator));
+    m_depthBuffer.CreateDepthBuffer(m_device, m_swapchain, m_graphicsCommandPool, _allocator);
+    VkCheck(m_framebuffer.CreateFramebuffers(
+      m_device, m_swapchain, m_renderPass, m_depthBuffer, _allocator));
 
     CreateUniformBuffers(_allocator);
     CreateDescriptorPool(_allocator);
@@ -179,9 +182,13 @@ namespace MFVE
       renderPassInfo.framebuffer       = m_framebuffer.GetFramebuffers()[i];
       renderPassInfo.renderArea.offset = { 0, 0 };
       renderPassInfo.renderArea.extent = m_swapchain.GetExtent();
-      VkClearValue clearColor          = { { { 0.0f, 0.0f, 0.0f, 1.0f } } };
-      renderPassInfo.clearValueCount   = 1;
-      renderPassInfo.pClearValues      = &clearColor;
+
+      std::array<VkClearValue, 2> clearValues{};
+      clearValues[0].color        = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+      clearValues[1].depthStencil = { 1.0f, 0 };
+
+      renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+      renderPassInfo.pClearValues    = clearValues.data();
 
       vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
