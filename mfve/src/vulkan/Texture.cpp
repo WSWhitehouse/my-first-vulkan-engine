@@ -2,6 +2,8 @@
 
 #include <mfve_pch.h>
 
+#include <filesystem>
+
 // Vulkan
 #include "vulkan/Buffer.h"
 #include "vulkan/Device.h"
@@ -22,8 +24,16 @@ namespace MFVE::Vulkan
 
     int texWidth, texHeight, texChannels;
 
-    stbi_uc* pixels =
-      stbi_load(filePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+    #ifdef MFVE_PLATFORM_WINDOWS
+    // On Windows,'filepath.c_str' returns 'path::value_type*'
+    // not 'const char*'. Must convert it into 'std::string' first.
+    const std::string filename_str = filePath.string();
+    const char* filename           = filename_str.c_str();
+    #else
+    const char* filename = filePath.c_str();
+    #endif
+
+    stbi_uc* pixels = stbi_load(filename, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 
     VkDeviceSize imageSize = texWidth * texHeight * 4;
 
